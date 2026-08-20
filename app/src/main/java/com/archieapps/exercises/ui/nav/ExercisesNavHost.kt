@@ -77,14 +77,12 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
         },
     ) { padding ->
         val layoutDirection = LocalLayoutDirection.current
-        val contentPadding = remember(padding, layoutDirection) {
-            PaddingValues(
-                start = padding.calculateStartPadding(layoutDirection),
-                top = padding.calculateTopPadding(),
-                end = padding.calculateEndPadding(layoutDirection),
-                bottom = padding.calculateBottomPadding() + 16.dp,
-            )
-        }
+        val contentPadding = PaddingValues(
+            start = padding.calculateStartPadding(layoutDirection),
+            top = padding.calculateTopPadding(),
+            end = padding.calculateEndPadding(layoutDirection),
+            bottom = padding.calculateBottomPadding() + 16.dp,
+        )
 
         NavHost(
             navController = navController,

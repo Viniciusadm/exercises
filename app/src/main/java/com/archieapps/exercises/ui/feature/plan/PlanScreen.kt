@@ -34,6 +34,7 @@ import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.EmptyState
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.HairLine
+import com.archieapps.exercises.ui.component.IronButtonHeight
 import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
@@ -199,11 +200,13 @@ private fun PlanFormScreen(state: PlanUiState, actions: PlanActions, contentPadd
             PrimaryButton(
                 text = "Montar plano",
                 onClick = actions.onGenerate,
-                modifier = Modifier.padding(horizontal = Spacing.lg),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.lg),
             )
         }
 
-        item { Spacer(Modifier.height(Spacing.xxl)) }
+        item { Spacer(Modifier.height(Spacing.md)) }
     }
 }
 
@@ -323,19 +326,32 @@ private fun PlanReviewScreen(state: PlanUiState, actions: PlanActions, contentPa
         }
 
         item {
-            Column(Modifier.padding(horizontal = Spacing.lg)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.lg),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                GhostButton(
+                    text = "Descartar",
+                    onClick = actions.onDiscard,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(IronButtonHeight),
+                )
                 PrimaryButton(
                     text = confirmLabel(proposal.days.size),
                     onClick = actions.onConfirm,
                     enabled = state.canConfirm,
                     loading = state.confirming,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(IronButtonHeight),
                 )
-                Spacer(Modifier.height(Spacing.sm))
-                GhostButton(text = "Descartar plano", onClick = actions.onDiscard)
             }
         }
 
-        item { Spacer(Modifier.height(Spacing.xxl)) }
+        item { Spacer(Modifier.height(Spacing.md)) }
     }
 }
 
@@ -487,7 +503,7 @@ private fun PlanSwapOverlay(state: PlanUiState, actions: PlanActions) {
                         }
                     }
 
-                    item { Spacer(Modifier.height(Spacing.xxl)) }
+                    item { Spacer(Modifier.height(Spacing.md)) }
                 }
             }
         }
@@ -550,13 +566,23 @@ private fun PlanDoneScreen(state: PlanUiState, actions: PlanActions, contentPadd
 
         item {
             Column(Modifier.padding(horizontal = Spacing.lg)) {
-                PrimaryButton(text = "Ver meus treinos", onClick = actions.onOpenWorkouts)
+                PrimaryButton(
+                    text = "Ver meus treinos",
+                    onClick = actions.onOpenWorkouts,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 Spacer(Modifier.height(Spacing.sm))
-                GhostButton(text = "Planejar outro", onClick = actions.onPlanAnother)
+                GhostButton(
+                    text = "Planejar outro",
+                    onClick = actions.onPlanAnother,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IronButtonHeight),
+                )
             }
         }
 
-        item { Spacer(Modifier.height(Spacing.xxl)) }
+        item { Spacer(Modifier.height(Spacing.md)) }
     }
 }
 

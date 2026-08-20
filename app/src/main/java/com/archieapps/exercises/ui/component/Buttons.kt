@@ -38,6 +38,8 @@ import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.Spacing
 
+val IronButtonHeight = 54.dp
+
 @Composable
 fun PrimaryButton(
     text: String,
@@ -55,7 +57,7 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier
             .scale(scale)
-            .defaultMinSize(minHeight = 54.dp),
+            .defaultMinSize(minHeight = IronButtonHeight),
         enabled = enabled && !loading,
         shape = MaterialTheme.shapes.medium,
         interactionSource = interaction,
