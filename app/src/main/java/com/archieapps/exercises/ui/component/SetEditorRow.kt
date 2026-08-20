@@ -3,6 +3,7 @@ package com.archieapps.exercises.ui.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,14 +38,23 @@ import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 
+private val ColumnNumberWidth = 40.dp
+private val ColumnActionWidth = 44.dp
+
 @Composable
 fun SetEditorHeader(exercise: SessionExercise, modifier: Modifier = Modifier) {
-    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
         Text(
             text = "SÉRIE",
             style = MaterialTheme.typography.labelSmall,
             color = IronTextMuted,
-            modifier = Modifier.width(48.dp),
+            modifier = Modifier.width(ColumnNumberWidth),
         )
         Text(
             text = if (exercise.executionType == "time") "TEMPO" else "REPS",
@@ -62,7 +72,7 @@ fun SetEditorHeader(exercise: SessionExercise, modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f),
             )
         }
-        Spacer(Modifier.width(52.dp))
+        Spacer(Modifier.width(ColumnActionWidth))
     }
 }
 
@@ -86,10 +96,11 @@ fun SetEditorRow(
             .background(background)
             .padding(horizontal = Spacing.sm, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Box(
             Modifier
-                .width(40.dp)
+                .width(ColumnNumberWidth)
                 .clickable(onClick = onRemove),
             contentAlignment = Alignment.Center,
         ) {
@@ -127,8 +138,7 @@ fun SetEditorRow(
 
         Box(
             Modifier
-                .padding(start = Spacing.sm)
-                .size(44.dp)
+                .size(ColumnActionWidth)
                 .clip(RoundedCornerShape(12.dp))
                 .background(if (set.done) IronPositive else IronSurface)
                 .border(1.dp, if (set.done) IronPositive else IronBorder, RoundedCornerShape(12.dp))
