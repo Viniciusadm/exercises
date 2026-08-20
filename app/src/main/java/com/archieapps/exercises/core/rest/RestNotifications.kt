@@ -63,7 +63,7 @@ class RestNotifications(private val context: Context) {
             .setOnlyAlertOnce(true)
             .setShowWhen(true)
             .setSilent(true)
-            .setContentIntent(openApp())
+            .setContentIntent(openSession(REQUEST_ONGOING))
             .addAction(0, "+15s", serviceAction(RestTimerService.ACTION_ADD))
             .addAction(0, "Pular", serviceAction(RestTimerService.ACTION_SKIP))
             .build()
@@ -78,7 +78,7 @@ class RestNotifications(private val context: Context) {
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setAutoCancel(true)
             .setTimeoutAfter(60_000)
-            .setContentIntent(openApp())
+            .setContentIntent(openSession(REQUEST_ALERT))
             .build()
 
         runCatching { manager.notify(ALERT_ID, notification) }
@@ -86,10 +86,12 @@ class RestNotifications(private val context: Context) {
 
     fun cancelAlert() = runCatching { manager.cancel(ALERT_ID) }
 
-    private fun openApp(): PendingIntent = PendingIntent.getActivity(
+    private fun openSession(requestCode: Int): PendingIntent = PendingIntent.getActivity(
         context,
-        0,
-        Intent(context, MainActivity::class.java),
+        requestCode,
+        Intent(context, MainActivity::class.java)
+            .setAction(ACTION_OPEN_SESSION)
+            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
@@ -105,5 +107,9 @@ class RestNotifications(private val context: Context) {
         const val CHANNEL_ALERT = "rest_alert"
         const val ONGOING_ID = 4201
         const val ALERT_ID = 4202
+        const val ACTION_OPEN_SESSION = "com.archieapps.exercises.OPEN_SESSION"
+
+        private const val REQUEST_ONGOING = 1
+        private const val REQUEST_ALERT = 2
     }
 }

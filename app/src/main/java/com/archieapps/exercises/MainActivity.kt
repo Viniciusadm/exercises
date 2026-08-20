@@ -1,6 +1,7 @@
 package com.archieapps.exercises
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -25,6 +26,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.archieapps.exercises.core.di.AppContainer
+import com.archieapps.exercises.core.rest.OpenSessionBus
+import com.archieapps.exercises.core.rest.RestNotifications
 import com.archieapps.exercises.ui.design.ExercisesTheme
 import com.archieapps.exercises.ui.feature.auth.LoginScreen
 import com.archieapps.exercises.ui.feature.auth.LoginViewModel
@@ -36,6 +39,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleIntent(intent)
         askForNotifications()
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
@@ -48,6 +52,16 @@ class MainActivity : ComponentActivity() {
                 ExercisesRoot(container)
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == RestNotifications.ACTION_OPEN_SESSION) OpenSessionBus.request()
     }
 
     private fun askForNotifications() {

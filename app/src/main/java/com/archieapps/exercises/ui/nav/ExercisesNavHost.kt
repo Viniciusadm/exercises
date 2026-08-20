@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.archieapps.exercises.core.di.AppContainer
+import com.archieapps.exercises.core.rest.OpenSessionBus
 import com.archieapps.exercises.ui.design.IronBackground
 import com.archieapps.exercises.ui.feature.anatomy.AnatomyScreen
 import com.archieapps.exercises.ui.feature.licenses.LicensesScreen
@@ -62,6 +63,18 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val showBottomBar = TopLevelDestination.entries.any { it.route == currentRoute } || currentRoute == null
+
+    LaunchedEffect(navController) {
+        OpenSessionBus.requestedAt.collect { requestedAt ->
+            if (requestedAt == null) return@collect
+
+            if (navController.currentDestination?.route != Routes.SESSION) {
+                navController.navigate(Routes.SESSION) { launchSingleTop = true }
+            }
+
+            OpenSessionBus.consume()
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
