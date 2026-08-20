@@ -6,11 +6,6 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Tudo aqui opera sobre PathNode e floats, sem tocar android.graphics: e por isso que
- * os bounds sao derivados dos nos em vez de Path.getBounds(), que seria uma linha mas
- * nao rodaria em teste de JVM.
- */
 data class BodyBounds(
     val left: Float,
     val top: Float,
@@ -48,12 +43,6 @@ data class FitTransform(val scale: Float, val dx: Float, val dy: Float) {
         if (scale <= 0f) Offset.Zero else Offset((offset.x - dx) / scale, (offset.y - dy) / scale)
 }
 
-/**
- * Curvas entram pelo casco dos pontos de controle, nao pelo extremo real. E um
- * superconjunto conservador: a caixa fica alguns centesimos maior que a tinta, o que
- * na pratica vira uma margem em volta da figura, e economiza a matematica de extremo
- * de Bezier.
- */
 fun boundsOf(nodes: List<PathNode>): BodyBounds? {
     if (nodes.isEmpty()) return null
 
@@ -163,13 +152,6 @@ fun boundsOf(nodes: List<PathNode>): BodyBounds? {
     return if (seen) BodyBounds(left, top, right, bottom) else null
 }
 
-/**
- * Medido nos arquivos upstream: frente e costas convivem no mesmo espaco de coordenadas,
- * lado a lado (frente em x aprox. 3..28, costas em 40..65). A uniao crua daria uma caixa
- * com o dobro da largura da figura e metade do canvas vazia em cada vista. Entao: caixa
- * propria de cada vista para posicao, tamanho comum para escala, de forma que a silhueta
- * nao pule nem redimensione ao alternar.
- */
 fun normalizeViewBoxes(front: BodyBounds, back: BodyBounds): Pair<BodyBounds, BodyBounds> {
     val width = max(front.width, back.width)
     val height = max(front.height, back.height)
@@ -191,10 +173,6 @@ fun fitTransform(canvasWidth: Float, canvasHeight: Float, bounds: BodyBounds): F
     )
 }
 
-/**
- * Compose nao expoe distancia ponto-a-path, entao a tolerancia de toque e amostrada em
- * anel: dois aneis de oito pontos cobrem uma polpa de dedo sem custo perceptivel.
- */
 fun toleranceRing(center: Offset, radius: Float): List<Offset> {
     if (radius <= 0f) return emptyList()
 

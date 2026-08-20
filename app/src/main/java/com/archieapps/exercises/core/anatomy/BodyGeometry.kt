@@ -45,10 +45,6 @@ class BodyRegion(
 ) {
     private var hitTester: PathHitTester? = null
 
-    /**
-     * Construir o hit-tester percorre cada segmento do path para montar a arvore de
-     * intervalos, entao vale so quando a vista e realmente desenhada.
-     */
     fun prepareHitTesting(): Boolean = runCatching {
         if (hitTester == null) hitTester = PathHitTester(path)
         true
@@ -86,11 +82,6 @@ class BodyGeometry(
         if (!ok) hitTestingAvailable = false
     }
 
-    /**
-     * Dois estagios: contencao exata, e um anel de amostras quando o dedo cai numa fresta.
-     * Empate resolve pela MENOR area de bbox, porque a regiao mais especifica e a que o
-     * usuario quis (traps-lower dentro da area de traps, por exemplo).
-     */
     fun regionAt(view: BodyView, point: Offset, tolerance: Float = 0f): BodyRegion? {
         val candidates = regionsFor(view)
         if (candidates.isEmpty()) return null

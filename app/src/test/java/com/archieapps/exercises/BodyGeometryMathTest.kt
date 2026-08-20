@@ -17,11 +17,6 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/**
- * PathParser().parsePathString(d).toNodes() nao toca android.graphics, entao a matematica
- * de bounds roda em JVM. Ja toPath() e PathHitTester precisam do framework: isso e coberto
- * por BodyGeometryInstrumentedTest.
- */
 class BodyGeometryMathTest {
     private val asset: BodyRegionsAsset by lazy {
         val file = File("src/main/assets/anatomy/body_regions_v1.json")

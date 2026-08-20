@@ -18,16 +18,10 @@ const val STATUS_EMPHASIZED = "emphasized"
 private const val MIN_INTENSITY = 0.28f
 private const val PERCENTILE = 0.9
 
-/**
- * Percentil 90 em vez do maximo: quando um musculo domina, normalizar pelo maximo
- * achata todo o resto ate a invisibilidade. Mesma ideia de referenceVolume no heatmap.
- */
 fun setsPerWeekReference(muscles: List<MuscleVolumeDto>, percentile: Double = PERCENTILE): Double {
     val values = muscles.map { it.setsPerWeek }.filter { it > 0.0 }.sorted()
     if (values.isEmpty()) return 1.0
 
-    // Posto mais proximo. Truncar (size - 1) * p cai no indice 0 para listas curtas,
-    // ou seja, elegeria o MENOR valor como percentil 90.
     val index = (ceil(percentile * values.size).toInt() - 1).coerceIn(0, values.size - 1)
 
     return values[index].takeIf { it > 0.0 } ?: 1.0
@@ -47,11 +41,6 @@ fun muscleIntensities(
     }
 }
 
-/**
- * Uma regiao SVG pode ser reivindicada por musculos de ativacoes diferentes (o triceps
- * medial e o lateral pintam a mesma regiao). Vence a ativacao mais forte: dizer
- * "estabilizador" onde tambem ha um primario esconderia o estimulo principal.
- */
 fun activationRegions(muscles: ExerciseMusclesDto): List<MuscleRegionValue> {
     val strongest = linkedMapOf<String, Pair<MuscleActivation, String>>()
 

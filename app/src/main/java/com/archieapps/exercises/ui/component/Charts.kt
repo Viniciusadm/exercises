@@ -37,10 +37,6 @@ data class ShareRow(val label: String, val value: String, val share: Double, val
 
 data class HeatDay(val date: java.time.LocalDate, val intensity: Float)
 
-/**
- * Escala de calor da casa. Vive aqui e e usada tanto pelo Heatmap do calendario quanto
- * pelo mapa anatomico, para as duas nunca divergirem.
- */
 fun heatColor(intensity: Float): Color = if (intensity <= 0f) {
     IronSurfaceHigh
 } else {

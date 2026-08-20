@@ -24,10 +24,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * Cobre a cadeia px -> viewBox -> hit-test, que e exatamente a parte que quebra em
- * silencio quando alguem refatora o dimensionamento.
- */
 class BodyMapTest {
     @get:Rule
     val compose = createComposeRule()
@@ -42,7 +38,6 @@ class BodyMapTest {
         MuscleRegionValue("quads-left", "Vasto medial", 1f, detail = "8 sér/sem"),
         MuscleRegionValue("quads-right", "Vasto medial", 1f, detail = "8 sér/sem"),
     )
-
 
     private fun interiorPoint(region: BodyRegion): Offset? {
         region.prepareHitTesting()
@@ -99,8 +94,6 @@ class BodyMapTest {
         val box = loaded.viewBox(BodyView.FRONT)
         val quads = loaded.regionsFor(BodyView.FRONT).first { it.id == "quads-left" }
 
-        // O centro da bbox de quads-left cai dentro de adductors-left: a coxa tem formato
-        // de crescente, entao o ponto de toque precisa ser um interior de verdade.
         quads.prepareHitTesting()
         val interior = requireNotNull(interiorPoint(quads)) { "quads-left sem ponto interior" }
 

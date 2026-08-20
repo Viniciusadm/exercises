@@ -56,10 +56,6 @@ data class MuscleRegionValue(
 
 private val TOUCH_TOLERANCE_DP = 6.dp
 
-/**
- * A figura e alta e estreita (proporcao ~0.3), entao o chamador deve restringir a
- * ALTURA: com a largura mandando, a proporcao pediria mais de mil dp de altura.
- */
 @Composable
 fun BodyMap(
     geometry: BodyGeometry?,
@@ -88,9 +84,6 @@ fun BodyMap(
         if (touchable) withContext(Dispatchers.Default) { geometry.prepareHitTesting(view) }
     }
 
-    // Larguras em px de tela. Dentro do withTransform as unidades sao do viewBox, entao
-    // cada uma e dividida pela escala real no momento do desenho para a espessura
-    // aparente nao mudar junto com o tamanho do canvas.
     val outlinePx = with(density) { 0.75.dp.toPx() }
     val primaryPx = with(density) { 1.5.dp.toPx() }
     val dashedPx = with(density) { 1.dp.toPx() }
@@ -165,11 +158,6 @@ fun BodyMap(
     }
 }
 
-/**
- * Tres canais independentes em vez de matiz: preenchimento, presenca de contorno e
- * traco. No tema dark, matiz sozinho nao distingue de forma legivel, e falha para quem
- * tem daltonismo.
- */
 private fun fillFor(intensity: Float, activation: MuscleActivation?): Color = when (activation) {
     MuscleActivation.PRIMARY -> IronPrimary.copy(alpha = 0.95f)
     MuscleActivation.SECONDARY -> IronPrimary.copy(alpha = 0.40f)
@@ -222,11 +210,6 @@ fun BodyViewToggle(
     }
 }
 
-/**
- * A legenda e a afordancia acessivel primaria: um Canvas unico nao consegue expor um no
- * de semantics por regiao, e 89 nos fantasma seria absurdo. Aqui cada musculo com dado e
- * uma linha focavel e clicavel com a mesma selecao do mapa.
- */
 @Composable
 fun BodyMapLegend(
     values: List<MuscleRegionValue>,

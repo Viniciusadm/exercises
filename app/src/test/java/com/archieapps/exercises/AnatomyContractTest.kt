@@ -20,10 +20,6 @@ import java.io.File
 import kotlinx.serialization.json.decodeFromJsonElement
 import org.junit.Test
 
-/**
- * Fixtures gerados pelo próprio código do backend (rotas reais, resource() real),
- * então este teste trava o contrato anatômico entre o Laravel e os DTOs do app.
- */
 class AnatomyContractTest {
     private val activationTypes = setOf("primary", "secondary", "stabilizer")
 
@@ -129,7 +125,6 @@ class AnatomyContractTest {
         assertTrue(catalog.all { meta.muscleRegions.contains(it.region) })
     }
 
-
     @Test
     fun `the analysis payload maps into the muscle dashboard`() {
         val analysis = decode<MuscleAnalysisDto>("muscle_analysis_response.json").body!!
@@ -214,7 +209,6 @@ class AnatomyContractTest {
         assertEquals(listOf("Esteira"), attribution.unmapped.exerciseNames)
     }
 
-
     @Test
     fun `every region the backend asks to paint exists in the shipped asset`() {
         val asset = File("src/main/assets/anatomy/body_regions_v1.json")
@@ -270,7 +264,6 @@ class AnatomyContractTest {
                 quads.value <= quads.muscles.maxOf { it.value } + 0.001,
         )
     }
-
 
     @Test
     fun `recommendations map into the actionable list`() {
@@ -330,8 +323,6 @@ class AnatomyContractTest {
             .flatMap { it.fromYourCatalog }
             .first { it.sessionsCount == 0 }
 
-        // Quem adota uma sugestão precisa continuar vendo "agora faça", em vez de
-        // ver o músculo desaparecer da lista.
         assertTrue("já está no catálogo", adopted.inCatalog)
         assertNotNull(adopted.exerciseId)
         assertNull("nunca feito não tem data", adopted.lastPerformedAt)

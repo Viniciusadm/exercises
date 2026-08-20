@@ -21,10 +21,6 @@ val IronRecord = Color(0xFFFFC24B)
 val IronPositive = Color(0xFF3ED598)
 val IronNegative = Color(0xFFFF5C5C)
 
-/**
- * Cor estavel por identidade. Indexar a paleta pela ordem da lista faz a cor de um
- * grupo mudar quando o ranking muda entre periodos.
- */
 fun muscleColorFor(key: String): Color =
     MuscleGroupColors[kotlin.math.abs(key.hashCode()) % MuscleGroupColors.size]
 

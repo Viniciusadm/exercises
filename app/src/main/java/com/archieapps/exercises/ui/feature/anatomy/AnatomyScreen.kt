@@ -203,8 +203,6 @@ private fun MapCard(
         }
         Spacer(Modifier.height(Spacing.md))
 
-        // Altura manda, largura sai da proporcao: a figura e alta e estreita (~0.3), entao
-        // deixar a largura mandar pediria mais de mil dp de altura.
         BodyMap(
             geometry = state.geometry,
             values = values,

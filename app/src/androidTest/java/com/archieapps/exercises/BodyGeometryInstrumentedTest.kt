@@ -15,11 +15,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Path real e PathHitTester precisam do framework, entao a precisao do toque so pode ser
- * verificada aqui. Em API < 34 o graphics-path usa uma lib nativa: e este teste que diz
- * se ela carrega no aparelho.
- */
 @RunWith(AndroidJUnit4::class)
 class BodyGeometryInstrumentedTest {
     private val geometry by lazy {
@@ -28,7 +23,6 @@ class BodyGeometryInstrumentedTest {
         runBlocking { BodyGeometryLoader(context, ApiJson).load() }
     }
 
-    /** Centro da bbox nem sempre cai dentro do path, entao varre uma grade dentro dela. */
     private fun interiorPoint(region: BodyRegion): Offset? {
         region.prepareHitTesting()
 
@@ -133,8 +127,6 @@ class BodyGeometryInstrumentedTest {
 
         val box = loaded.viewBox(BodyView.FRONT)
 
-        // Ponto a meia altura, um pouco a esquerda de tudo: fora de qualquer path da vista,
-        // mas perto o suficiente para o anel de tolerancia alcançar a silhueta.
         val edge = loaded.regionsFor(BodyView.FRONT).minOf { it.bounds.left }
         val nearMiss = Offset(edge - 0.5f, box.centerY)
 

@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-// Gera app/src/main/assets/anatomy/body_regions_v1.json a partir do vulovix/body-muscles.
-// One-off: a saida e commitada e este script NAO faz parte do build do Gradle.
-// Rode com: node tools/anatomy/build-regions.mjs
 
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -11,8 +8,6 @@ const SOURCE_COMMIT = '15c8085ee97cb94c51f92c75224416b15f955b5c'
 const RAW = `https://raw.githubusercontent.com/vulovix/body-muscles/${SOURCE_COMMIT}/src/data`
 const OUT = resolve(import.meta.dirname, '../../app/src/main/assets/anatomy/body_regions_v1.json')
 
-// Um bloco por regiao. Parsing por bloco em vez de uma regex monolitica: varias
-// entradas upstream tem comentarios "//" entre os campos.
 const BLOCK = /\{\s*id:\s*"[^"]+"[\s\S]*?\n  \}/g
 const FIELD = (name) => new RegExp(`(?:^|\\n)\\s*${name}:\\s*(?:ViewSide\\.)?"?([^"\\n,]+)"?`)
 

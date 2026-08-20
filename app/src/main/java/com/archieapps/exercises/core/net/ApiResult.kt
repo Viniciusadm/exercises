@@ -19,10 +19,6 @@ class ApiCaller(private val json: Json) {
             is ApiResult.Failure -> result
         }
 
-    /**
-     * Devolve o envelope inteiro: endpoints que carregam informacao em "misc"
-     * (ex.: a atribuicao por musculo) perderiam esse bloco em call().
-     */
     suspend fun <T> envelope(block: suspend () -> Envelope<T>): ApiResult<Envelope<T>> = try {
         val envelope = block()
 
