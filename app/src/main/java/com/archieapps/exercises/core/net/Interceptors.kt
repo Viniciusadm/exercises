@@ -1,5 +1,6 @@
 package com.archieapps.exercises.core.net
 
+import java.util.concurrent.TimeUnit
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -17,5 +18,22 @@ class SessionInterceptor(
         }
 
         return chain.proceed(builder.build())
+    }
+}
+
+class SlowCallInterceptor(
+    private val paths: List<String>,
+    private val readTimeoutSeconds: Int,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val path = chain.request().url.encodedPath
+
+        if (paths.none { path.contains(it) }) {
+            return chain.proceed(chain.request())
+        }
+
+        return chain
+            .withReadTimeout(readTimeoutSeconds, TimeUnit.SECONDS)
+            .proceed(chain.request())
     }
 }

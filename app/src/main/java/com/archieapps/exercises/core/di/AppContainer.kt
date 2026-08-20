@@ -8,6 +8,7 @@ import com.archieapps.exercises.core.data.AnatomyRepository
 import com.archieapps.exercises.core.data.AuthRepository
 import com.archieapps.exercises.core.data.ExerciseRepository
 import com.archieapps.exercises.core.data.HomeRepository
+import com.archieapps.exercises.core.data.PlanRepository
 import com.archieapps.exercises.core.data.SessionRepository
 import com.archieapps.exercises.core.data.TemplateRepository
 import com.archieapps.exercises.core.data.WorkoutRepository
@@ -16,6 +17,7 @@ import com.archieapps.exercises.core.net.ApiCaller
 import com.archieapps.exercises.core.net.ApiJson
 import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.SessionInterceptor
+import com.archieapps.exercises.core.net.SlowCallInterceptor
 import com.archieapps.exercises.core.rest.RestNotifications
 import com.archieapps.exercises.core.rest.RestTimerController
 import com.archieapps.exercises.core.settings.SettingsStore
@@ -32,6 +34,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 class AppContainer(context: Context) {
+    private companion object {
+        val SLOW_PATHS = listOf("workout-plans")
+        const val SLOW_READ_TIMEOUT_SECONDS = 90
+    }
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val settings = SettingsStore(context, scope)
@@ -40,6 +47,7 @@ class AppContainer(context: Context) {
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(SessionInterceptor({ settings.current.token }))
+        .addInterceptor(SlowCallInterceptor(SLOW_PATHS, SLOW_READ_TIMEOUT_SECONDS))
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
@@ -71,6 +79,8 @@ class AppContainer(context: Context) {
     val workoutRepository = WorkoutRepository(api, database.jsonCache(), caller, ApiJson)
 
     val templateRepository = TemplateRepository(api, database.jsonCache(), caller, ApiJson)
+
+    val planRepository = PlanRepository(api, database.jsonCache(), caller, ApiJson)
 
     val sessionRepository = SessionRepository(
         api,

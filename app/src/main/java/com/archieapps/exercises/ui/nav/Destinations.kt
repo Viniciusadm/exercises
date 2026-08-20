@@ -18,6 +18,7 @@ object Routes {
     const val SETTINGS = "settings"
     const val SESSION = "session"
     const val ANATOMY = "anatomy"
+    const val PLAN = "plan"
     const val LICENSES = "licenses"
     const val TEMPLATE_PATTERN = "template/{id}"
     const val WORKOUT_PATTERN = "workout/{id}/edit"

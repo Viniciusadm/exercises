@@ -1,0 +1,52 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": {
+        "objectives": [
+            {
+                "value": "strength",
+                "label": "Força"
+            },
+            {
+                "value": "hypertrophy",
+                "label": "Hipertrofia"
+            },
+            {
+                "value": "endurance",
+                "label": "Resistência"
+            }
+        ],
+        "days_per_week": {
+            "min": 1,
+            "max": 6,
+            "default": 3
+        },
+        "minutes_per_day": {
+            "min": 30,
+            "max": 120,
+            "step": 15,
+            "default": 60
+        },
+        "default_objective": "hypertrophy",
+        "equipment": [
+            "Banco romano",
+            "Bandas",
+            "Barra",
+            "Barra fixa",
+            "Caneleira",
+            "Cross over",
+            "Esteira",
+            "Halteres",
+            "Máquina",
+            "Peso do corpo",
+            "Smith",
+            "Step"
+        ],
+        "sets_per_exercise_range": [
+            2,
+            5
+        ]
+    },
+    "misc": null,
+    "error": null,
+    "success": true
+}

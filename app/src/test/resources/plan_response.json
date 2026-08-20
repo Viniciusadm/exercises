@@ -1,0 +1,768 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": {
+        "plan_uuid": "f6437bab-71ce-4568-aff3-07143135fc43",
+        "source": "deterministic",
+        "objective": "hypertrophy",
+        "days_per_week": 3,
+        "minutes_per_day": 60,
+        "sets_budget_per_day": 20,
+        "window": {
+            "from": "2026-07-24",
+            "to": "2026-08-20",
+            "weeks": 4
+        },
+        "summary": null,
+        "days": [
+            {
+                "day": 1,
+                "focus": "Membros inferiores",
+                "name": "Membros inferiores · Dia 1",
+                "total_sets": 18,
+                "estimated_minutes": 55,
+                "exercises": [
+                    {
+                        "ref": "canon:hiperextensao-lombar",
+                        "exercise_id": null,
+                        "name": "Hiperextensão lombar",
+                        "is_new": true,
+                        "equipment": "Banco romano",
+                        "execution_type": "sets",
+                        "uses_weight": false,
+                        "compound": true,
+                        "region": "back",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "eretores-da-espinha",
+                                    "name": "Eretores da espinha"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "gluteo-maximo",
+                                    "name": "Glúteo máximo"
+                                },
+                                {
+                                    "slug": "biceps-femoral",
+                                    "name": "Bíceps femoral"
+                                },
+                                {
+                                    "slug": "semitendinoso",
+                                    "name": "Semitendíneo"
+                                },
+                                {
+                                    "slug": "semimembranoso",
+                                    "name": "Semimembranáceo"
+                                },
+                                {
+                                    "slug": "quadrado-lombar",
+                                    "name": "Quadrado lombar"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "canon:elevacao-de-pernas-suspenso",
+                        "exercise_id": null,
+                        "name": "Elevação de pernas suspenso",
+                        "is_new": true,
+                        "equipment": "Barra fixa",
+                        "execution_type": "sets",
+                        "uses_weight": false,
+                        "compound": true,
+                        "region": "core",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "iliopsoas",
+                                    "name": "Iliopsoas"
+                                },
+                                {
+                                    "slug": "reto-abdominal",
+                                    "name": "Reto abdominal"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "obliquos",
+                                    "name": "Oblíquos"
+                                },
+                                {
+                                    "slug": "flexores-do-antebraco",
+                                    "name": "Flexores do antebraço"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "cat:7",
+                        "exercise_id": 7,
+                        "name": "Cadeira abdutora",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "lower_body",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "gluteo-medio",
+                                    "name": "Glúteo médio"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "gluteo-maximo",
+                                    "name": "Glúteo máximo"
+                                },
+                                {
+                                    "slug": "eretores-da-espinha",
+                                    "name": "Eretores da espinha"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 37.5,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "cat:12",
+                        "exercise_id": 12,
+                        "name": "Crucifixo invertido",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "shoulders",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "deltoide-posterior",
+                                    "name": "Deltoide posterior"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "trapezio-medio",
+                                    "name": "Trapézio médio"
+                                },
+                                {
+                                    "slug": "romboides",
+                                    "name": "Romboides"
+                                },
+                                {
+                                    "slug": "trapezio-inferior",
+                                    "name": "Trapézio inferior"
+                                },
+                                {
+                                    "slug": "eretores-da-espinha",
+                                    "name": "Eretores da espinha"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 37.5,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "cat:9",
+                        "exercise_id": 9,
+                        "name": "Cadeira extensora",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": false,
+                        "region": "lower_body",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "reto-femoral",
+                                    "name": "Reto femoral"
+                                },
+                                {
+                                    "slug": "vasto-lateral",
+                                    "name": "Vasto lateral"
+                                },
+                                {
+                                    "slug": "vasto-medial",
+                                    "name": "Vasto medial"
+                                },
+                                {
+                                    "slug": "vasto-intermedio",
+                                    "name": "Vasto intermédio"
+                                }
+                            ],
+                            "secondary": []
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 37.5,
+                        "rest_seconds": 60,
+                        "notes": null
+                    },
+                    {
+                        "ref": "canon:dorsiflexao-com-elastico",
+                        "exercise_id": null,
+                        "name": "Dorsiflexão com elástico",
+                        "is_new": true,
+                        "equipment": "Bandas",
+                        "execution_type": "sets",
+                        "uses_weight": false,
+                        "compound": false,
+                        "region": "lower_body",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "tibial-anterior",
+                                    "name": "Tibial anterior"
+                                }
+                            ],
+                            "secondary": []
+                        },
+                        "target_sets": 3,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 60,
+                        "notes": null
+                    }
+                ]
+            },
+            {
+                "day": 2,
+                "focus": "Peito",
+                "name": "Peito · Dia 2",
+                "total_sets": 16,
+                "estimated_minutes": 50,
+                "exercises": [
+                    {
+                        "ref": "canon:rosca-inversa",
+                        "exercise_id": null,
+                        "name": "Rosca inversa",
+                        "is_new": true,
+                        "equipment": "Barra",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "arms",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "braquiorradial",
+                                    "name": "Braquiorradial"
+                                },
+                                {
+                                    "slug": "extensores-do-antebraco",
+                                    "name": "Extensores do antebraço"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "braquial",
+                                    "name": "Braquial"
+                                },
+                                {
+                                    "slug": "biceps-braquial",
+                                    "name": "Bíceps braquial"
+                                }
+                            ]
+                        },
+                        "target_sets": 4,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 120,
+                        "notes": "Primeira vez: comece leve e registre a carga."
+                    },
+                    {
+                        "ref": "cat:11",
+                        "exercise_id": 11,
+                        "name": "Crucifixo",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "chest",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "peitoral-maior-esternal",
+                                    "name": "Peitoral maior (esternal)"
+                                },
+                                {
+                                    "slug": "peitoral-maior-clavicular",
+                                    "name": "Peitoral maior (clavicular)"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "deltoide-anterior",
+                                    "name": "Deltoide anterior"
+                                },
+                                {
+                                    "slug": "serratil-anterior",
+                                    "name": "Serrátil anterior"
+                                },
+                                {
+                                    "slug": "biceps-braquial",
+                                    "name": "Bíceps braquial"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 32.5,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "canon:pullover-com-halter",
+                        "exercise_id": null,
+                        "name": "Pullover com halter",
+                        "is_new": true,
+                        "equipment": "Halteres",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "chest",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "serratil-anterior",
+                                    "name": "Serrátil anterior"
+                                },
+                                {
+                                    "slug": "latissimo-do-dorso",
+                                    "name": "Latíssimo do dorso"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "peitoral-maior-esternal",
+                                    "name": "Peitoral maior (esternal)"
+                                },
+                                {
+                                    "slug": "triceps-cabeca-longa",
+                                    "name": "Tríceps (cabeça longa)"
+                                },
+                                {
+                                    "slug": "reto-abdominal",
+                                    "name": "Reto abdominal"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 120,
+                        "notes": "Primeira vez: comece leve e registre a carga."
+                    },
+                    {
+                        "ref": "cat:33",
+                        "exercise_id": 33,
+                        "name": "Supino vertical",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "chest",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "peitoral-maior-esternal",
+                                    "name": "Peitoral maior (esternal)"
+                                },
+                                {
+                                    "slug": "peitoral-maior-clavicular",
+                                    "name": "Peitoral maior (clavicular)"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "deltoide-anterior",
+                                    "name": "Deltoide anterior"
+                                },
+                                {
+                                    "slug": "triceps-cabeca-longa",
+                                    "name": "Tríceps (cabeça longa)"
+                                },
+                                {
+                                    "slug": "triceps-cabeca-lateral",
+                                    "name": "Tríceps (cabeça lateral)"
+                                },
+                                {
+                                    "slug": "triceps-cabeca-medial",
+                                    "name": "Tríceps (cabeça medial)"
+                                },
+                                {
+                                    "slug": "serratil-anterior",
+                                    "name": "Serrátil anterior"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 34.5,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "canon:extensao-de-punho",
+                        "exercise_id": null,
+                        "name": "Extensão de punho",
+                        "is_new": true,
+                        "equipment": "Barra",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": false,
+                        "region": "arms",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "extensores-do-antebraco",
+                                    "name": "Extensores do antebraço"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "braquiorradial",
+                                    "name": "Braquiorradial"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 60,
+                        "notes": "Primeira vez: comece leve e registre a carga."
+                    }
+                ]
+            },
+            {
+                "day": 3,
+                "focus": "Membros inferiores",
+                "name": "Membros inferiores · Dia 3",
+                "total_sets": 19,
+                "estimated_minutes": 58,
+                "exercises": [
+                    {
+                        "ref": "cat:25",
+                        "exercise_id": 25,
+                        "name": "Remada sentada pronada",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "back",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "trapezio-medio",
+                                    "name": "Trapézio médio"
+                                },
+                                {
+                                    "slug": "romboides",
+                                    "name": "Romboides"
+                                },
+                                {
+                                    "slug": "latissimo-do-dorso",
+                                    "name": "Latíssimo do dorso"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "deltoide-posterior",
+                                    "name": "Deltoide posterior"
+                                },
+                                {
+                                    "slug": "biceps-braquial",
+                                    "name": "Bíceps braquial"
+                                },
+                                {
+                                    "slug": "braquial",
+                                    "name": "Braquial"
+                                },
+                                {
+                                    "slug": "trapezio-inferior",
+                                    "name": "Trapézio inferior"
+                                },
+                                {
+                                    "slug": "eretores-da-espinha",
+                                    "name": "Eretores da espinha"
+                                },
+                                {
+                                    "slug": "flexores-do-antebraco",
+                                    "name": "Flexores do antebraço"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 50,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "canon:prancha-lateral",
+                        "exercise_id": null,
+                        "name": "Prancha lateral",
+                        "is_new": true,
+                        "equipment": "Peso do corpo",
+                        "execution_type": "time",
+                        "uses_weight": false,
+                        "compound": true,
+                        "region": "core",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "obliquos",
+                                    "name": "Oblíquos"
+                                },
+                                {
+                                    "slug": "quadrado-lombar",
+                                    "name": "Quadrado lombar"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "gluteo-medio",
+                                    "name": "Glúteo médio"
+                                },
+                                {
+                                    "slug": "reto-abdominal",
+                                    "name": "Reto abdominal"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": null,
+                        "target_weight_kg": null,
+                        "rest_seconds": 120,
+                        "notes": "3 x 40s"
+                    },
+                    {
+                        "ref": "cat:18",
+                        "exercise_id": 18,
+                        "name": "Leg press",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "lower_body",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "reto-femoral",
+                                    "name": "Reto femoral"
+                                },
+                                {
+                                    "slug": "vasto-lateral",
+                                    "name": "Vasto lateral"
+                                },
+                                {
+                                    "slug": "vasto-medial",
+                                    "name": "Vasto medial"
+                                },
+                                {
+                                    "slug": "vasto-intermedio",
+                                    "name": "Vasto intermédio"
+                                },
+                                {
+                                    "slug": "gluteo-maximo",
+                                    "name": "Glúteo máximo"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "adutores",
+                                    "name": "Adutores"
+                                },
+                                {
+                                    "slug": "biceps-femoral",
+                                    "name": "Bíceps femoral"
+                                },
+                                {
+                                    "slug": "semitendinoso",
+                                    "name": "Semitendíneo"
+                                },
+                                {
+                                    "slug": "semimembranoso",
+                                    "name": "Semimembranáceo"
+                                },
+                                {
+                                    "slug": "soleo",
+                                    "name": "Sóleo"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 60,
+                        "rest_seconds": 120,
+                        "notes": null
+                    },
+                    {
+                        "ref": "canon:levantamento-terra",
+                        "exercise_id": null,
+                        "name": "Levantamento terra",
+                        "is_new": true,
+                        "equipment": "Barra",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": true,
+                        "region": "lower_body",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "biceps-femoral",
+                                    "name": "Bíceps femoral"
+                                },
+                                {
+                                    "slug": "semitendinoso",
+                                    "name": "Semitendíneo"
+                                },
+                                {
+                                    "slug": "semimembranoso",
+                                    "name": "Semimembranáceo"
+                                },
+                                {
+                                    "slug": "gluteo-maximo",
+                                    "name": "Glúteo máximo"
+                                },
+                                {
+                                    "slug": "eretores-da-espinha",
+                                    "name": "Eretores da espinha"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "latissimo-do-dorso",
+                                    "name": "Latíssimo do dorso"
+                                },
+                                {
+                                    "slug": "trapezio-superior",
+                                    "name": "Trapézio superior"
+                                },
+                                {
+                                    "slug": "vasto-lateral",
+                                    "name": "Vasto lateral"
+                                },
+                                {
+                                    "slug": "vasto-medial",
+                                    "name": "Vasto medial"
+                                },
+                                {
+                                    "slug": "quadrado-lombar",
+                                    "name": "Quadrado lombar"
+                                },
+                                {
+                                    "slug": "flexores-do-antebraco",
+                                    "name": "Flexores do antebraço"
+                                },
+                                {
+                                    "slug": "reto-abdominal",
+                                    "name": "Reto abdominal"
+                                }
+                            ]
+                        },
+                        "target_sets": 4,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 120,
+                        "notes": "Primeira vez: comece leve e registre a carga."
+                    },
+                    {
+                        "ref": "canon:rosca-de-punho",
+                        "exercise_id": null,
+                        "name": "Rosca de punho",
+                        "is_new": true,
+                        "equipment": "Barra",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": false,
+                        "region": "arms",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "flexores-do-antebraco",
+                                    "name": "Flexores do antebraço"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "braquiorradial",
+                                    "name": "Braquiorradial"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 10,
+                        "target_weight_kg": null,
+                        "rest_seconds": 60,
+                        "notes": "Primeira vez: comece leve e registre a carga."
+                    },
+                    {
+                        "ref": "cat:8",
+                        "exercise_id": 8,
+                        "name": "Cadeira adutora",
+                        "is_new": false,
+                        "equipment": "Máquina",
+                        "execution_type": "sets",
+                        "uses_weight": true,
+                        "compound": false,
+                        "region": "lower_body",
+                        "muscles": {
+                            "primary": [
+                                {
+                                    "slug": "adutores",
+                                    "name": "Adutores"
+                                }
+                            ],
+                            "secondary": [
+                                {
+                                    "slug": "reto-abdominal",
+                                    "name": "Reto abdominal"
+                                }
+                            ]
+                        },
+                        "target_sets": 3,
+                        "target_reps": 15,
+                        "target_weight_kg": 55,
+                        "rest_seconds": 60,
+                        "notes": null
+                    }
+                ]
+            }
+        ]
+    },
+    "misc": {
+        "source": "deterministic",
+        "model": null,
+        "uncoverable": [],
+        "warnings": [],
+        "new_exercises_count": 9,
+        "pool_size": 17,
+        "deficits_considered": 7
+    },
+    "success": true
+}

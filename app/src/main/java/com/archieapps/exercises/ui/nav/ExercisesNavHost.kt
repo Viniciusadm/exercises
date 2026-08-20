@@ -33,6 +33,9 @@ import com.archieapps.exercises.core.di.AppContainer
 import com.archieapps.exercises.ui.design.IronBackground
 import com.archieapps.exercises.ui.feature.anatomy.AnatomyScreen
 import com.archieapps.exercises.ui.feature.licenses.LicensesScreen
+import com.archieapps.exercises.ui.feature.plan.PlanActions
+import com.archieapps.exercises.ui.feature.plan.PlanScreen
+import com.archieapps.exercises.ui.feature.plan.PlanViewModel
 import com.archieapps.exercises.ui.feature.anatomy.AnatomyViewModel
 import com.archieapps.exercises.ui.feature.home.HomeScreen
 import com.archieapps.exercises.ui.feature.home.HomeViewModel
@@ -186,6 +189,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onCancelForm = viewModel::cancelForm,
                     onDeleteTemplate = viewModel::deleteTemplate,
                     onOpenTemplate = { id -> navController.navigate(Routes.template(id)) },
+                    onPlanWorkout = { navController.navigate(Routes.PLAN) },
                     onDismissMessage = viewModel::dismissMessage,
                     contentPadding = contentPadding,
                 )
@@ -242,6 +246,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onRepeatWorkout = viewModel::repeatWorkout,
                     onStartEmpty = viewModel::startEmpty,
                     onManageTemplates = { navController.navigate(Routes.template(null)) },
+                    onPlanWorkout = { navController.navigate(Routes.PLAN) },
                     onDone = {
                         viewModel.acknowledgeOutcome()
                         navController.popBackStack()
@@ -349,6 +354,53 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onOpenSuggestions = viewModel::openSuggestions,
                     onAdopt = viewModel::adopt,
                     onDismissMessage = viewModel::dismissMessage,
+                    contentPadding = contentPadding,
+                )
+            }
+
+            composable(Routes.PLAN) {
+                val viewModel: PlanViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer {
+                            PlanViewModel(
+                                container.planRepository,
+                                container.templateRepository,
+                                container.exerciseRepository,
+                                container.anatomyRepository,
+                                container.sessionRepository,
+                                container.settings,
+                            )
+                        }
+                    }
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                PlanScreen(
+                    state = state,
+                    actions = PlanActions(
+                        onBack = { navController.popBackStack() },
+                        onSetObjective = viewModel::setObjective,
+                        onSetDays = viewModel::setDaysPerWeek,
+                        onSetMinutes = viewModel::setMinutesPerDay,
+                        onToggleEquipment = viewModel::toggleEquipment,
+                        onClearEquipment = viewModel::clearEquipment,
+                        onGenerate = viewModel::generate,
+                        onBackToForm = viewModel::backToForm,
+                        onDiscard = viewModel::discard,
+                        onSetSets = viewModel::setSets,
+                        onSetReps = viewModel::setReps,
+                        onRemove = viewModel::remove,
+                        onOpenSwap = viewModel::openSwap,
+                        onCloseSwap = viewModel::closeSwap,
+                        onApplySwap = viewModel::applySwap,
+                        onConfirm = viewModel::confirm,
+                        onOpenWorkouts = {
+                            navController.popBackStack()
+                            navController.navigate(Routes.SESSION)
+                        },
+                        onPlanAnother = viewModel::reset,
+                        onDismissMessage = viewModel::dismissMessage,
+                    ),
                     contentPadding = contentPadding,
                 )
             }

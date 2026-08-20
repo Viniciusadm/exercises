@@ -45,6 +45,7 @@ fun StartSessionScreen(
     onRepeatWorkout: (WorkoutDto) -> Unit,
     onStartEmpty: () -> Unit,
     onManageTemplates: () -> Unit,
+    onPlanWorkout: () -> Unit,
     onDismissMessage: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -122,8 +123,14 @@ fun StartSessionScreen(
                         color = IronTextSecondary,
                     )
                     Spacer(Modifier.height(Spacing.md))
+                    PrimaryButton(
+                        text = "Gerar plano com IA",
+                        onClick = onPlanWorkout,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(Modifier.height(Spacing.sm))
                     GhostButton(
-                        text = "Criar template",
+                        text = "Criar template na mão",
                         onClick = onManageTemplates,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -155,6 +162,23 @@ fun StartSessionScreen(
                     onStart = { onRepeatWorkout(workout) },
                     modifier = Modifier.padding(horizontal = Spacing.lg),
                 )
+            }
+        }
+
+        if (state.templates.isNotEmpty()) {
+            item {
+                IronCard(Modifier.padding(horizontal = Spacing.lg)) {
+                    CardHeader(
+                        title = "Planejar com IA",
+                        caption = "um treino ou a semana, pelo que seus músculos estão precisando",
+                    )
+                    Spacer(Modifier.height(Spacing.md))
+                    GhostButton(
+                        text = "Montar plano",
+                        onClick = onPlanWorkout,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
 

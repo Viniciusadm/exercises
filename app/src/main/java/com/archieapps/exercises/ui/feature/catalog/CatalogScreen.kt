@@ -69,6 +69,7 @@ fun CatalogScreen(
     onCancelForm: () -> Unit,
     onDeleteTemplate: (TemplateDto) -> Unit,
     onOpenTemplate: (Int?) -> Unit,
+    onPlanWorkout: () -> Unit,
     onDismissMessage: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -123,6 +124,16 @@ fun CatalogScreen(
                     PrimaryButton(
                         text = "Novo template",
                         onClick = { onOpenTemplate(null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.lg),
+                    )
+                }
+
+                item {
+                    GhostButton(
+                        text = "Planejar com IA",
+                        onClick = onPlanWorkout,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = Spacing.lg),

@@ -20,6 +20,10 @@ import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.net.dto.WorkoutRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import com.archieapps.exercises.core.net.dto.PlanConfirmRequest
+import com.archieapps.exercises.core.net.dto.PlanOptionsDto
+import com.archieapps.exercises.core.net.dto.PlanProposalDto
+import com.archieapps.exercises.core.net.dto.PlanRequest
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -121,6 +125,15 @@ interface ExercisesApi {
         @Query("name") name: String? = null,
         @Query("sessions") sessions: Int = 3,
     ): Envelope<LatestExerciseDto>
+
+    @GET("api/workout-plans/options")
+    suspend fun planOptions(): Envelope<PlanOptionsDto>
+
+    @POST("api/workout-plans")
+    suspend fun createPlan(@Body request: PlanRequest): Envelope<PlanProposalDto>
+
+    @POST("api/workout-plans/confirm")
+    suspend fun confirmPlan(@Body request: PlanConfirmRequest): Envelope<List<TemplateDto>>
 
     @GET("api/workout-templates")
     suspend fun templates(): Envelope<List<TemplateDto>>
