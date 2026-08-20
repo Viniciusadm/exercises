@@ -5,11 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-/**
- * Estado do descanso compartilhado entre o serviço (que segura o processo vivo em background)
- * e a UI. A contagem é derivada de um instante de término, não de um contador decrementado,
- * então atrasos de agendamento não desalinham o cronômetro.
- */
 object RestTimerBus {
     data class Snapshot(
         val exerciseName: String,

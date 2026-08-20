@@ -22,6 +22,5 @@ object Routes {
 
     fun workout(id: Int) = "workout/$id/edit"
 
-    /** O editor usa 0 para "template novo", já que o argumento da rota é obrigatório. */
     fun template(id: Int?) = "template/${id ?: 0}"
 }

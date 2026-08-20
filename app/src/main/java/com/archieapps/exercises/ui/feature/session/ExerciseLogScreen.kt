@@ -35,10 +35,6 @@ import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 
-/**
- * Nível 2 da sessão: uma tela só para registrar o exercício escolhido. Concluir a última série não
- * navega sozinho — o rodapé passa a destacar a volta para a lista.
- */
 @Composable
 fun ExerciseLogScreen(
     state: SessionUiState,

@@ -224,7 +224,7 @@ private fun TemplateItemCard(
 
         TargetRow(
             label = "Séries",
-            value = item.targetSets?.toString() ?: "—",
+            value = item.targetSets?.toString() ?: Format.PLACEHOLDER,
             onDecrease = { onUpdate { it.copy(targetSets = ((it.targetSets ?: 1) - 1).coerceAtLeast(1)) } },
             onIncrease = { onUpdate { it.copy(targetSets = ((it.targetSets ?: 0) + 1).coerceAtMost(12)) } },
         )
@@ -232,14 +232,14 @@ private fun TemplateItemCard(
         if (item.executionType == "time") {
             TargetRow(
                 label = "Tempo (s)",
-                value = item.targetReps?.toString() ?: "—",
+                value = item.targetReps?.toString() ?: Format.PLACEHOLDER,
                 onDecrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 15) - 15).coerceAtLeast(15)) } },
                 onIncrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 0) + 15).coerceAtMost(3600)) } },
             )
         } else {
             TargetRow(
                 label = "Repetições",
-                value = item.targetReps?.toString() ?: "—",
+                value = item.targetReps?.toString() ?: Format.PLACEHOLDER,
                 onDecrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 1) - 1).coerceAtLeast(1)) } },
                 onIncrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 0) + 1).coerceAtMost(100)) } },
             )
@@ -248,7 +248,7 @@ private fun TemplateItemCard(
         if (item.usesWeight) {
             TargetRow(
                 label = "Carga alvo",
-                value = item.targetWeightKg?.let { Format.weight(it) } ?: "—",
+                value = item.targetWeightKg?.let { Format.weight(it) } ?: Format.PLACEHOLDER,
                 onDecrease = {
                     onUpdate { it.copy(targetWeightKg = ((it.targetWeightKg ?: 0.0) - 2.5).coerceAtLeast(0.0)) }
                 },

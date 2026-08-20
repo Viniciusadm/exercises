@@ -17,7 +17,6 @@ data class ActiveSession(
     val templateId: Int? = null,
     val startedAtEpochMillis: Long,
     val notes: String? = null,
-    /** null = lista de escolha aberta; índice = exercício sendo registrado. */
     val openExerciseIndex: Int? = null,
     val exercises: List<SessionExercise> = emptyList(),
 ) {

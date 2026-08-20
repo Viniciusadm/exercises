@@ -7,10 +7,6 @@ import com.archieapps.exercises.ui.component.HeatDay
 private const val MIN_INTENSITY = 0.3f
 private const val NO_VOLUME_INTENSITY = 0.45f
 
-/**
- * Normaliza o volume diário pelo percentil 90 para o heatmap: dias muito acima da média não
- * achatam a escala do resto, e um dia treinado sem carga (só tempo) ainda aparece preenchido.
- */
 fun heatDays(calendar: List<CalendarDayDto>): List<HeatDay> {
     val reference = referenceVolume(calendar)
 

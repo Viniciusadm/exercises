@@ -49,10 +49,6 @@ import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 
-/**
- * Nível 1 da sessão: a tela é a lista do que fazer hoje. Nenhum exercício é "o atual" — a pessoa
- * escolhe pela máquina que está livre, e a ordem nunca se reorganiza sozinha.
- */
 @Composable
 fun SessionExerciseListScreen(
     state: SessionUiState,
@@ -188,7 +184,6 @@ private fun ExerciseChoiceRow(
     val running = exercise.started && !done
     val shape = MaterialTheme.shapes.large
     val nameColor = if (done) IronTextMuted else IronTextPrimary
-    // Na lista cabe só a carga sugerida; o motivo completo fica na tela do exercício.
     val reference = exercise.suggestion?.takeIf { !exercise.started }?.substringBefore(" · ")
         ?.let { "sugestão: $it" }
         ?: exercise.previousSummary?.let { "última vez: $it" }

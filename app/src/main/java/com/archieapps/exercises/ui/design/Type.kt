@@ -106,7 +106,6 @@ object IronText {
         lineHeight = 22.sp,
     )
 
-    /** Valor dentro dos steppers: cabe "112,5" em uma linha sem quebrar. */
     val stepper = TextStyle(
         fontFamily = Condensed,
         fontWeight = FontWeight.Bold,

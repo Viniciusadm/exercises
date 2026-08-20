@@ -1,9 +1,5 @@
 import java.util.Properties
 
-/**
- * Configuração do app fora do git: env.properties na raiz do projeto (veja env.properties.example).
- * Lido via providers.fileContents para o cache de configuração do Gradle invalidar quando o arquivo muda.
- */
 val envText = providers.fileContents(layout.projectDirectory.file("../env.properties")).asText
 val env = Properties().apply { envText.orNull?.let { load(it.reader()) } }
 

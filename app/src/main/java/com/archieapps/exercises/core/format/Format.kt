@@ -17,7 +17,7 @@ private val decimalFormat: NumberFormat = NumberFormat.getNumberInstance(PtBr).a
 private val monthDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM", PtBr)
 
 object Format {
-    const val PLACEHOLDER = "—"
+    const val PLACEHOLDER = "-"
 
     fun integer(value: Number?): String = value?.let { integerFormat.format(it.toLong()) } ?: PLACEHOLDER
 

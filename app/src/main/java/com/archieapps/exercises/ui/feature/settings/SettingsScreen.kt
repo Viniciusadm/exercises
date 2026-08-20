@@ -87,7 +87,7 @@ fun SettingsScreen(
             CardHeader(
                 title = "Treinos aguardando envio",
                 caption = if (state.pendingWorkouts == 0) {
-                    "nada na fila — tudo sincronizado"
+                    "nada na fila, tudo sincronizado"
                 } else {
                     "${state.pendingWorkouts} sessão(ões) salvas no aparelho"
                 },

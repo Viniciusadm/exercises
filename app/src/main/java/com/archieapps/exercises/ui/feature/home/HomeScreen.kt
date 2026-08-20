@@ -88,7 +88,7 @@ fun HomeScreen(
             item {
                 NoticeBanner(
                     message = if (state.offline && state.cached != null) {
-                        "Sem conexão — mostrando os dados sincronizados."
+                        "Sem conexão. Mostrando os dados sincronizados."
                     } else {
                         state.error
                     },

@@ -97,7 +97,7 @@ class SessionRepository(
 
             is ApiResult.Failure -> if (result.kind == FailureKind.OFFLINE) {
                 enqueue(request)
-                FinishOutcome.Queued("Sem conexão — o treino ficou salvo no aparelho e sobe no próximo sync.")
+                FinishOutcome.Queued("Sem conexão. O treino ficou salvo no aparelho e sobe no próximo sync.")
             } else {
                 enqueue(request)
                 FinishOutcome.Queued("${result.message} O treino ficou salvo no aparelho para tentar de novo.")

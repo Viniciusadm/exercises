@@ -285,7 +285,6 @@ private fun DeleteWorkoutDialog(
     )
 }
 
-/** "3×15 · 35 kg" quando as séries repetem, senão lista cada uma para não esconder a variação. */
 private fun summarizeSets(exercise: WorkoutExerciseDto): String {
     val sets = exercise.sets
     if (sets.isEmpty()) return Format.PLACEHOLDER

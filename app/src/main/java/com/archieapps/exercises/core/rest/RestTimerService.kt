@@ -16,11 +16,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
- * Mantém a contagem do descanso viva com o app em background: um serviço em primeiro plano evita
- * que o processo seja congelado (Android 12+) e a notificação mostra o cronômetro em contagem
- * regressiva, com ações de +15s e pular.
- */
 class RestTimerService : Service() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val notifications by lazy { RestNotifications(this) }
@@ -31,8 +26,6 @@ class RestTimerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         notifications.ensureChannels()
 
-        // O sistema exige startForeground logo após startForegroundService, inclusive quando a
-        // ação recebida vai encerrar o serviço em seguida (ex.: "pular" com o estado já vazio).
         promote(RestTimerBus.current ?: placeholder())
 
         when (intent?.action) {

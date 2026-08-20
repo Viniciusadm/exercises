@@ -210,7 +210,7 @@ private fun SessionsCard(history: ExerciseHistoryDto, modifier: Modifier = Modif
 
         history.sessions.take(12).forEach { session ->
             KeyValueRow(
-                label = session.date?.let { Format.parseDate(it)?.let(Format::dateWithWeekday) } ?: "—",
+                label = session.date?.let { Format.parseDate(it)?.let(Format::dateWithWeekday) } ?: Format.PLACEHOLDER,
                 value = buildString {
                     append(session.sets.size)
                     append("× ")

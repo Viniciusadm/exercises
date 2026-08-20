@@ -53,8 +53,6 @@ fun ExercisesTheme(content: @Composable () -> Unit) {
         typography = IronTypography,
         shapes = IronShapes,
     ) {
-        // Sem um Surface na raiz o LocalContentColor do Material3 cai para preto e todo texto
-        // que não define cor explícita desaparece no fundo escuro.
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = IronBackground,

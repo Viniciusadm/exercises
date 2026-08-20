@@ -51,10 +51,6 @@ import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 
-/**
- * Container da sessão ao vivo: decide entre a lista de escolha e a tela do exercício, e concentra o
- * que vale para os dois níveis — descanso, seletor do catálogo, diálogos e tela ligada.
- */
 @Composable
 fun LiveSessionScreen(
     state: SessionUiState,

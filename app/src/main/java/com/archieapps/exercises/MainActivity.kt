@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** O aviso de fim de descanso chega por notificação, então a permissão é pedida na abertura. */
     private fun askForNotifications() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
 
@@ -65,8 +64,6 @@ class MainActivity : ComponentActivity() {
 private fun ExercisesRoot(container: AppContainer) {
     val settings by container.settings.state.collectAsStateWithLifecycle()
 
-    // O app é edge-to-edge para pintar as barras com a cor do tema, mas o conteúdo nunca deve
-    // ficar por baixo delas: o padding da área segura fica na raiz, uma vez só.
     Box(
         Modifier
             .fillMaxSize()

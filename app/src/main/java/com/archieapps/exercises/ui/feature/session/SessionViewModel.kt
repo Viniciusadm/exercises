@@ -352,7 +352,7 @@ class SessionViewModel(
             weight?.let(Format::weight),
         ).joinToString(" · ")
 
-        return listOfNotNull(core.takeIf { it.isNotBlank() }, date).joinToString(" — ")
+        return listOfNotNull(core.takeIf { it.isNotBlank() }, date).joinToString(" · ")
     }
 
     private fun updateSet(exerciseIndex: Int, setIndex: Int, transform: (SessionSet) -> SessionSet) =

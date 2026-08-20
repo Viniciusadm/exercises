@@ -131,7 +131,7 @@ fun CatalogScreen(
                     item {
                         EmptyState(
                             title = "Nenhum template",
-                            message = "Monte um aqui definindo séries, repetições e carga alvo — ou abra um treino " +
+                            message = "Monte um aqui definindo séries, repetições e carga alvo, ou abra um treino " +
                                 "no histórico e use “criar template com este treino”.",
                         )
                     }
