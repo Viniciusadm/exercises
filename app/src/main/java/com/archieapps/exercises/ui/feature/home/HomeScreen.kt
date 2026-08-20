@@ -286,23 +286,25 @@ private fun MonthTiles(stats: StatsDto, modifier: Modifier = Modifier) {
 
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
         StatTile(
-            label = "volume do mês",
+            label = "volume",
             value = Format.volume(current?.volumeKg ?: 0.0).substringBefore(' '),
             unit = Format.volume(current?.volumeKg ?: 0.0).substringAfter(' '),
-            caption = current?.month?.let { Format.parseMonth(it)?.let(Format::monthShort) },
+            caption = current?.month?.let { month ->
+                Format.parseMonth(month)?.let { "em ${Format.monthLong(it)}" }
+            },
             spark = spark,
             modifier = Modifier.weight(1f),
         )
         StatTile(
-            label = "sessões no mês",
+            label = "sessões",
             value = Format.integer(current?.sessions ?: 0),
-            caption = Format.minutes(current?.minutes),
+            caption = "${Format.minutes(current?.minutes)} no mês",
             modifier = Modifier.weight(1f),
         )
         StatTile(
-            label = "por semana",
+            label = "semana",
             value = Format.weightValue(stats.averages.sessionsPerWeek),
-            caption = "${Format.integer(stats.totals.sessions)} em 12 meses",
+            caption = "${Format.integer(stats.totals.sessions)} em 12m",
             accent = IronPositive,
             modifier = Modifier.weight(1f),
         )

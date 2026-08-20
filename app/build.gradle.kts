@@ -21,7 +21,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "DEFAULT_BASE_URL", "\"http://10.0.2.2:8001/\"")
+        buildConfigField("String", "DEFAULT_BASE_URL", "\"https://manage.isarchie.com.br/\"")
     }
 
     buildTypes {

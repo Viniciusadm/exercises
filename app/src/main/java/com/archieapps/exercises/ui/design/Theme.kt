@@ -3,8 +3,11 @@ package com.archieapps.exercises.ui.design
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 private val IronColorScheme = darkColorScheme(
@@ -49,6 +52,14 @@ fun ExercisesTheme(content: @Composable () -> Unit) {
         colorScheme = IronColorScheme,
         typography = IronTypography,
         shapes = IronShapes,
-        content = content,
-    )
+    ) {
+        // Sem um Surface na raiz o LocalContentColor do Material3 cai para preto e todo texto
+        // que não define cor explícita desaparece no fundo escuro.
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = IronBackground,
+            contentColor = IronTextPrimary,
+            content = content,
+        )
+    }
 }

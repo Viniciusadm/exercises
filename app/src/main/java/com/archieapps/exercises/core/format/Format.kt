@@ -55,6 +55,9 @@ object Format {
     fun weekdayShort(date: LocalDate): String =
         date.dayOfWeek.getDisplayName(TextStyle.SHORT, PtBr).take(3).trimEnd('.').lowercase(PtBr)
 
+    fun monthLong(month: YearMonth): String =
+        month.month.getDisplayName(TextStyle.FULL, PtBr).lowercase(PtBr)
+
     fun monthShort(month: YearMonth): String =
         month.month.getDisplayName(TextStyle.SHORT, PtBr).take(3).trimEnd('.').lowercase(PtBr)
 
