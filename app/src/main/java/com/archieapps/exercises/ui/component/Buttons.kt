@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.ui.design.IronBackground
 import com.archieapps.exercises.ui.design.IronBorderStrong
@@ -83,6 +84,8 @@ fun PrimaryButton(
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(start = if (iconRes != null) Spacing.sm else 0.dp),
             )
         }
@@ -104,7 +107,12 @@ fun GhostButton(
         border = BorderStroke(1.dp, IronBorderStrong),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = IronTextPrimary),
     ) {
-        Text(text = text, style = MaterialTheme.typography.labelLarge)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

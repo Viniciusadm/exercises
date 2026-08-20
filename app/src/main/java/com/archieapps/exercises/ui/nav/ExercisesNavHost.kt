@@ -199,7 +199,8 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                 SessionRoute(
                     state = state,
                     actions = SessionActions(
-                        onSelectExercise = viewModel::selectExercise,
+                        onOpenExercise = viewModel::openExercise,
+                        onCloseExercise = viewModel::closeExercise,
                         onAddExercise = viewModel::addExercise,
                         onRemoveExercise = viewModel::removeExercise,
                         onAddSet = viewModel::addSet,

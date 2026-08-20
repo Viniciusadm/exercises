@@ -170,6 +170,10 @@ class SessionViewModel(
         }
     }
 
+    fun openExercise(index: Int) = mutate { it.copy(openExerciseIndex = index) }
+
+    fun closeExercise() = mutate { it.copy(openExerciseIndex = null) }
+
     fun addExercise(exercise: ExerciseEntity) {
         mutate { draft ->
             draft.copy(
@@ -184,7 +188,7 @@ class SessionViewModel(
                     bestWeightKg = exercise.bestWeightKg,
                     sets = listOf(SessionSet(repetitions = 12, weightKg = exercise.bestWeightKg)),
                 ),
-                currentIndex = draft.exercises.size,
+                openExerciseIndex = draft.exercises.size,
             )
         }
 
@@ -193,16 +197,12 @@ class SessionViewModel(
 
     fun removeExercise(index: Int) {
         mutate { draft ->
-            val remaining = draft.exercises.filterIndexed { position, _ -> position != index }
-
             draft.copy(
-                exercises = remaining,
-                currentIndex = draft.currentIndex.coerceAtMost((remaining.size - 1).coerceAtLeast(0)),
+                exercises = draft.exercises.filterIndexed { position, _ -> position != index },
+                openExerciseIndex = null,
             )
         }
     }
-
-    fun selectExercise(index: Int) = mutate { it.copy(currentIndex = index) }
 
     fun addSet(exerciseIndex: Int) = mutate { draft ->
         draft.updateExercise(exerciseIndex) { exercise ->

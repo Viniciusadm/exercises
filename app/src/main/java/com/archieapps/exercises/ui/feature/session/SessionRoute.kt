@@ -51,7 +51,8 @@ import com.archieapps.exercises.ui.feature.auth.IronTextField
 import com.archieapps.exercises.ui.design.Spacing
 
 data class SessionActions(
-    val onSelectExercise: (Int) -> Unit,
+    val onOpenExercise: (Int) -> Unit,
+    val onCloseExercise: () -> Unit,
     val onAddExercise: (ExerciseEntity) -> Unit,
     val onRemoveExercise: (Int) -> Unit,
     val onAddSet: (Int) -> Unit,

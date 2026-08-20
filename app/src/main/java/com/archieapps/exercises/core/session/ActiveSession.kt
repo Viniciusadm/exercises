@@ -17,10 +17,13 @@ data class ActiveSession(
     val templateId: Int? = null,
     val startedAtEpochMillis: Long,
     val notes: String? = null,
-    val currentIndex: Int = 0,
+    /** null = lista de escolha aberta; índice = exercício sendo registrado. */
+    val openExerciseIndex: Int? = null,
     val exercises: List<SessionExercise> = emptyList(),
 ) {
     val completedSets: Int get() = exercises.sumOf { exercise -> exercise.sets.count { it.done } }
+
+    val plannedSets: Int get() = exercises.sumOf { it.sets.size }
 
     val totalVolumeKg: Double
         get() = exercises.sumOf { exercise ->
@@ -33,7 +36,7 @@ data class ActiveSession(
 
     fun durationMinutes(nowMillis: Long): Int = max(1, Math.round(elapsedSeconds(nowMillis) / 60.0).toInt())
 
-    fun current(): SessionExercise? = exercises.getOrNull(currentIndex)
+    fun openExercise(): SessionExercise? = openExerciseIndex?.let { exercises.getOrNull(it) }
 
     fun updateExercise(index: Int, transform: (SessionExercise) -> SessionExercise): ActiveSession =
         copy(exercises = exercises.mapIndexed { position, exercise ->
@@ -103,6 +106,10 @@ data class SessionExercise(
         get() = sets.filter { it.done }.sumOf { (it.repetitions ?: 0) * (it.weightKg ?: 0.0) }
 
     val isComplete: Boolean get() = sets.isNotEmpty() && sets.all { it.done }
+
+    val doneSets: Int get() = sets.count { it.done }
+
+    val started: Boolean get() = doneSets > 0
 
     val topWeightKg: Double? get() = sets.filter { it.done }.mapNotNull { it.weightKg }.maxOrNull()
 }
