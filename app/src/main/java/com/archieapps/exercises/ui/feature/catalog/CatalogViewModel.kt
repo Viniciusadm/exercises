@@ -9,6 +9,7 @@ import com.archieapps.exercises.core.data.TemplateRepository
 import com.archieapps.exercises.core.db.ExerciseEntity
 import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.dto.ExerciseRequest
+import com.archieapps.exercises.core.session.WeightLadder
 import com.archieapps.exercises.core.net.dto.TemplateDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +27,7 @@ data class ExerciseForm(
     val executionType: String = "sets",
     val usesWeight: Boolean = true,
     val restSeconds: Int = 90,
+    val weightOptions: List<Double> = emptyList(),
     val notes: String = "",
 ) {
     val isValid: Boolean get() = name.isNotBlank()
@@ -37,6 +39,7 @@ data class ExerciseForm(
         muscleGroup = muscleGroup.trim().takeIf { it.isNotBlank() },
         equipment = equipment.trim().takeIf { it.isNotBlank() },
         restSeconds = restSeconds,
+        weightOptions = WeightLadder.sanitize(weightOptions),
         notes = notes.trim().takeIf { it.isNotBlank() },
     )
 }
@@ -123,6 +126,7 @@ class CatalogViewModel(
                 executionType = exercise.executionType,
                 usesWeight = exercise.usesWeight,
                 restSeconds = exercise.restSeconds ?: 90,
+                weightOptions = exercise.weightOptions,
                 notes = exercise.notes.orEmpty(),
             )
         )

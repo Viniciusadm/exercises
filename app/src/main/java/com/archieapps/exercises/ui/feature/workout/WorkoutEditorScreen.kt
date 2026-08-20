@@ -61,7 +61,8 @@ data class WorkoutEditorActions(
     val onAddSet: (Int) -> Unit,
     val onRemoveSet: (Int, Int) -> Unit,
     val onChangeReps: (Int, Int, Int) -> Unit,
-    val onChangeWeight: (Int, Int, Double) -> Unit,
+    val onChangeWeight: (Int, Int, Int) -> Unit,
+    val onSetWeight: (Int, Int, Double) -> Unit,
     val onChangeDurationSeconds: (Int, Int, Int) -> Unit,
     val onToggleSet: (Int, Int) -> Unit,
     val onSave: () -> Unit,
@@ -164,6 +165,7 @@ fun WorkoutEditorScreen(
                     exercise = exercise,
                     index = index,
                     actions = actions,
+                    weightOptions = state.weightOptionsFor(exercise.exerciseId),
                     modifier = Modifier.padding(horizontal = Spacing.lg),
                 )
             }
@@ -243,6 +245,7 @@ private fun ExerciseEditorCard(
     exercise: SessionExercise,
     index: Int,
     actions: WorkoutEditorActions,
+    weightOptions: List<Double>,
     modifier: Modifier = Modifier,
 ) {
     IronCard(modifier) {
@@ -277,10 +280,12 @@ private fun ExerciseEditorCard(
                 set = set,
                 exercise = exercise,
                 onRepsChange = { delta -> actions.onChangeReps(index, setIndex, delta) },
-                onWeightChange = { delta -> actions.onChangeWeight(index, setIndex, delta) },
+                onWeightStep = { direction -> actions.onChangeWeight(index, setIndex, direction) },
+                onWeightSet = { weight -> actions.onSetWeight(index, setIndex, weight) },
                 onDurationChange = { delta -> actions.onChangeDurationSeconds(index, setIndex, delta) },
                 onToggle = { actions.onToggleSet(index, setIndex) },
                 onRemove = { actions.onRemoveSet(index, setIndex) },
+                weightOptions = weightOptions,
             )
             Spacer(Modifier.height(Spacing.sm))
         }

@@ -53,6 +53,9 @@ data class TemplateEditorUiState(
 ) {
     val canSave: Boolean get() = name.isNotBlank() && items.isNotEmpty() && !saving
     val isNew: Boolean get() = templateId == null
+
+    fun weightOptionsFor(exerciseId: Int?): List<Double> =
+        catalog.firstOrNull { it.id == exerciseId }?.weightOptions.orEmpty()
 }
 
 class TemplateEditorViewModel(

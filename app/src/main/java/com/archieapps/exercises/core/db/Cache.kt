@@ -8,6 +8,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "json_cache")
@@ -27,6 +31,7 @@ data class ExerciseEntity(
     val difficulty: String?,
     val equipment: String?,
     val restSeconds: Int?,
+    val weightOptions: List<Double> = emptyList(),
     val notes: String?,
     val lastPerformedAt: String?,
     val sessionsCount: Int,
@@ -96,11 +101,28 @@ interface ExerciseDao {
     suspend fun deleteMissing(keepIds: List<Int>)
 }
 
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE exercises ADD COLUMN weightOptions TEXT NOT NULL DEFAULT ''")
+    }
+}
+
+class Converters {
+    @TypeConverter
+    fun weightOptionsToString(options: List<Double>?): String =
+        options.orEmpty().joinToString(separator = ",")
+
+    @TypeConverter
+    fun weightOptionsFromString(stored: String?): List<Double> =
+        stored.orEmpty().split(",").mapNotNull { it.toDoubleOrNull() }
+}
+
 @Database(
     entities = [JsonCacheEntity::class, ExerciseEntity::class, PendingWorkoutEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
+@TypeConverters(Converters::class)
 abstract class ExercisesDatabase : RoomDatabase() {
     abstract fun jsonCache(): JsonCacheDao
 

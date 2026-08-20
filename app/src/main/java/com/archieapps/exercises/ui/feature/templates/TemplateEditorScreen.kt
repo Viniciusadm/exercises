@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.R
 import com.archieapps.exercises.core.format.Format
+import com.archieapps.exercises.core.session.WeightLadder
 import com.archieapps.exercises.ui.component.ExercisePickerOverlay
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
@@ -124,6 +125,7 @@ fun TemplateEditorScreen(
                     onMoveDown = { onMoveItem(index, 1) },
                     onRemove = { onRemoveItem(index) },
                     onUpdate = { transform -> onUpdateItem(index, transform) },
+                    weightOptions = state.weightOptionsFor(item.exerciseId),
                     modifier = Modifier.padding(horizontal = Spacing.lg),
                 )
             }
@@ -185,6 +187,7 @@ private fun TemplateItemCard(
     onMoveDown: () -> Unit,
     onRemove: () -> Unit,
     onUpdate: ((TemplateItemForm) -> TemplateItemForm) -> Unit,
+    weightOptions: List<Double>,
     modifier: Modifier = Modifier,
 ) {
     IronCard(modifier) {
@@ -250,10 +253,10 @@ private fun TemplateItemCard(
                 label = "Carga alvo",
                 value = item.targetWeightKg?.let { Format.weight(it) } ?: Format.PLACEHOLDER,
                 onDecrease = {
-                    onUpdate { it.copy(targetWeightKg = ((it.targetWeightKg ?: 0.0) - 2.5).coerceAtLeast(0.0)) }
+                    onUpdate { it.copy(targetWeightKg = WeightLadder.down(it.targetWeightKg, weightOptions)) }
                 },
                 onIncrease = {
-                    onUpdate { it.copy(targetWeightKg = ((it.targetWeightKg ?: 0.0) + 2.5).coerceAtMost(999.0)) }
+                    onUpdate { it.copy(targetWeightKg = WeightLadder.up(it.targetWeightKg, weightOptions)) }
                 },
             )
         }

@@ -149,16 +149,20 @@ fun ExerciseLogScreen(
                 SetEditorHeader(exercise = exercise)
                 Spacer(Modifier.height(Spacing.sm))
 
+                val weightOptions = state.weightOptionsFor(exercise.exerciseId)
+
                 exercise.sets.forEachIndexed { setIndex, set ->
                     SetEditorRow(
                         position = setIndex + 1,
                         set = set,
                         exercise = exercise,
                         onRepsChange = { delta -> actions.onChangeReps(index, setIndex, delta) },
-                        onWeightChange = { delta -> actions.onChangeWeight(index, setIndex, delta) },
+                        onWeightStep = { direction -> actions.onChangeWeight(index, setIndex, direction) },
+                        onWeightSet = { weight -> actions.onSetWeight(index, setIndex, weight) },
                         onDurationChange = { delta -> actions.onChangeDuration(index, setIndex, delta) },
                         onToggle = { actions.onToggleSet(index, setIndex) },
                         onRemove = { actions.onRemoveSet(index, setIndex) },
+                        weightOptions = weightOptions,
                     )
                     Spacer(Modifier.height(Spacing.sm))
                 }

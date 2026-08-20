@@ -20,6 +20,7 @@ import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.session.ActiveSession
 import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.core.session.SessionSet
+import com.archieapps.exercises.core.session.WeightLadder
 import com.archieapps.exercises.core.settings.SettingsStore
 import java.util.UUID
 import kotlinx.coroutines.delay
@@ -57,7 +58,10 @@ data class SessionUiState(
     val keepScreenOn: Boolean = true,
     val muscleMap: ExerciseMuscleMap = ExerciseMuscleMap(),
     val geometry: BodyGeometry? = null,
-)
+) {
+    fun weightOptionsFor(exerciseId: Int?): List<Double> =
+        catalog.firstOrNull { it.id == exerciseId }?.weightOptions.orEmpty()
+}
 
 class SessionViewModel(
     private val sessions: SessionRepository,
@@ -243,8 +247,24 @@ class SessionViewModel(
         set.copy(repetitions = ((set.repetitions ?: 0) + delta).coerceIn(0, 999))
     }
 
-    fun changeWeight(exerciseIndex: Int, setIndex: Int, delta: Double) = updateSet(exerciseIndex, setIndex) { set ->
-        set.copy(weightKg = ((set.weightKg ?: 0.0) + delta).coerceIn(0.0, 999.0))
+    fun changeWeight(exerciseIndex: Int, setIndex: Int, direction: Int) {
+        val options = state.value.weightOptionsFor(
+            state.value.draft?.exercises?.getOrNull(exerciseIndex)?.exerciseId,
+        )
+
+        updateSet(exerciseIndex, setIndex) { set ->
+            set.copy(
+                weightKg = if (direction >= 0) {
+                    WeightLadder.up(set.weightKg, options)
+                } else {
+                    WeightLadder.down(set.weightKg, options)
+                },
+            )
+        }
+    }
+
+    fun setWeight(exerciseIndex: Int, setIndex: Int, weightKg: Double) = updateSet(exerciseIndex, setIndex) { set ->
+        set.copy(weightKg = weightKg.coerceIn(WeightLadder.MIN_KG, WeightLadder.MAX_KG))
     }
 
     fun changeDuration(exerciseIndex: Int, setIndex: Int, delta: Int) = updateSet(exerciseIndex, setIndex) { set ->

@@ -26,10 +26,15 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.core.db.ExerciseEntity
@@ -40,6 +45,7 @@ import com.archieapps.exercises.ui.component.EmptyState
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.core.net.dto.ExerciseMusclesDto
 import com.archieapps.exercises.ui.component.IronCard
+import com.archieapps.exercises.core.session.WeightLadder
 import com.archieapps.exercises.ui.component.MuscleActivationSection
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
@@ -414,6 +420,13 @@ private fun ExerciseFormOverlay(
                 )
             }
 
+            if (form.usesWeight) {
+                WeightOptionsSection(
+                    options = form.weightOptions,
+                    onChange = { options -> onChange { it.copy(weightOptions = options) } },
+                )
+            }
+
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Descanso padrão",
@@ -452,3 +465,111 @@ private fun ExerciseFormOverlay(
         }
     }
 }
+
+@Composable
+private fun WeightOptionsSection(options: List<Double>, onChange: (List<Double>) -> Unit) {
+    var single by remember { mutableStateOf("") }
+    var from by remember { mutableStateOf("") }
+    var to by remember { mutableStateOf("") }
+    var step by remember { mutableStateOf("") }
+
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+        SectionLabel(text = "cargas disponíveis")
+        Text(
+            text = if (options.isEmpty()) {
+                "Sem cargas cadastradas o +/- anda de 1 em 1 kg."
+            } else {
+                "Toque numa carga para removê-la."
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = IronTextMuted,
+        )
+
+        if (options.isNotEmpty()) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                items(options) { weight ->
+                    Chip(
+                        text = Format.weight(weight),
+                        selected = false,
+                        onClick = { onChange(options.filterNot { it == weight }) },
+                    )
+                }
+            }
+        }
+
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IronTextField(
+                value = single,
+                onValueChange = { single = it },
+                label = "Carga (kg)",
+                keyboardType = KeyboardType.Decimal,
+                modifier = Modifier.weight(1f),
+            )
+            GhostButton(text = "Adicionar", onClick = {
+                parseWeight(single)?.let { weight ->
+                    onChange(WeightLadder.sanitize(options + weight))
+                    single = ""
+                }
+            })
+        }
+
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IronTextField(
+                value = from,
+                onValueChange = { from = it },
+                label = "De",
+                keyboardType = KeyboardType.Decimal,
+                modifier = Modifier.weight(1f),
+            )
+            IronTextField(
+                value = to,
+                onValueChange = { to = it },
+                label = "Até",
+                keyboardType = KeyboardType.Decimal,
+                modifier = Modifier.weight(1f),
+            )
+            IronTextField(
+                value = step,
+                onValueChange = { step = it },
+                label = "Passo",
+                keyboardType = KeyboardType.Decimal,
+                modifier = Modifier.weight(1f),
+            )
+        }
+
+        GhostButton(
+            text = "Gerar faixa",
+            onClick = {
+                val generated = generateRange(parseWeight(from), parseWeight(to), parseWeight(step))
+
+                if (generated.isNotEmpty()) {
+                    onChange(WeightLadder.sanitize(options + generated))
+                    from = ""
+                    to = ""
+                    step = ""
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+private fun parseWeight(raw: String): Double? = raw.trim().replace(',', '.').toDoubleOrNull()
+
+private fun generateRange(from: Double?, to: Double?, step: Double?): List<Double> {
+    if (from == null || to == null || step == null) return emptyList()
+    if (step <= 0.0 || to < from) return emptyList()
+    if ((to - from) / step > MAX_GENERATED_WEIGHTS) return emptyList()
+
+    return generateSequence(from) { it + step }.takeWhile { it <= to + 1e-6 }.toList()
+}
+
+private const val MAX_GENERATED_WEIGHTS = 200

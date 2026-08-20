@@ -13,6 +13,7 @@ data class ExerciseDto(
     val difficulty: String? = null,
     val equipment: String? = null,
     @SerialName("rest_seconds") val restSeconds: Int? = null,
+    @SerialName("weight_options") val weightOptions: List<Double> = emptyList(),
     val notes: String? = null,
     @SerialName("last_performed_at") val lastPerformedAt: String? = null,
     @SerialName("sessions_count") val sessionsCount: Int = 0,

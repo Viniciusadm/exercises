@@ -17,6 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,12 +87,15 @@ fun SetEditorRow(
     set: SessionSet,
     exercise: SessionExercise,
     onRepsChange: (Int) -> Unit,
-    onWeightChange: (Double) -> Unit,
+    onWeightStep: (Int) -> Unit,
+    onWeightSet: (Double) -> Unit,
     onDurationChange: (Int) -> Unit,
     onToggle: () -> Unit,
     onRemove: () -> Unit,
+    weightOptions: List<Double> = emptyList(),
 ) {
     val background = if (set.done) IronPositive.copy(alpha = 0.10f) else IronSurfaceHigh
+    var pickingWeight by remember { mutableStateOf(false) }
 
     Row(
         Modifier
@@ -131,9 +138,10 @@ fun SetEditorRow(
         if (exercise.usesWeight) {
             SetStepper(
                 value = Format.weightValue(set.weightKg ?: 0.0),
-                onDecrease = { onWeightChange(-2.5) },
-                onIncrease = { onWeightChange(2.5) },
+                onDecrease = { onWeightStep(-1) },
+                onIncrease = { onWeightStep(1) },
                 modifier = Modifier.weight(1f),
+                onValueClick = { pickingWeight = true },
             )
         }
 
@@ -154,6 +162,18 @@ fun SetEditorRow(
             )
         }
     }
+
+    if (pickingWeight) {
+        WeightPickerDialog(
+            current = set.weightKg,
+            options = weightOptions,
+            onDismiss = { pickingWeight = false },
+            onConfirm = { weight ->
+                onWeightSet(weight)
+                pickingWeight = false
+            },
+        )
+    }
 }
 
 @Composable
@@ -162,6 +182,7 @@ fun SetStepper(
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
     modifier: Modifier = Modifier,
+    onValueClick: (() -> Unit)? = null,
 ) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         SetStepperButton(label = "−", onClick = onDecrease)
@@ -172,7 +193,18 @@ fun SetStepper(
             textAlign = TextAlign.Center,
             maxLines = 1,
             softWrap = false,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .then(
+                    if (onValueClick == null) {
+                        Modifier
+                    } else {
+                        Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable(onClickLabel = "Escolher carga", onClick = onValueClick)
+                            .padding(vertical = Spacing.xs)
+                    }
+                ),
         )
         SetStepperButton(label = "+", onClick = onIncrease)
     }

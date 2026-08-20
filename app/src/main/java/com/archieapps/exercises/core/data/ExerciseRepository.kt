@@ -7,6 +7,7 @@ import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.dto.ExerciseDto
 import com.archieapps.exercises.core.net.dto.ExerciseRequest
+import com.archieapps.exercises.core.session.WeightLadder
 import kotlinx.coroutines.flow.Flow
 
 class ExerciseRepository(
@@ -62,6 +63,7 @@ class ExerciseRepository(
         difficulty = dto.difficulty,
         equipment = dto.equipment,
         restSeconds = dto.restSeconds,
+        weightOptions = WeightLadder.sanitize(dto.weightOptions),
         notes = dto.notes,
         lastPerformedAt = dto.lastPerformedAt,
         sessionsCount = dto.sessionsCount,

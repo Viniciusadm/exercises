@@ -13,6 +13,7 @@ import com.archieapps.exercises.core.net.dto.WorkoutRequest
 import com.archieapps.exercises.core.net.dto.WorkoutSetRequest
 import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.core.session.SessionSet
+import com.archieapps.exercises.core.session.WeightLadder
 import java.time.LocalDate
 import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +46,9 @@ data class WorkoutEditorUiState(
         }
 
     val canSave: Boolean get() = name.isNotBlank() && countedSets > 0 && !saving
+
+    fun weightOptionsFor(exerciseId: Int?): List<Double> =
+        catalog.firstOrNull { it.id == exerciseId }?.weightOptions.orEmpty()
 }
 
 class WorkoutEditorViewModel(
@@ -131,8 +135,24 @@ class WorkoutEditorViewModel(
         set.copy(repetitions = ((set.repetitions ?: 0) + delta).coerceIn(0, 999))
     }
 
-    fun changeWeight(exerciseIndex: Int, setIndex: Int, delta: Double) = updateSet(exerciseIndex, setIndex) { set ->
-        set.copy(weightKg = ((set.weightKg ?: 0.0) + delta).coerceIn(0.0, 999.0))
+    fun changeWeight(exerciseIndex: Int, setIndex: Int, direction: Int) {
+        val options = state.value.weightOptionsFor(
+            state.value.exercises.getOrNull(exerciseIndex)?.exerciseId,
+        )
+
+        updateSet(exerciseIndex, setIndex) { set ->
+            set.copy(
+                weightKg = if (direction >= 0) {
+                    WeightLadder.up(set.weightKg, options)
+                } else {
+                    WeightLadder.down(set.weightKg, options)
+                },
+            )
+        }
+    }
+
+    fun setWeight(exerciseIndex: Int, setIndex: Int, weightKg: Double) = updateSet(exerciseIndex, setIndex) { set ->
+        set.copy(weightKg = weightKg.coerceIn(WeightLadder.MIN_KG, WeightLadder.MAX_KG))
     }
 
     fun changeDurationSeconds(exerciseIndex: Int, setIndex: Int, delta: Int) =

@@ -13,6 +13,7 @@ import com.archieapps.exercises.core.data.SessionRepository
 import com.archieapps.exercises.core.data.TemplateRepository
 import com.archieapps.exercises.core.data.WorkoutRepository
 import com.archieapps.exercises.core.db.ExercisesDatabase
+import com.archieapps.exercises.core.db.MIGRATION_2_3
 import com.archieapps.exercises.core.net.ApiCaller
 import com.archieapps.exercises.core.net.ApiJson
 import com.archieapps.exercises.core.net.ExercisesApi
@@ -61,6 +62,7 @@ class AppContainer(context: Context) {
 
     private val database = Room
         .databaseBuilder(context, ExercisesDatabase::class.java, "exercises.db")
+        .addMigrations(MIGRATION_2_3)
         .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 
