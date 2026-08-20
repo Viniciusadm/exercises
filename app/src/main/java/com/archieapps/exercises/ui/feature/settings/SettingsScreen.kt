@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.archieapps.exercises.BuildConfig
 import com.archieapps.exercises.ui.component.CardHeader
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
@@ -42,7 +43,6 @@ import com.archieapps.exercises.ui.feature.auth.IronTextField
 @Composable
 fun SettingsScreen(
     state: SettingsUiState,
-    onSaveBaseUrl: (String) -> Unit,
     onSyncCatalog: () -> Unit,
     onFlushPending: () -> Unit,
     onRestChange: (Int) -> Unit,
@@ -51,8 +51,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    var baseUrl by rememberSaveable(state.baseUrl) { mutableStateOf(state.baseUrl) }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -70,19 +68,12 @@ fun SettingsScreen(
         }
 
         IronCard {
-            CardHeader(title = "Servidor", caption = "endereço da API do painel")
-            Spacer(Modifier.height(Spacing.md))
-            IronTextField(
-                value = baseUrl,
-                onValueChange = { baseUrl = it },
-                label = "Base URL",
-                keyboardType = KeyboardType.Uri,
-            )
-            Spacer(Modifier.height(Spacing.md))
-            PrimaryButton(
-                text = "Salvar endereço",
-                onClick = { onSaveBaseUrl(baseUrl) },
-                modifier = Modifier.fillMaxWidth(),
+            CardHeader(title = "Servidor", caption = "definido em env.properties, fora do git")
+            Spacer(Modifier.height(Spacing.sm))
+            Text(
+                text = BuildConfig.BASE_URL,
+                style = MaterialTheme.typography.bodyLarge,
+                color = IronTextSecondary,
             )
         }
 

@@ -1,6 +1,7 @@
 package com.archieapps.exercises.core.di
 
 import android.content.Context
+import com.archieapps.exercises.BuildConfig
 import androidx.room.Room
 import com.archieapps.exercises.core.data.AuthRepository
 import com.archieapps.exercises.core.data.ExerciseRepository
@@ -11,7 +12,6 @@ import com.archieapps.exercises.core.data.WorkoutRepository
 import com.archieapps.exercises.core.db.ExercisesDatabase
 import com.archieapps.exercises.core.net.ApiCaller
 import com.archieapps.exercises.core.net.ApiJson
-import com.archieapps.exercises.core.net.BaseUrlInterceptor
 import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.SessionInterceptor
 import com.archieapps.exercises.core.rest.RestNotifications
@@ -37,14 +37,13 @@ class AppContainer(context: Context) {
     val restTimer = RestTimerController(context)
 
     private val client = OkHttpClient.Builder()
-        .addInterceptor(BaseUrlInterceptor { settings.current.baseUrl })
         .addInterceptor(SessionInterceptor({ settings.current.token }))
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
 
     private val api: ExercisesApi = Retrofit.Builder()
-        .baseUrl(PLACEHOLDER_BASE_URL)
+        .baseUrl(BuildConfig.BASE_URL)
         .client(client)
         .addConverterFactory(ApiJson.asConverterFactory("application/json".toMediaType()))
         .build()
@@ -89,9 +88,5 @@ class AppContainer(context: Context) {
                     }
                 }
         }
-    }
-
-    private companion object {
-        const val PLACEHOLDER_BASE_URL = "http://localhost/"
     }
 }

@@ -271,7 +271,6 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
 
                 SettingsScreen(
                     state = state,
-                    onSaveBaseUrl = viewModel::saveBaseUrl,
                     onSyncCatalog = viewModel::syncCatalog,
                     onFlushPending = viewModel::flushPending,
                     onRestChange = viewModel::setDefaultRest,

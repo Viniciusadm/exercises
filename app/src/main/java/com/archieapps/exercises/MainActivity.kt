@@ -68,7 +68,7 @@ private fun ExercisesRoot(container: AppContainer) {
     } else {
         val viewModel: LoginViewModel = viewModel(
             factory = viewModelFactory {
-                initializer { LoginViewModel(container.authRepository, container.settings) }
+                initializer { LoginViewModel(container.authRepository) }
             }
         )
         val state by viewModel.state.collectAsStateWithLifecycle()
@@ -82,8 +82,6 @@ private fun ExercisesRoot(container: AppContainer) {
                 state = state,
                 onEmailChange = viewModel::onEmailChange,
                 onPasswordChange = viewModel::onPasswordChange,
-                onBaseUrlChange = viewModel::onBaseUrlChange,
-                onToggleServer = viewModel::toggleServerEditor,
                 onSubmit = viewModel::submit,
             )
         }

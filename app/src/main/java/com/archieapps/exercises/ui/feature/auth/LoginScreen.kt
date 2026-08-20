@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.archieapps.exercises.ui.component.GhostButton
+import com.archieapps.exercises.BuildConfig
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
@@ -38,8 +38,6 @@ fun LoginScreen(
     state: LoginUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onBaseUrlChange: (String) -> Unit,
-    onToggleServer: () -> Unit,
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -95,29 +93,13 @@ fun LoginScreen(
 
         Spacer(Modifier.height(Spacing.lg))
 
-        if (state.editingServer) {
-            IronTextField(
-                value = state.baseUrl,
-                onValueChange = onBaseUrlChange,
-                label = "Endereço do servidor",
-                keyboardType = KeyboardType.Uri,
-            )
-            Spacer(Modifier.height(Spacing.sm))
-            Text(
-                text = "No emulador use 10.0.2.2; no celular, o IP da máquina na rede local.",
-                style = MaterialTheme.typography.labelMedium,
-                color = IronTextMuted,
-            )
-            Spacer(Modifier.height(Spacing.md))
-        }
-
-        GhostButton(
-            text = if (state.editingServer) "Ocultar servidor" else "Servidor: ${state.baseUrl}",
-            onClick = onToggleServer,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
+        Text(
+            text = "Servidor: ${BuildConfig.BASE_URL}",
+            style = MaterialTheme.typography.labelMedium,
+            color = IronTextMuted,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
         )
+
         Spacer(Modifier.height(Spacing.xxl))
     }
 }

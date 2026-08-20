@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class SettingsUiState(
-    val baseUrl: String = "",
     val userName: String? = null,
     val defaultRestSeconds: Int = 90,
     val keepScreenOn: Boolean = true,
@@ -43,7 +42,6 @@ class SettingsViewModel(
         message,
     ) { appSettings, catalogSize, pendingWorkouts, isSyncing, notice ->
         SettingsUiState(
-            baseUrl = appSettings.baseUrl,
             userName = appSettings.userName,
             defaultRestSeconds = appSettings.defaultRestSeconds,
             keepScreenOn = appSettings.keepScreenOnDuringWorkout,
@@ -54,13 +52,6 @@ class SettingsViewModel(
             isError = notice?.second ?: false,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
-
-    fun saveBaseUrl(value: String) {
-        viewModelScope.launch {
-            settings.setBaseUrl(value)
-            message.value = "Endereço salvo." to false
-        }
-    }
 
     fun setDefaultRest(seconds: Int) {
         viewModelScope.launch { settings.setDefaultRestSeconds(seconds) }

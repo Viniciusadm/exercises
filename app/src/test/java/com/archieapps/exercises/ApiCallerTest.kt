@@ -3,7 +3,6 @@ package com.archieapps.exercises
 import com.archieapps.exercises.core.net.ApiCaller
 import com.archieapps.exercises.core.net.ApiJson
 import com.archieapps.exercises.core.net.ApiResult
-import com.archieapps.exercises.core.net.BaseUrlInterceptor
 import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.FailureKind
 import com.archieapps.exercises.core.net.LoginRequest
@@ -24,19 +23,17 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 class ApiCallerTest {
     private lateinit var server: MockWebServer
-    private var baseUrl: String? = null
     private var token: String? = "abc123"
 
     private val caller = ApiCaller(ApiJson)
 
     private val api: ExercisesApi by lazy {
         val client = OkHttpClient.Builder()
-            .addInterceptor(BaseUrlInterceptor { baseUrl })
             .addInterceptor(SessionInterceptor({ token }, { "12345678" }))
             .build()
 
         Retrofit.Builder()
-            .baseUrl("http://localhost/")
+            .baseUrl(server.url("/"))
             .client(client)
             .addConverterFactory(ApiJson.asConverterFactory("application/json".toMediaType()))
             .build()
@@ -47,7 +44,6 @@ class ApiCallerTest {
     fun setUp() {
         server = MockWebServer()
         server.start()
-        baseUrl = server.url("/").toString()
     }
 
     @After
@@ -78,16 +74,6 @@ class ApiCallerTest {
         val request = server.takeRequest()
         assertEquals("POST", request.method)
         assertEquals("12345678", request.getHeader("code"))
-    }
-
-    @Test
-    fun `base url with a path prefix keeps the prefix`() = runTest {
-        baseUrl = server.url("/manage/").toString()
-        server.enqueue(json(200, """{"body":[],"success":true}"""))
-
-        caller.call { api.exercises() }
-
-        assertEquals("/manage/api/exercises?per_page=500&sort=name", server.takeRequest().path)
     }
 
     @Test

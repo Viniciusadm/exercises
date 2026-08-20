@@ -8,7 +8,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.archieapps.exercises.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
 
 data class AppSettings(
-    val baseUrl: String = BuildConfig.DEFAULT_BASE_URL,
     val token: String? = null,
     val userName: String? = null,
     val defaultRestSeconds: Int = 90,
@@ -37,11 +35,6 @@ class SettingsStore(context: Context, scope: CoroutineScope) {
         .stateIn(scope, SharingStarted.Eagerly, runBlocking { read(store.data.first()) })
 
     val current: AppSettings get() = state.value
-
-    suspend fun setBaseUrl(value: String) {
-        val normalized = normalizeBaseUrl(value) ?: return
-        store.edit { it[Keys.baseUrl] = normalized }
-    }
 
     suspend fun setSession(token: String, userName: String?) {
         store.edit {
@@ -66,7 +59,6 @@ class SettingsStore(context: Context, scope: CoroutineScope) {
     }
 
     private fun read(preferences: Preferences) = AppSettings(
-        baseUrl = preferences[Keys.baseUrl] ?: BuildConfig.DEFAULT_BASE_URL,
         token = preferences[Keys.token],
         userName = preferences[Keys.userName],
         defaultRestSeconds = preferences[Keys.restSeconds] ?: 90,
@@ -74,23 +66,9 @@ class SettingsStore(context: Context, scope: CoroutineScope) {
     )
 
     private object Keys {
-        val baseUrl = stringPreferencesKey("base_url")
         val token = stringPreferencesKey("token")
         val userName = stringPreferencesKey("user_name")
         val restSeconds = intPreferencesKey("default_rest_seconds")
         val keepScreenOn = booleanPreferencesKey("keep_screen_on")
     }
-}
-
-fun normalizeBaseUrl(input: String): String? {
-    val trimmed = input.trim()
-    if (trimmed.isEmpty()) return null
-
-    val withScheme = if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-        trimmed
-    } else {
-        "http://$trimmed"
-    }
-
-    return withScheme.trimEnd('/') + "/"
 }
