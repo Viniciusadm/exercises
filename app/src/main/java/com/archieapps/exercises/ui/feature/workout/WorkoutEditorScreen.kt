@@ -31,6 +31,7 @@ import com.archieapps.exercises.R
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.ui.component.CardHeader
+import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.ExercisePickerOverlay
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
@@ -39,6 +40,7 @@ import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
+import com.archieapps.exercises.ui.component.SetEditorHeader
 import com.archieapps.exercises.ui.component.SetEditorRow
 import com.archieapps.exercises.ui.design.IronPrimary
 import com.archieapps.exercises.ui.design.IronSurface
@@ -71,6 +73,7 @@ data class WorkoutEditorActions(
 fun WorkoutEditorScreen(
     state: WorkoutEditorUiState,
     actions: WorkoutEditorActions,
+    onClose: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -84,16 +87,29 @@ fun WorkoutEditorScreen(
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             item {
-                Column(Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)) {
-                    SectionLabel(text = "editar treino")
-                    Text(
-                        text = Format.dateWithWeekday(state.date),
-                        style = MaterialTheme.typography.headlineMedium,
-                    )
-                    Text(
-                        text = "${state.countedSets} séries · ${Format.volume(state.totalVolumeKg)}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = IronTextSecondary,
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.md),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        SectionLabel(text = "editar treino")
+                        Text(
+                            text = Format.dateWithWeekday(state.date),
+                            style = MaterialTheme.typography.headlineMedium,
+                        )
+                        Text(
+                            text = "${state.countedSets} séries · ${Format.volume(state.totalVolumeKg)}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = IronTextSecondary,
+                        )
+                    }
+                    CircleIconButton(
+                        iconRes = R.drawable.ic_chevron_left,
+                        contentDescription = "Voltar",
+                        onClick = onClose,
+                        tint = IronTextSecondary,
                     )
                 }
             }
@@ -252,6 +268,9 @@ private fun ExerciseEditorCard(
         }
 
         Spacer(Modifier.height(Spacing.md))
+
+        SetEditorHeader(exercise = exercise)
+        Spacer(Modifier.height(Spacing.sm))
 
         exercise.sets.forEachIndexed { setIndex, set ->
             SetEditorRow(

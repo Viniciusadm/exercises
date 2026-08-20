@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +36,35 @@ import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
+
+@Composable
+fun SetEditorHeader(exercise: SessionExercise, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "SÉRIE",
+            style = MaterialTheme.typography.labelSmall,
+            color = IronTextMuted,
+            modifier = Modifier.width(48.dp),
+        )
+        Text(
+            text = if (exercise.executionType == "time") "TEMPO" else "REPS",
+            style = MaterialTheme.typography.labelSmall,
+            color = IronTextMuted,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f),
+        )
+        if (exercise.usesWeight) {
+            Text(
+                text = "CARGA (KG)",
+                style = MaterialTheme.typography.labelSmall,
+                color = IronTextMuted,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        Spacer(Modifier.width(52.dp))
+    }
+}
 
 @Composable
 fun SetEditorRow(

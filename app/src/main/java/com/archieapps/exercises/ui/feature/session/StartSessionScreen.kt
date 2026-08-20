@@ -24,6 +24,7 @@ import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.net.dto.TemplateDto
 import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.ui.component.CardHeader
+import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.ui.component.NoticeBanner
@@ -38,6 +39,7 @@ import com.archieapps.exercises.ui.design.Spacing
 @Composable
 fun StartSessionScreen(
     state: SessionUiState,
+    onClose: () -> Unit,
     onRepeatLast: () -> Unit,
     onStartTemplate: (TemplateDto) -> Unit,
     onRepeatWorkout: (WorkoutDto) -> Unit,
@@ -53,9 +55,22 @@ fun StartSessionScreen(
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         item {
-            Column(Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)) {
-                SectionLabel(text = "sessão")
-                Text(text = "Começar treino", style = MaterialTheme.typography.headlineMedium)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.lg, vertical = Spacing.md),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(Modifier.weight(1f)) {
+                    SectionLabel(text = "sessão")
+                    Text(text = "Começar treino", style = MaterialTheme.typography.headlineMedium)
+                }
+                CircleIconButton(
+                    iconRes = R.drawable.ic_chevron_left,
+                    contentDescription = "Voltar",
+                    onClick = onClose,
+                    tint = IronTextSecondary,
+                )
             }
         }
 
@@ -201,9 +216,10 @@ private fun RecentWorkoutCard(workout: WorkoutDto, onStart: () -> Unit, modifier
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    text = workout.muscleGroups.take(4).joinToString(" · ").ifBlank {
-                        "${workout.exerciseCount} exercícios"
-                    },
+                    text = listOfNotNull(
+                        "${workout.exerciseCount} ex · ${workout.setsCount} séries",
+                        workout.muscleGroups.take(3).joinToString(" · ").takeIf { it.isNotBlank() },
+                    ).joinToString(" · "),
                     style = MaterialTheme.typography.bodyMedium,
                     color = IronTextSecondary,
                     maxLines = 1,

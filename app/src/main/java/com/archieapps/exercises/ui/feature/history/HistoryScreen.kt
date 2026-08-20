@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.net.dto.WorkoutDto
+import com.archieapps.exercises.core.net.dto.WorkoutExerciseDto
 import com.archieapps.exercises.ui.component.EmptyState
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.HairLine
@@ -232,15 +233,7 @@ private fun WorkoutCard(
                 Spacer(Modifier.height(Spacing.sm))
 
                 workout.exercises.forEach { exercise ->
-                    KeyValueRow(
-                        label = exercise.name,
-                        value = exercise.sets.joinToString("  ") { set ->
-                            listOfNotNull(
-                                set.repetitions?.let { "$it" },
-                                set.weightKg?.let { Format.weightValue(it) },
-                            ).joinToString("×")
-                        },
-                    )
+                    KeyValueRow(label = exercise.name, value = summarizeSets(exercise))
                 }
 
                 Spacer(Modifier.height(Spacing.md))
@@ -291,4 +284,30 @@ private fun DeleteWorkoutDialog(
             TextButton(onClick = onDismiss) { Text("Manter", color = IronTextMuted) }
         },
     )
+}
+
+/** "3×15 · 35 kg" quando as séries repetem, senão lista cada uma para não esconder a variação. */
+private fun summarizeSets(exercise: WorkoutExerciseDto): String {
+    val sets = exercise.sets
+    if (sets.isEmpty()) return Format.PLACEHOLDER
+
+    val sameReps = sets.map { it.repetitions }.distinct().size == 1
+    val sameWeight = sets.map { it.weightKg }.distinct().size == 1
+
+    if (sameReps && sameWeight) {
+        val reps = sets.first().repetitions
+        val weight = sets.first().weightKg
+
+        return listOfNotNull(
+            reps?.let { "${sets.size}×$it" } ?: "${sets.size} séries",
+            weight?.let { Format.weight(it) },
+        ).joinToString(" · ")
+    }
+
+    return sets.joinToString("  ") { set ->
+        listOfNotNull(
+            set.repetitions?.let { "$it" },
+            set.weightKg?.let { "${Format.weightValue(it)}kg" },
+        ).joinToString("×")
+    }
 }

@@ -53,6 +53,7 @@ import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.core.session.SessionSet
 import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.ExercisePickerOverlay
+import com.archieapps.exercises.ui.component.SetEditorHeader
 import com.archieapps.exercises.ui.component.SetEditorRow
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
@@ -422,31 +423,7 @@ private fun ExerciseCard(
 
         Spacer(Modifier.height(Spacing.lg))
 
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "SÉRIE",
-                style = MaterialTheme.typography.labelSmall,
-                color = IronTextMuted,
-                modifier = Modifier.width(48.dp),
-            )
-            Text(
-                text = if (exercise.executionType == "time") "TEMPO" else "REPS",
-                style = MaterialTheme.typography.labelSmall,
-                color = IronTextMuted,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f),
-            )
-            if (exercise.usesWeight) {
-                Text(
-                    text = "CARGA",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = IronTextMuted,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            Spacer(Modifier.width(52.dp))
-        }
+        SetEditorHeader(exercise = exercise)
 
         Spacer(Modifier.height(Spacing.sm))
 

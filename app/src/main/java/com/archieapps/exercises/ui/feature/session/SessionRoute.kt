@@ -71,6 +71,7 @@ data class SessionActions(
 fun SessionRoute(
     state: SessionUiState,
     actions: SessionActions,
+    onClose: () -> Unit,
     onRepeatLast: () -> Unit,
     onStartTemplate: (TemplateDto) -> Unit,
     onRepeatWorkout: (com.archieapps.exercises.core.net.dto.WorkoutDto) -> Unit,
@@ -101,6 +102,7 @@ fun SessionRoute(
 
         else -> StartSessionScreen(
             state = state,
+            onClose = onClose,
             onRepeatLast = onRepeatLast,
             onStartTemplate = onStartTemplate,
             onRepeatWorkout = onRepeatWorkout,
