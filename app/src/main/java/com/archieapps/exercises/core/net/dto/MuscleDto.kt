@@ -194,10 +194,10 @@ data class MuscleRecommendationDto(
     @SerialName("target_sets_per_week") val targetSetsPerWeek: Double = 0.0,
     @SerialName("coverage_pct") val coveragePct: Int? = null,
     val message: String = "",
-    @SerialName("from_your_history") val fromYourHistory: List<RecommendedExerciseDto> = emptyList(),
+    @SerialName("from_your_catalog") val fromYourCatalog: List<RecommendedExerciseDto> = emptyList(),
     @SerialName("new_options") val newOptions: List<RecommendedExerciseDto> = emptyList(),
 ) {
-    val hasSuggestions: Boolean get() = fromYourHistory.isNotEmpty() || newOptions.isNotEmpty()
+    val hasSuggestions: Boolean get() = fromYourCatalog.isNotEmpty() || newOptions.isNotEmpty()
 }
 
 @Serializable

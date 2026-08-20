@@ -15,7 +15,7 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Eretores da espinha: apenas estabilizador em 16 séries. Nenhum exercício do seu catálogo trabalha esse músculo diretamente.",
-            "from_your_history": [],
+            "from_your_catalog": [],
             "new_options": [
                 {
                     "name": "Hiperextensão lombar",
@@ -47,7 +47,7 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Extensores do antebraço: nenhum estímulo no período.",
-            "from_your_history": [],
+            "from_your_catalog": [],
             "new_options": [
                 {
                     "name": "Extensão de punho",
@@ -79,7 +79,7 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Flexores do antebraço: apenas estabilizador em 16 séries. Nenhum exercício do seu catálogo trabalha esse músculo diretamente.",
-            "from_your_history": [],
+            "from_your_catalog": [],
             "new_options": [
                 {
                     "name": "Rosca de punho",
@@ -104,7 +104,7 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Iliopsoas: nenhum estímulo no período.",
-            "from_your_history": [],
+            "from_your_catalog": [],
             "new_options": [
                 {
                     "name": "Elevação de pernas suspenso",
@@ -129,16 +129,20 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Quadrado lombar: nenhum estímulo no período.",
-            "from_your_history": [],
-            "new_options": [
+            "from_your_catalog": [
                 {
+                    "exercise_id": 9,
                     "name": "Prancha lateral",
-                    "equipment": "Peso do corpo",
+                    "equipment": "Máquina",
                     "execution_type": "time",
-                    "secondary_count": 2,
+                    "secondary_count": 0,
+                    "sessions_count": 0,
+                    "last_performed_at": null,
+                    "days_since": null,
                     "isolation_rank": 1
                 }
-            ]
+            ],
+            "new_options": []
         },
         {
             "muscle": {
@@ -154,7 +158,7 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Serrátil anterior: apenas estabilizador em 16 séries. Nenhum exercício do seu catálogo trabalha esse músculo diretamente.",
-            "from_your_history": [],
+            "from_your_catalog": [],
             "new_options": [
                 {
                     "name": "Pullover com halter",
@@ -179,7 +183,7 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Tibial anterior: nenhum estímulo no período.",
-            "from_your_history": [],
+            "from_your_catalog": [],
             "new_options": [
                 {
                     "name": "Dorsiflexão com elástico",
@@ -204,7 +208,7 @@
             "target_sets_per_week": 10,
             "coverage_pct": 0,
             "message": "Trapézio inferior: nenhum estímulo no período.",
-            "from_your_history": [],
+            "from_your_catalog": [],
             "new_options": [
                 {
                     "name": "Elevação em Y no banco inclinado",
@@ -229,9 +233,9 @@
             "target_sets_per_week": 10,
             "coverage_pct": 6,
             "message": "Glúteo médio: apenas 6% do volume médio dos demais músculos de Membros inferiores.",
-            "from_your_history": [
+            "from_your_catalog": [
                 {
-                    "exercise_id": 5,
+                    "exercise_id": 8,
                     "name": "Cadeira abdutora",
                     "equipment": "Máquina",
                     "execution_type": "sets",

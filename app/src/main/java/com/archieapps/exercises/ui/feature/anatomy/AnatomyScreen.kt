@@ -195,13 +195,12 @@ private fun MapCard(
     val values = state.regionValues
 
     IronCard(Modifier.padding(horizontal = Spacing.lg)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                CardHeader(title = "Mapa anatômico", caption = "quanto mais claro, mais estímulo")
-            }
+        CardHeader(title = "Mapa anatômico", caption = "quanto mais claro, mais estímulo")
+
+        Spacer(Modifier.height(Spacing.md))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             BodyViewToggle(view = state.view, onChange = onSelectView)
         }
-
         Spacer(Modifier.height(Spacing.md))
 
         // Altura manda, largura sai da proporcao: a figura e alta e estreita (~0.3), entao
@@ -273,7 +272,7 @@ private fun SelectedMuscle(muscle: MuscleVolumeDto) {
         Spacer(Modifier.height(Spacing.md))
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
             StatTile(
-                label = "séries/semana",
+                label = "sér/semana",
                 value = trimZero(muscle.setsPerWeek),
                 modifier = Modifier.weight(1f),
             )
@@ -308,7 +307,7 @@ private fun VolumeCard(state: AnatomyUiState) {
     IronCard(Modifier.padding(horizontal = Spacing.lg)) {
         CardHeader(
             title = "Séries por semana",
-            caption = "ponderadas: auxiliar conta metade, estabilizador não conta",
+            caption = "auxiliar conta metade, estabilizador não conta",
         )
         Spacer(Modifier.height(Spacing.md))
 
@@ -441,15 +440,19 @@ private fun SuggestionsOverlay(
                 color = IronTextMuted,
             )
 
-            if (recommendation.fromYourHistory.isNotEmpty()) {
-                SectionLabel(text = "do seu catálogo")
-                recommendation.fromYourHistory.forEach { exercise ->
+            if (recommendation.fromYourCatalog.isNotEmpty()) {
+                SectionLabel(text = "no seu catálogo")
+                recommendation.fromYourCatalog.forEach { exercise ->
                     KeyValueRow(
                         label = exercise.name,
-                        value = exercise.daysSince?.let { "há $it dias" } ?: "nunca feito",
+                        value = exercise.daysSince?.let { "há $it dias" } ?: "ainda não feito",
                         trailing = {
                             Text(
-                                text = "${exercise.sessionsCount} sessões",
+                                text = if (exercise.sessionsCount > 0) {
+                                    "${exercise.sessionsCount} sessões"
+                                } else {
+                                    exercise.equipment ?: ""
+                                },
                                 style = MaterialTheme.typography.labelSmall,
                                 color = IronTextMuted,
                             )

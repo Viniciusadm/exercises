@@ -166,6 +166,10 @@ fun KeyValueRow(
         )
         Spacer(Modifier.width(Spacing.sm))
         Text(text = value, style = IronText.tabular, color = IronTextSecondary)
-        trailing?.invoke()
+
+        if (trailing != null) {
+            Spacer(Modifier.width(Spacing.sm))
+            trailing()
+        }
     }
 }

@@ -305,19 +305,37 @@ class AnatomyContractTest {
             "muscle_recommendations_response.json"
         ).body!!
 
-        val withHistory = recommendations.first { it.fromYourHistory.isNotEmpty() }
-        val known = withHistory.fromYourHistory.first()
+        val performed = recommendations
+            .flatMap { it.fromYourCatalog }
+            .first { it.sessionsCount > 0 }
 
-        assertTrue("exercício do histórico precisa de id para virar ação", known.inCatalog)
-        assertNotNull(known.exerciseId)
-        assertTrue(known.sessionsCount > 0)
-        assertNotNull(known.lastPerformedAt)
-        assertNotNull(known.daysSince)
+        assertTrue("exercício do catálogo precisa de id para virar ação", performed.inCatalog)
+        assertNotNull(performed.exerciseId)
+        assertNotNull(performed.lastPerformedAt)
+        assertNotNull(performed.daysSince)
 
-        val fresh = withHistory.newOptions.first()
+        val fresh = recommendations.first { it.newOptions.isNotEmpty() }.newOptions.first()
         assertFalse("sugestão nova não pode fingir estar no catálogo", fresh.inCatalog)
         assertNull(fresh.exerciseId)
         assertEquals(0, fresh.sessionsCount)
+    }
+
+    @Test
+    fun `an adopted exercise stays listed until it is actually performed`() {
+        val recommendations = decode<List<MuscleRecommendationDto>>(
+            "muscle_recommendations_response.json"
+        ).body!!
+
+        val adopted = recommendations
+            .flatMap { it.fromYourCatalog }
+            .first { it.sessionsCount == 0 }
+
+        // Quem adota uma sugestão precisa continuar vendo "agora faça", em vez de
+        // ver o músculo desaparecer da lista.
+        assertTrue("já está no catálogo", adopted.inCatalog)
+        assertNotNull(adopted.exerciseId)
+        assertNull("nunca feito não tem data", adopted.lastPerformedAt)
+        assertNull(adopted.daysSince)
     }
 
     @Test
