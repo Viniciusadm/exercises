@@ -6,9 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,21 +71,12 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
         },
     ) { padding ->
         val layoutDirection = LocalLayoutDirection.current
-        // Rotas sem bottom bar (sessão, editores) não recebem o inset da barra do sistema pelo
-        // Scaffold, então o conteúdo ficava por baixo dela: aqui garantimos o maior dos dois.
-        val safeInsets = WindowInsets.safeDrawing.asPaddingValues()
-        val contentPadding = remember(padding, safeInsets, layoutDirection) {
+        val contentPadding = remember(padding, layoutDirection) {
             PaddingValues(
-                start = maxOf(
-                    padding.calculateStartPadding(layoutDirection),
-                    safeInsets.calculateStartPadding(layoutDirection),
-                ),
-                top = maxOf(padding.calculateTopPadding(), safeInsets.calculateTopPadding()),
-                end = maxOf(
-                    padding.calculateEndPadding(layoutDirection),
-                    safeInsets.calculateEndPadding(layoutDirection),
-                ),
-                bottom = maxOf(padding.calculateBottomPadding(), safeInsets.calculateBottomPadding()) + 16.dp,
+                start = padding.calculateStartPadding(layoutDirection),
+                top = padding.calculateTopPadding(),
+                end = padding.calculateEndPadding(layoutDirection),
+                bottom = padding.calculateBottomPadding() + 16.dp,
             )
         }
 

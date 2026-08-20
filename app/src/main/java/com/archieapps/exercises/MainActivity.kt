@@ -13,7 +13,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,27 +65,34 @@ class MainActivity : ComponentActivity() {
 private fun ExercisesRoot(container: AppContainer) {
     val settings by container.settings.state.collectAsStateWithLifecycle()
 
-    if (settings.isLoggedIn) {
-        ExercisesNavHost(container)
-    } else {
-        val viewModel: LoginViewModel = viewModel(
-            factory = viewModelFactory {
-                initializer { LoginViewModel(container.authRepository) }
-            }
-        )
-        val state by viewModel.state.collectAsStateWithLifecycle()
-
-        Box(
-            Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-        ) {
-            LoginScreen(
-                state = state,
-                onEmailChange = viewModel::onEmailChange,
-                onPasswordChange = viewModel::onPasswordChange,
-                onSubmit = viewModel::submit,
-            )
+    // O app é edge-to-edge para pintar as barras com a cor do tema, mas o conteúdo nunca deve
+    // ficar por baixo delas: o padding da área segura fica na raiz, uma vez só.
+    Box(
+        Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars.union(WindowInsets.displayCutout))
+    ) {
+        if (settings.isLoggedIn) {
+            ExercisesNavHost(container)
+        } else {
+            LoginRoute(container)
         }
     }
+}
+
+@Composable
+private fun LoginRoute(container: AppContainer) {
+    val viewModel: LoginViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { LoginViewModel(container.authRepository) }
+        }
+    )
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LoginScreen(
+        state = state,
+        onEmailChange = viewModel::onEmailChange,
+        onPasswordChange = viewModel::onPasswordChange,
+        onSubmit = viewModel::submit,
+    )
 }
