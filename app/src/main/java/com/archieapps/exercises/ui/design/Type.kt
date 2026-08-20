@@ -106,6 +106,15 @@ object IronText {
         lineHeight = 22.sp,
     )
 
+    /** Valor dentro dos steppers: cabe "112,5" em uma linha sem quebrar. */
+    val stepper = TextStyle(
+        fontFamily = Condensed,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        lineHeight = 22.sp,
+        letterSpacing = (-0.2).sp,
+    )
+
     val tabular = TextStyle(
         fontFamily = Condensed,
         fontWeight = FontWeight.SemiBold,

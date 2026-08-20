@@ -38,8 +38,9 @@ import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 
-private val ColumnNumberWidth = 40.dp
+private val ColumnNumberWidth = 34.dp
 private val ColumnActionWidth = 44.dp
+private val StepButtonSize = 32.dp
 
 @Composable
 fun SetEditorHeader(exercise: SessionExercise, modifier: Modifier = Modifier) {
@@ -166,9 +167,11 @@ fun SetStepper(
         SetStepperButton(label = "−", onClick = onDecrease)
         Text(
             text = value,
-            style = IronText.metricSmall,
+            style = IronText.stepper,
             color = IronTextPrimary,
             textAlign = TextAlign.Center,
+            maxLines = 1,
+            softWrap = false,
             modifier = Modifier.weight(1f),
         )
         SetStepperButton(label = "+", onClick = onIncrease)
@@ -179,7 +182,7 @@ fun SetStepper(
 private fun SetStepperButton(label: String, onClick: () -> Unit) {
     Box(
         Modifier
-            .size(34.dp)
+            .size(StepButtonSize)
             .clip(CircleShape)
             .background(IronSurface)
             .clickable(onClick = onClick),
