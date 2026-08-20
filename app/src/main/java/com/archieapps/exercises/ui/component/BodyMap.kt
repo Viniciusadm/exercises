@@ -17,7 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -91,67 +93,69 @@ fun BodyMap(
     val edgePx = with(density) { 2.dp.toPx() }
     val dashPx = with(density) { 3.dp.toPx() }
 
-    Canvas(
-        modifier = modifier
-            .aspectRatio(viewBox.width / viewBox.height)
-            .then(
-                if (contentDescription != null) {
-                    Modifier.semantics { this.contentDescription = contentDescription }
-                } else {
-                    Modifier
-                }
-            )
-            .then(
-                if (touchable) {
-                    Modifier.pointerInput(geometry, view, values) {
-                        detectTapGestures { offset ->
-                            val transform = fitTransform(size.width.toFloat(), size.height.toFloat(), viewBox)
-                            val point = transform.toViewBox(offset)
-                            val tolerance = with(density) { TOUCH_TOLERANCE_DP.toPx() } /
-                                transform.scale.coerceAtLeast(0.0001f)
-                            val region = geometry.regionAt(view, point, tolerance)
-
-                            onRegionTap(
-                                region?.let {
-                                    byId[it.id] ?: MuscleRegionValue(it.id, it.name, 0f)
-                                }
-                            )
-                        }
+    Box(modifier.clipToBounds(), contentAlignment = Alignment.Center) {
+        Canvas(
+            modifier = Modifier
+                .aspectRatio(viewBox.width / viewBox.height)
+                .then(
+                    if (contentDescription != null) {
+                        Modifier.semantics { this.contentDescription = contentDescription }
+                    } else {
+                        Modifier
                     }
-                } else {
-                    Modifier
+                )
+                .then(
+                    if (touchable) {
+                        Modifier.pointerInput(geometry, view, values) {
+                            detectTapGestures { offset ->
+                                val transform = fitTransform(size.width.toFloat(), size.height.toFloat(), viewBox)
+                                val point = transform.toViewBox(offset)
+                                val tolerance = with(density) { TOUCH_TOLERANCE_DP.toPx() } /
+                                    transform.scale.coerceAtLeast(0.0001f)
+                                val region = geometry.regionAt(view, point, tolerance)
+
+                                onRegionTap(
+                                    region?.let {
+                                        byId[it.id] ?: MuscleRegionValue(it.id, it.name, 0f)
+                                    }
+                                )
+                            }
+                        }
+                    } else {
+                        Modifier
+                    }
+                ),
+        ) {
+            val transform = fitTransform(size.width, size.height, viewBox)
+            val unit = 1f / transform.scale.coerceAtLeast(0.0001f)
+
+            val outline = Stroke(width = outlinePx * unit)
+            val primaryStroke = Stroke(width = primaryPx * unit)
+            val dashed = Stroke(
+                width = dashedPx * unit,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashPx * unit, dashPx * unit * 0.8f)),
+            )
+
+            withTransform({
+                translate(transform.dx, transform.dy)
+                scale(transform.scale, transform.scale, pivot = Offset.Zero)
+            }) {
+                regions.forEach { region ->
+                    val value = byId[region.id]
+                    val activation = value?.activation
+
+                    drawPath(path = region.path, color = fillFor(value?.intensity ?: 0f, activation))
+
+                    strokeFor(activation, outline, primaryStroke, dashed)?.let { (color, stroke) ->
+                        drawPath(path = region.path, color = color, style = stroke)
+                    }
                 }
-            ),
-    ) {
-        val transform = fitTransform(size.width, size.height, viewBox)
-        val unit = 1f / transform.scale.coerceAtLeast(0.0001f)
 
-        val outline = Stroke(width = outlinePx * unit)
-        val primaryStroke = Stroke(width = primaryPx * unit)
-        val dashed = Stroke(
-            width = dashedPx * unit,
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashPx * unit, dashPx * unit * 0.8f)),
-        )
-
-        withTransform({
-            translate(transform.dx, transform.dy)
-            scale(transform.scale, transform.scale, pivot = Offset.Zero)
-        }) {
-            regions.forEach { region ->
-                val value = byId[region.id]
-                val activation = value?.activation
-
-                drawPath(path = region.path, color = fillFor(value?.intensity ?: 0f, activation))
-
-                strokeFor(activation, outline, primaryStroke, dashed)?.let { (color, stroke) ->
-                    drawPath(path = region.path, color = color, style = stroke)
-                }
-            }
-
-            selectedRegionId?.let { selected ->
-                regions.firstOrNull { it.id == selected }?.let { region ->
-                    drawPath(path = region.path, color = IronPrimaryGlow, style = Stroke(glowPx * unit))
-                    drawPath(path = region.path, color = IronTextPrimary, style = Stroke(edgePx * unit))
+                selectedRegionId?.let { selected ->
+                    regions.firstOrNull { it.id == selected }?.let { region ->
+                        drawPath(path = region.path, color = IronPrimaryGlow, style = Stroke(glowPx * unit))
+                        drawPath(path = region.path, color = IronTextPrimary, style = Stroke(edgePx * unit))
+                    }
                 }
             }
         }
