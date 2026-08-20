@@ -1,0 +1,97 @@
+package com.archieapps.exercises.core.di
+
+import android.content.Context
+import androidx.room.Room
+import com.archieapps.exercises.core.data.AuthRepository
+import com.archieapps.exercises.core.data.ExerciseRepository
+import com.archieapps.exercises.core.data.HomeRepository
+import com.archieapps.exercises.core.data.SessionRepository
+import com.archieapps.exercises.core.data.TemplateRepository
+import com.archieapps.exercises.core.data.WorkoutRepository
+import com.archieapps.exercises.core.db.ExercisesDatabase
+import com.archieapps.exercises.core.net.ApiCaller
+import com.archieapps.exercises.core.net.ApiJson
+import com.archieapps.exercises.core.net.BaseUrlInterceptor
+import com.archieapps.exercises.core.net.ExercisesApi
+import com.archieapps.exercises.core.net.SessionInterceptor
+import com.archieapps.exercises.core.rest.RestNotifications
+import com.archieapps.exercises.core.rest.RestTimerController
+import com.archieapps.exercises.core.settings.SettingsStore
+import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
+
+class AppContainer(context: Context) {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    val settings = SettingsStore(context, scope)
+
+    val restTimer = RestTimerController(context)
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(BaseUrlInterceptor { settings.current.baseUrl })
+        .addInterceptor(SessionInterceptor({ settings.current.token }))
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    private val api: ExercisesApi = Retrofit.Builder()
+        .baseUrl(PLACEHOLDER_BASE_URL)
+        .client(client)
+        .addConverterFactory(ApiJson.asConverterFactory("application/json".toMediaType()))
+        .build()
+        .create(ExercisesApi::class.java)
+
+    private val database = Room
+        .databaseBuilder(context, ExercisesDatabase::class.java, "exercises.db")
+        .fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
+
+    private val caller = ApiCaller(ApiJson)
+
+    val authRepository = AuthRepository(api, caller, settings)
+
+    val homeRepository = HomeRepository(api, database.jsonCache(), caller, ApiJson)
+
+    val exerciseRepository = ExerciseRepository(api, database.exercises(), caller)
+
+    val workoutRepository = WorkoutRepository(api, database.jsonCache(), caller, ApiJson)
+
+    val templateRepository = TemplateRepository(api, database.jsonCache(), caller, ApiJson)
+
+    val sessionRepository = SessionRepository(
+        api,
+        database.jsonCache(),
+        database.pendingWorkouts(),
+        caller,
+        ApiJson,
+    )
+
+    init {
+        RestNotifications(context).ensureChannels()
+
+        scope.launch {
+            settings.state
+                .map { it.isLoggedIn }
+                .distinctUntilChanged()
+                .collect { loggedIn ->
+                    if (loggedIn) {
+                        sessionRepository.flushPending()
+                        exerciseRepository.sync()
+                    }
+                }
+        }
+    }
+
+    private companion object {
+        const val PLACEHOLDER_BASE_URL = "http://localhost/"
+    }
+}

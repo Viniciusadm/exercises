@@ -1,0 +1,24 @@
+package com.archieapps.exercises.ui.nav
+
+import com.archieapps.exercises.R
+
+enum class TopLevelDestination(
+    val route: String,
+    val label: String,
+    val iconRes: Int,
+) {
+    HOME("home", "Hoje", R.drawable.ic_home),
+    HISTORY("history", "Histórico", R.drawable.ic_calendar),
+    PROGRESS("progress", "Progresso", R.drawable.ic_chart),
+    CATALOG("catalog", "Exercícios", R.drawable.ic_list),
+}
+
+object Routes {
+    const val LOGIN = "login"
+    const val SETTINGS = "settings"
+    const val SESSION = "session"
+    const val TEMPLATE_PATTERN = "template/{id}"
+
+    /** O editor usa 0 para "template novo", já que o argumento da rota é obrigatório. */
+    fun template(id: Int?) = "template/${id ?: 0}"
+}

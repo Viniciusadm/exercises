@@ -1,0 +1,69 @@
+package com.archieapps.exercises.core.net.dto
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class WorkoutRequest(
+    @SerialName("client_uuid") val clientUuid: String,
+    val name: String,
+    val date: String,
+    @SerialName("started_at") val startedAt: String? = null,
+    @SerialName("finished_at") val finishedAt: String? = null,
+    @SerialName("duration_minutes") val durationMinutes: Int? = null,
+    @SerialName("workout_type") val workoutType: String,
+    @SerialName("workout_template_id") val templateId: Int? = null,
+    val notes: String? = null,
+    val exercises: List<WorkoutExerciseRequest>,
+)
+
+@Serializable
+data class WorkoutExerciseRequest(
+    @SerialName("exercise_id") val exerciseId: Int? = null,
+    val name: String,
+    @SerialName("execution_type") val executionType: String,
+    @SerialName("uses_weight") val usesWeight: Boolean,
+    @SerialName("muscle_group") val muscleGroup: String? = null,
+    val difficulty: String? = null,
+    val notes: String? = null,
+    val sets: List<WorkoutSetRequest>,
+)
+
+@Serializable
+data class WorkoutSetRequest(
+    @SerialName("set_number") val setNumber: Int,
+    val repetitions: Int? = null,
+    @SerialName("duration_seconds") val durationSeconds: Int? = null,
+    @SerialName("weight_kg") val weightKg: Double? = null,
+)
+
+@Serializable
+data class ExerciseRequest(
+    val name: String,
+    @SerialName("execution_type") val executionType: String,
+    @SerialName("uses_weight") val usesWeight: Boolean,
+    @SerialName("muscle_group") val muscleGroup: String? = null,
+    val difficulty: String? = null,
+    val equipment: String? = null,
+    @SerialName("rest_seconds") val restSeconds: Int? = null,
+    val notes: String? = null,
+)
+
+@Serializable
+data class TemplateRequest(
+    val name: String,
+    val exercises: List<TemplateExerciseRequest>,
+)
+
+@Serializable
+data class TemplateExerciseRequest(
+    @SerialName("exercise_id") val exerciseId: Int,
+    @SerialName("target_sets") val targetSets: Int? = null,
+    @SerialName("target_reps") val targetReps: Int? = null,
+    @SerialName("target_weight_kg") val targetWeightKg: Double? = null,
+    @SerialName("rest_seconds") val restSeconds: Int? = null,
+    val notes: String? = null,
+)
+
+@Serializable
+data class NameRequest(val name: String? = null)
