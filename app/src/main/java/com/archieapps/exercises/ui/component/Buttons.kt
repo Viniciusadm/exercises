@@ -103,7 +103,7 @@ fun GhostButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.defaultMinSize(minHeight = 48.dp),
+        modifier = modifier.defaultMinSize(minHeight = IronButtonHeight),
         enabled = enabled,
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, IronBorderStrong),

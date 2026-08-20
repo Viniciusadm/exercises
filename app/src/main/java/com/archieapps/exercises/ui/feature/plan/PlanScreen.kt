@@ -34,7 +34,6 @@ import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.EmptyState
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.HairLine
-import com.archieapps.exercises.ui.component.IronButtonHeight
 import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
@@ -335,18 +334,14 @@ private fun PlanReviewScreen(state: PlanUiState, actions: PlanActions, contentPa
                 GhostButton(
                     text = "Descartar",
                     onClick = actions.onDiscard,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(IronButtonHeight),
+                    modifier = Modifier.weight(1f),
                 )
                 PrimaryButton(
                     text = confirmLabel(proposal.days.size),
                     onClick = actions.onConfirm,
                     enabled = state.canConfirm,
                     loading = state.confirming,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(IronButtonHeight),
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -575,9 +570,7 @@ private fun PlanDoneScreen(state: PlanUiState, actions: PlanActions, contentPadd
                 GhostButton(
                     text = "Planejar outro",
                     onClick = actions.onPlanAnother,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IronButtonHeight),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
