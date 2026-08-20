@@ -160,7 +160,6 @@ fun TemplateEditorScreen(
                 }
             }
 
-            item { Spacer(Modifier.height(Spacing.xl)) }
         }
 
         if (picking) {

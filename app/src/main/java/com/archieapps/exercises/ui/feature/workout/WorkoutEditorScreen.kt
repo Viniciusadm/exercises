@@ -199,7 +199,6 @@ fun WorkoutEditorScreen(
                 }
             }
 
-            item { Spacer(Modifier.height(Spacing.xl)) }
         }
 
         if (picking) {

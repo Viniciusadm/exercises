@@ -25,8 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.archieapps.exercises.BuildConfig
+import com.archieapps.exercises.R
 import com.archieapps.exercises.ui.component.CardHeader
+import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.ui.component.NoticeBanner
@@ -48,6 +49,7 @@ fun SettingsScreen(
     onRestChange: (Int) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onLogout: () -> Unit,
+    onClose: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -59,36 +61,26 @@ fun SettingsScreen(
             .padding(horizontal = Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
-        Spacer(Modifier.height(Spacing.sm))
-        SectionLabel(text = "ajustes")
-        Text(text = "Configuração", style = MaterialTheme.typography.headlineMedium)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                SectionLabel(text = "ajustes")
+                Text(text = "Configuração", style = MaterialTheme.typography.headlineMedium)
+            }
+            CircleIconButton(
+                iconRes = R.drawable.ic_chevron_left,
+                contentDescription = "Voltar",
+                onClick = onClose,
+                tint = IronTextSecondary,
+            )
+        }
 
         if (state.message != null) {
             NoticeBanner(message = state.message, isError = state.isError)
-        }
-
-        IronCard {
-            CardHeader(title = "Servidor", caption = "definido em env.properties, fora do git")
-            Spacer(Modifier.height(Spacing.sm))
-            Text(
-                text = BuildConfig.BASE_URL,
-                style = MaterialTheme.typography.bodyLarge,
-                color = IronTextSecondary,
-            )
-        }
-
-        IronCard {
-            CardHeader(
-                title = "Catálogo de exercícios",
-                caption = "${state.catalogSize} exercícios no cache local",
-            )
-            Spacer(Modifier.height(Spacing.md))
-            PrimaryButton(
-                text = "Sincronizar catálogo",
-                onClick = onSyncCatalog,
-                loading = state.syncing,
-                modifier = Modifier.fillMaxWidth(),
-            )
         }
 
         IronCard {
@@ -155,20 +147,10 @@ fun SettingsScreen(
         }
 
         IronCard {
-            CardHeader(
-                title = state.userName ?: "Sessão",
-                caption = "token guardado neste aparelho",
-            )
+            CardHeader(title = state.userName ?: "Sessão")
             Spacer(Modifier.height(Spacing.md))
             GhostButton(text = "Sair da conta", onClick = onLogout, modifier = Modifier.fillMaxWidth())
         }
-
-        Text(
-            text = "Treinos · fase 2",
-            style = MaterialTheme.typography.labelMedium,
-            color = IronTextSecondary,
-            modifier = Modifier.padding(vertical = Spacing.lg),
-        )
     }
 }
 

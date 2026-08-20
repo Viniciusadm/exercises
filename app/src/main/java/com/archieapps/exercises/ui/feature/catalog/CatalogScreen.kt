@@ -191,7 +191,6 @@ fun CatalogScreen(
                 }
             }
 
-            item { Spacer(Modifier.height(Spacing.xl)) }
         }
 
         state.form?.let { form ->

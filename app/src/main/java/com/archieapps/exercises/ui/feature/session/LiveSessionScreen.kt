@@ -194,7 +194,6 @@ fun LiveSessionScreen(
                 )
             }
 
-            item { Spacer(Modifier.height(Spacing.xxl)) }
         }
 
         AnimatedVisibility(

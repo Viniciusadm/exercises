@@ -117,7 +117,6 @@ fun ProgressScreen(
         item { RecordTiles(history, Modifier.padding(horizontal = Spacing.lg)) }
         item { LoadCurveCard(history, Modifier.padding(horizontal = Spacing.lg)) }
         item { SessionsCard(history, Modifier.padding(horizontal = Spacing.lg)) }
-        item { Spacer(Modifier.height(Spacing.xl)) }
     }
 }
 

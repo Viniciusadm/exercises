@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -91,7 +92,7 @@ fun StatTile(
             )
         }
         if (spark.size > 1) {
-            Spacer(Modifier.height(Spacing.sm))
+            Spacer(Modifier.weight(1f, fill = true).heightIn(min = Spacing.sm))
             Sparkline(
                 values = spark,
                 color = accent,

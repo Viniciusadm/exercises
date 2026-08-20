@@ -335,6 +335,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onRestChange = viewModel::setDefaultRest,
                     onKeepScreenOnChange = viewModel::setKeepScreenOn,
                     onLogout = viewModel::logout,
+                    onClose = { navController.popBackStack() },
                     contentPadding = contentPadding,
                 )
             }

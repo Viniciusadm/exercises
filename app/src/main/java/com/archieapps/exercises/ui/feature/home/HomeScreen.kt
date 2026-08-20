@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -284,7 +286,12 @@ private fun MonthTiles(stats: StatsDto, modifier: Modifier = Modifier) {
     val current = stats.monthly.lastOrNull()
     val spark = stats.monthly.takeLast(6).map { it.volumeKg }
 
-    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+    ) {
         StatTile(
             label = "volume",
             value = Format.volume(current?.volumeKg ?: 0.0).substringBefore(' '),
@@ -293,20 +300,26 @@ private fun MonthTiles(stats: StatsDto, modifier: Modifier = Modifier) {
                 Format.parseMonth(month)?.let { "em ${Format.monthLong(it)}" }
             },
             spark = spark,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
         )
         StatTile(
             label = "sessões",
             value = Format.integer(current?.sessions ?: 0),
             caption = "${Format.minutes(current?.minutes)} no mês",
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
         )
         StatTile(
             label = "semana",
             value = Format.weightValue(stats.averages.sessionsPerWeek),
             caption = "${Format.integer(stats.totals.sessions)} em 12m",
             accent = IronPositive,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
         )
     }
 }

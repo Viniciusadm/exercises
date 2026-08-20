@@ -169,7 +169,6 @@ fun StartSessionScreen(
             }
         }
 
-        item { Spacer(Modifier.height(Spacing.lg)) }
     }
 }
 

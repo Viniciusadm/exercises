@@ -150,7 +150,6 @@ fun HistoryScreen(
             }
         }
 
-        item { Spacer(Modifier.height(Spacing.xl)) }
     }
 }
 
