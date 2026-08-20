@@ -13,7 +13,7 @@ class FormatTest {
         assertEquals("9.999 kg", Format.volume(9999.4))
         assertEquals("10,0 t", Format.volume(10_000.0))
         assertEquals("838,7 t", Format.volume(838_749.0))
-        assertEquals("—", Format.volume(null))
+        assertEquals(Format.PLACEHOLDER, Format.volume(null))
     }
 
     @Test
@@ -21,7 +21,7 @@ class FormatTest {
         assertEquals("55 kg", Format.weight(55.0))
         assertEquals("7,5 kg", Format.weight(7.5))
         assertEquals("55 kg", Format.weight(55.04))
-        assertEquals("—", Format.weight(null))
+        assertEquals(Format.PLACEHOLDER, Format.weight(null))
     }
 
     @Test
@@ -54,7 +54,7 @@ class FormatTest {
     fun `signed values show the direction`() {
         assertEquals("+5", Format.signed(5.0))
         assertEquals("−2,5", Format.signed(-2.5))
-        assertEquals("—", Format.signed(0.0))
+        assertEquals(Format.PLACEHOLDER, Format.signed(0.0))
     }
 
     @Test
