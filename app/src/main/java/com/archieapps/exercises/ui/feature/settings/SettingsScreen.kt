@@ -50,6 +50,7 @@ fun SettingsScreen(
     onKeepScreenOnChange: (Boolean) -> Unit,
     onLogout: () -> Unit,
     onClose: () -> Unit,
+    onOpenLicenses: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -150,6 +151,16 @@ fun SettingsScreen(
             CardHeader(title = state.userName ?: "Sessão")
             Spacer(Modifier.height(Spacing.md))
             GhostButton(text = "Sair da conta", onClick = onLogout, modifier = Modifier.fillMaxWidth())
+        }
+
+        IronCard(Modifier.padding(horizontal = Spacing.lg)) {
+            CardHeader(title = "Sobre", caption = "código e assets de terceiros")
+            Spacer(Modifier.height(Spacing.md))
+            GhostButton(
+                text = "Licenças",
+                onClick = onOpenLicenses,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

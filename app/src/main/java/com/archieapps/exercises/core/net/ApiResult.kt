@@ -13,14 +13,23 @@ sealed interface ApiResult<out T> {
 }
 
 class ApiCaller(private val json: Json) {
-    suspend fun <T> call(block: suspend () -> Envelope<T>): ApiResult<T> = try {
+    suspend fun <T> call(block: suspend () -> Envelope<T>): ApiResult<T> =
+        when (val result = envelope(block)) {
+            is ApiResult.Success -> ApiResult.Success(result.value.body!!)
+            is ApiResult.Failure -> result
+        }
+
+    /**
+     * Devolve o envelope inteiro: endpoints que carregam informacao em "misc"
+     * (ex.: a atribuicao por musculo) perderiam esse bloco em call().
+     */
+    suspend fun <T> envelope(block: suspend () -> Envelope<T>): ApiResult<Envelope<T>> = try {
         val envelope = block()
-        val body = envelope.body
 
         when {
             !envelope.success -> ApiResult.Failure(envelope.errorText(), FailureKind.SERVER)
-            body == null -> ApiResult.Failure(envelope.errorText(), FailureKind.EMPTY)
-            else -> ApiResult.Success(body)
+            envelope.body == null -> ApiResult.Failure(envelope.errorText(), FailureKind.EMPTY)
+            else -> ApiResult.Success(envelope)
         }
     } catch (error: HttpException) {
         ApiResult.Failure(

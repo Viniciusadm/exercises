@@ -1,0 +1,1123 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": {
+        "range": {
+            "from": "2026-06-01",
+            "to": "2026-06-30",
+            "weeks": 5
+        },
+        "metric": "sets",
+        "max_value": 1.2,
+        "legend": {
+            "min": 0,
+            "max": 1.2,
+            "unit": "sets_per_week"
+        },
+        "regions": [
+            {
+                "svg_region": "head",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "face",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "neck-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "neck-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "shoulder-front-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "deltoide-anterior",
+                        "name": "Deltoide anterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "shoulder-side-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "deltoide-lateral",
+                        "name": "Deltoide lateral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "shoulder-front-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "deltoide-anterior",
+                        "name": "Deltoide anterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "shoulder-side-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "deltoide-lateral",
+                        "name": "Deltoide lateral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "biceps-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "braquial",
+                        "name": "Braquial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "biceps-braquial",
+                        "name": "Bíceps braquial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "forearm-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "braquiorradial",
+                        "name": "Braquiorradial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "biceps-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "braquial",
+                        "name": "Braquial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "biceps-braquial",
+                        "name": "Bíceps braquial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "forearm-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "braquiorradial",
+                        "name": "Braquiorradial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "chest-upper-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "peitoral-maior-clavicular",
+                        "name": "Peitoral maior (clavicular)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "chest-lower-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "peitoral-maior-esternal",
+                        "name": "Peitoral maior (esternal)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "chest-upper-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "peitoral-maior-clavicular",
+                        "name": "Peitoral maior (clavicular)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "chest-lower-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "peitoral-maior-esternal",
+                        "name": "Peitoral maior (esternal)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "abs-upper-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "reto-abdominal",
+                        "name": "Reto abdominal",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "serratus-anterior-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "serratil-anterior",
+                        "name": "Serrátil anterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "obliques-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "obliquos",
+                        "name": "Oblíquos",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "abs-upper-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "reto-abdominal",
+                        "name": "Reto abdominal",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "abs-lower-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "reto-abdominal",
+                        "name": "Reto abdominal",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "abs-lower-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "reto-abdominal",
+                        "name": "Reto abdominal",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "serratus-anterior-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "serratil-anterior",
+                        "name": "Serrátil anterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "obliques-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "obliquos",
+                        "name": "Oblíquos",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "hip-flexor-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "iliopsoas",
+                        "name": "Iliopsoas",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "hip-flexor-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "iliopsoas",
+                        "name": "Iliopsoas",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "quads-left",
+                "value": 1.2,
+                "intensity": 1,
+                "muscles": [
+                    {
+                        "slug": "vasto-medial",
+                        "name": "Vasto medial",
+                        "value": 1.2,
+                        "relative_status": "balanced"
+                    },
+                    {
+                        "slug": "reto-femoral",
+                        "name": "Reto femoral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "vasto-intermedio",
+                        "name": "Vasto intermédio",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "vasto-lateral",
+                        "name": "Vasto lateral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "adductors-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "adutores",
+                        "name": "Adutores",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "foot-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "tibialis-anterior-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "tibial-anterior",
+                        "name": "Tibial anterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "knee-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "quads-right",
+                "value": 1.2,
+                "intensity": 1,
+                "muscles": [
+                    {
+                        "slug": "vasto-medial",
+                        "name": "Vasto medial",
+                        "value": 1.2,
+                        "relative_status": "balanced"
+                    },
+                    {
+                        "slug": "reto-femoral",
+                        "name": "Reto femoral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "vasto-intermedio",
+                        "name": "Vasto intermédio",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "vasto-lateral",
+                        "name": "Vasto lateral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "adductors-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "adutores",
+                        "name": "Adutores",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "foot-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "tibialis-anterior-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "tibial-anterior",
+                        "name": "Tibial anterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "knee-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "elbow-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "hand-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "elbow-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "hand-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "head-back",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "nape",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "traps-upper-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "trapezio-superior",
+                        "name": "Trapézio superior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "traps-mid-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "romboides",
+                        "name": "Romboides",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "trapezio-medio",
+                        "name": "Trapézio médio",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "traps-lower-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "trapezio-inferior",
+                        "name": "Trapézio inferior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "traps-upper-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "trapezio-superior",
+                        "name": "Trapézio superior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "traps-mid-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "romboides",
+                        "name": "Romboides",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "trapezio-medio",
+                        "name": "Trapézio médio",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "traps-lower-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "trapezio-inferior",
+                        "name": "Trapézio inferior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lats-upper-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "latissimo-do-dorso",
+                        "name": "Latíssimo do dorso",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "deltoid-rear-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "deltoide-posterior",
+                        "name": "Deltoide posterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lats-mid-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "latissimo-do-dorso",
+                        "name": "Latíssimo do dorso",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lats-lower-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "latissimo-do-dorso",
+                        "name": "Latíssimo do dorso",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "deltoid-rear-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "deltoide-posterior",
+                        "name": "Deltoide posterior",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lats-upper-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "latissimo-do-dorso",
+                        "name": "Latíssimo do dorso",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lats-mid-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "latissimo-do-dorso",
+                        "name": "Latíssimo do dorso",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lats-lower-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "latissimo-do-dorso",
+                        "name": "Latíssimo do dorso",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "triceps-long-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "triceps-cabeca-longa",
+                        "name": "Tríceps (cabeça longa)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "triceps-lateral-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "triceps-cabeca-lateral",
+                        "name": "Tríceps (cabeça lateral)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "triceps-cabeca-medial",
+                        "name": "Tríceps (cabeça medial)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "hand-back-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "forearm-flexors-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "flexores-do-antebraco",
+                        "name": "Flexores do antebraço",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "forearm-extensors-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "extensores-do-antebraco",
+                        "name": "Extensores do antebraço",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "triceps-long-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "triceps-cabeca-longa",
+                        "name": "Tríceps (cabeça longa)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "triceps-lateral-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "triceps-cabeca-lateral",
+                        "name": "Tríceps (cabeça lateral)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "triceps-cabeca-medial",
+                        "name": "Tríceps (cabeça medial)",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "hand-back-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "forearm-flexors-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "flexores-do-antebraco",
+                        "name": "Flexores do antebraço",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "forearm-extensors-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "extensores-do-antebraco",
+                        "name": "Extensores do antebraço",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "spine",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "eretores-da-espinha",
+                        "name": "Eretores da espinha",
+                        "value": 0,
+                        "relative_status": "stabilizer_only"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lower-back-erectors-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "eretores-da-espinha",
+                        "name": "Eretores da espinha",
+                        "value": 0,
+                        "relative_status": "stabilizer_only"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lower-back-ql-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "quadrado-lombar",
+                        "name": "Quadrado lombar",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lower-back-erectors-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "eretores-da-espinha",
+                        "name": "Eretores da espinha",
+                        "value": 0,
+                        "relative_status": "stabilizer_only"
+                    }
+                ]
+            },
+            {
+                "svg_region": "lower-back-ql-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "quadrado-lombar",
+                        "name": "Quadrado lombar",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "gluteus-medius-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "gluteo-medio",
+                        "name": "Glúteo médio",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "gluteus-maximus-left",
+                "value": 1.2,
+                "intensity": 1,
+                "muscles": [
+                    {
+                        "slug": "gluteo-maximo",
+                        "name": "Glúteo máximo",
+                        "value": 1.2,
+                        "relative_status": "balanced"
+                    }
+                ]
+            },
+            {
+                "svg_region": "gluteus-medius-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "gluteo-medio",
+                        "name": "Glúteo médio",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "gluteus-maximus-right",
+                "value": 1.2,
+                "intensity": 1,
+                "muscles": [
+                    {
+                        "slug": "gluteo-maximo",
+                        "name": "Glúteo máximo",
+                        "value": 1.2,
+                        "relative_status": "balanced"
+                    }
+                ]
+            },
+            {
+                "svg_region": "knee-back-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "knee-back-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "calves-gastroc-medial-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "gastrocnemio-medial",
+                        "name": "Gastrocnêmio medial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "calves-gastroc-lateral-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "gastrocnemio-lateral",
+                        "name": "Gastrocnêmio lateral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "calves-soleus-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "soleo",
+                        "name": "Sóleo",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "calves-gastroc-medial-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "gastrocnemio-medial",
+                        "name": "Gastrocnêmio medial",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "calves-gastroc-lateral-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "gastrocnemio-lateral",
+                        "name": "Gastrocnêmio lateral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "calves-soleus-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "soleo",
+                        "name": "Sóleo",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "foot-back-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "hamstrings-medial-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "semimembranoso",
+                        "name": "Semimembranáceo",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "semitendinoso",
+                        "name": "Semitendíneo",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "hamstrings-lateral-left",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "biceps-femoral",
+                        "name": "Bíceps femoral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "foot-back-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": []
+            },
+            {
+                "svg_region": "hamstrings-medial-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "semimembranoso",
+                        "name": "Semimembranáceo",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    },
+                    {
+                        "slug": "semitendinoso",
+                        "name": "Semitendíneo",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            },
+            {
+                "svg_region": "hamstrings-lateral-right",
+                "value": 0,
+                "intensity": 0,
+                "muscles": [
+                    {
+                        "slug": "biceps-femoral",
+                        "name": "Bíceps femoral",
+                        "value": 0,
+                        "relative_status": "untrained"
+                    }
+                ]
+            }
+        ]
+    },
+    "misc": null,
+    "error": null,
+    "success": true
+}

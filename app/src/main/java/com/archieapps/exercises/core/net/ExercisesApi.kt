@@ -2,6 +2,12 @@ package com.archieapps.exercises.core.net
 
 import com.archieapps.exercises.core.net.dto.CalendarDayDto
 import com.archieapps.exercises.core.net.dto.CatalogMetaDto
+import com.archieapps.exercises.core.net.dto.ExerciseMuscleMappingDto
+import com.archieapps.exercises.core.net.dto.MuscleAnalysisDto
+import com.archieapps.exercises.core.net.dto.MuscleHeatmapDto
+import com.archieapps.exercises.core.net.dto.MuscleRecommendationDto
+import com.archieapps.exercises.core.net.dto.AdoptExerciseRequest
+import com.archieapps.exercises.core.net.dto.MuscleDto
 import com.archieapps.exercises.core.net.dto.ExerciseDto
 import com.archieapps.exercises.core.net.dto.ExerciseHistoryDto
 import com.archieapps.exercises.core.net.dto.ExerciseRequest
@@ -66,6 +72,36 @@ interface ExercisesApi {
 
     @GET("api/exercises/meta")
     suspend fun catalogMeta(): Envelope<CatalogMetaDto>
+
+    @GET("api/muscles")
+    suspend fun muscles(): Envelope<List<MuscleDto>>
+
+    @GET("api/muscles/recommendations")
+    suspend fun muscleRecommendations(
+        @Query("from") from: String? = null,
+        @Query("to") to: String? = null,
+        @Query("limit") limit: Int? = null,
+    ): Envelope<List<MuscleRecommendationDto>>
+
+    @POST("api/muscles/recommendations/adopt")
+    suspend fun adoptExercise(@Body request: AdoptExerciseRequest): Envelope<ExerciseDto>
+
+    @GET("api/muscles/heatmap")
+    suspend fun muscleHeatmap(
+        @Query("from") from: String? = null,
+        @Query("to") to: String? = null,
+        @Query("metric") metric: String? = null,
+    ): Envelope<MuscleHeatmapDto>
+
+    @GET("api/muscles/analysis")
+    suspend fun muscleAnalysis(
+        @Query("from") from: String? = null,
+        @Query("to") to: String? = null,
+        @Query("granularity") granularity: String? = null,
+    ): Envelope<MuscleAnalysisDto>
+
+    @GET("api/exercises/{id}/muscles")
+    suspend fun exerciseMuscles(@Path("id") id: Int): Envelope<ExerciseMuscleMappingDto>
 
     @GET("api/exercises/{id}/history")
     suspend fun exerciseHistory(

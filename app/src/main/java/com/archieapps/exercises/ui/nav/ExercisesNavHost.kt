@@ -31,6 +31,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.archieapps.exercises.core.di.AppContainer
 import com.archieapps.exercises.ui.design.IronBackground
+import com.archieapps.exercises.ui.feature.anatomy.AnatomyScreen
+import com.archieapps.exercises.ui.feature.licenses.LicensesScreen
+import com.archieapps.exercises.ui.feature.anatomy.AnatomyViewModel
 import com.archieapps.exercises.ui.feature.home.HomeScreen
 import com.archieapps.exercises.ui.feature.home.HomeViewModel
 import com.archieapps.exercises.ui.feature.settings.SettingsScreen
@@ -90,7 +93,12 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                 val viewModel: HomeViewModel = viewModel(
                     factory = viewModelFactory {
                         initializer {
-                            HomeViewModel(container.homeRepository, container.authRepository)
+                            HomeViewModel(
+                                container.homeRepository,
+                                container.authRepository,
+                                container.anatomyRepository,
+                                container.bodyGeometry,
+                            )
                         }
                     }
                 )
@@ -106,6 +114,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onRefresh = viewModel::refresh,
                     onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                     onStartWorkout = { navController.navigate(Routes.SESSION) },
+                    onOpenAnatomy = { navController.navigate(Routes.ANATOMY) },
                     contentPadding = contentPadding,
                 )
             }
@@ -146,6 +155,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                 ProgressScreen(
                     state = state,
                     onSelect = viewModel::select,
+                    onOpenAnatomy = { navController.navigate(Routes.ANATOMY) },
                     contentPadding = contentPadding,
                 )
             }
@@ -153,7 +163,13 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
             composable(TopLevelDestination.CATALOG.route) {
                 val viewModel: CatalogViewModel = viewModel(
                     factory = viewModelFactory {
-                        initializer { CatalogViewModel(container.exerciseRepository, container.templateRepository) }
+                        initializer {
+                            CatalogViewModel(
+                                container.exerciseRepository,
+                                container.templateRepository,
+                                container.anatomyRepository,
+                            )
+                        }
                     }
                 )
                 val state by viewModel.state.collectAsStateWithLifecycle()
@@ -188,6 +204,8 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                                 container.workoutRepository,
                                 container.templateRepository,
                                 container.exerciseRepository,
+                                container.anatomyRepository,
+                                container.bodyGeometry,
                                 container.settings,
                                 container.restTimer,
                             )
@@ -314,6 +332,34 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                 )
             }
 
+            composable(Routes.ANATOMY) {
+                val viewModel: AnatomyViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer { AnatomyViewModel(container.anatomyRepository, container.bodyGeometry) }
+                    }
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                AnatomyScreen(
+                    state = state,
+                    onBack = { navController.popBackStack() },
+                    onSelectRegion = viewModel::selectRegion,
+                    onSelectView = viewModel::selectView,
+                    onSelectRegionId = viewModel::selectRegionId,
+                    onOpenSuggestions = viewModel::openSuggestions,
+                    onAdopt = viewModel::adopt,
+                    onDismissMessage = viewModel::dismissMessage,
+                    contentPadding = contentPadding,
+                )
+            }
+
+            composable(Routes.LICENSES) {
+                LicensesScreen(
+                    onBack = { navController.popBackStack() },
+                    contentPadding = contentPadding,
+                )
+            }
+
             composable(Routes.SETTINGS) {
                 val viewModel: SettingsViewModel = viewModel(
                     factory = viewModelFactory {
@@ -337,6 +383,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onKeepScreenOnChange = viewModel::setKeepScreenOn,
                     onLogout = viewModel::logout,
                     onClose = { navController.popBackStack() },
+                    onOpenLicenses = { navController.navigate(Routes.LICENSES) },
                     contentPadding = contentPadding,
                 )
             }

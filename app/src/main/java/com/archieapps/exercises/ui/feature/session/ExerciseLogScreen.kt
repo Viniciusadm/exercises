@@ -23,6 +23,7 @@ import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
+import com.archieapps.exercises.ui.component.MuscleChipsRow
 import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
@@ -34,6 +35,9 @@ import com.archieapps.exercises.ui.design.IronText
 import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
+import com.archieapps.exercises.core.anatomy.BodyView
+import com.archieapps.exercises.ui.component.BodyMap
+import com.archieapps.exercises.ui.feature.anatomy.activationRegions
 
 @Composable
 fun ExerciseLogScreen(
@@ -86,9 +90,41 @@ fun ExerciseLogScreen(
         item {
             IronCard(Modifier.padding(horizontal = Spacing.lg)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    exercise.muscleGroup?.let { PillTag(text = it) }
                     exercise.equipment?.let { PillTag(text = it) }
                     PillTag(text = Format.volume(exercise.volumeKg))
+                }
+
+                Spacer(Modifier.height(Spacing.sm))
+
+                val muscles = state.muscleMap.of(exercise.exerciseId)
+
+                MuscleChipsRow(
+                    muscles = muscles,
+                    modifier = Modifier.fillMaxWidth(),
+                    fallback = exercise.muscleGroup,
+                )
+
+                if (!muscles.isEmpty && state.geometry != null) {
+                    Spacer(Modifier.height(Spacing.md))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                    ) {
+                        val regions = activationRegions(muscles)
+
+                        BodyView.entries.forEach { view ->
+                            BodyMap(
+                                geometry = state.geometry,
+                                values = regions,
+                                view = view,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(160.dp),
+                                interactive = false,
+                                contentDescription = null,
+                            )
+                        }
+                    }
                 }
 
                 exercise.previousSummary?.let { summary ->

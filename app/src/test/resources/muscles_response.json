@@ -1,0 +1,78 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": [
+        {
+            "id": 4,
+            "slug": "reto-abdominal",
+            "name": "Reto abdominal",
+            "anatomical_name": "Rectus abdominis",
+            "region": "core",
+            "region_label": "Core",
+            "parent_id": null,
+            "parent_slug": null,
+            "legacy_muscle_group": "Abdômen",
+            "svg_regions": [
+                "abs-upper-left",
+                "abs-upper-right",
+                "abs-lower-left",
+                "abs-lower-right"
+            ],
+            "order": 3,
+            "exercises_count": 1
+        },
+        {
+            "id": 1,
+            "slug": "quadriceps",
+            "name": "Quadríceps",
+            "anatomical_name": "Quadriceps femoris",
+            "region": "lower_body",
+            "region_label": "Membros inferiores",
+            "parent_id": null,
+            "parent_slug": null,
+            "legacy_muscle_group": "Pernas",
+            "svg_regions": [
+                "quads-left",
+                "quads-right"
+            ],
+            "order": 0,
+            "exercises_count": 0
+        },
+        {
+            "id": 2,
+            "slug": "vasto-medial",
+            "name": "Vasto medial",
+            "anatomical_name": "Vastus medialis",
+            "region": "lower_body",
+            "region_label": "Membros inferiores",
+            "parent_id": 1,
+            "parent_slug": "quadriceps",
+            "legacy_muscle_group": "Pernas",
+            "svg_regions": [
+                "quads-left",
+                "quads-right"
+            ],
+            "order": 1,
+            "exercises_count": 1
+        },
+        {
+            "id": 3,
+            "slug": "gluteo-maximo",
+            "name": "Glúteo máximo",
+            "anatomical_name": "Gluteus maximus",
+            "region": "lower_body",
+            "region_label": "Membros inferiores",
+            "parent_id": null,
+            "parent_slug": null,
+            "legacy_muscle_group": "Glúteos",
+            "svg_regions": [
+                "gluteus-maximus-left",
+                "gluteus-maximus-right"
+            ],
+            "order": 2,
+            "exercises_count": 1
+        }
+    ],
+    "misc": null,
+    "error": null,
+    "success": true
+}

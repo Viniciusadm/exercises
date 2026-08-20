@@ -1,0 +1,15 @@
+Este aplicativo inclui software e assets de terceiros.
+
+## vulovix/body-muscles
+
+A silhueta anatômica em `app/src/main/assets/anatomy/body_regions_v1.json` é derivada de
+https://github.com/vulovix/body-muscles, commit 15c8085ee97cb94c51f92c75224416b15f955b5c,
+licenciado sob a Apache License 2.0.
+
+Alteração: os arquivos `src/data/muscles.front.ts` e `src/data/muscles.back.ts` foram
+reserializados para JSON por `tools/anatomy/build-regions.mjs`. Nenhuma coordenada, id ou
+nome de região foi modificado.
+
+O texto integral da licença acompanha a distribuição em
+`app/src/main/assets/anatomy/LICENSE-body-muscles.txt` e é exibido na tela de Licenças
+do aplicativo (Ajustes → Sobre → Licenças).

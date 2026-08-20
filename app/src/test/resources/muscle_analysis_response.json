@@ -1,0 +1,457 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": {
+        "range": {
+            "from": "2026-06-01",
+            "to": "2026-06-30",
+            "weeks": 5
+        },
+        "granularity": "as_mapped",
+        "muscles": [
+            {
+                "muscle_id": 6,
+                "slug": "eretores-da-espinha",
+                "name": "Eretores da espinha",
+                "anatomical_name": "Erector spinae",
+                "region": "back",
+                "region_label": "Costas",
+                "parent_id": null,
+                "parent_slug": null,
+                "root_id": 6,
+                "svg_regions": [
+                    "lower-back-erectors-left",
+                    "lower-back-erectors-right",
+                    "spine"
+                ],
+                "sessions": 4,
+                "entries": 4,
+                "sets": 12,
+                "reps": 112,
+                "seconds": 0,
+                "bodyweight_sets": 0,
+                "volume_kg": 10120,
+                "weighted_sets": 0,
+                "last_trained_at": "2026-06-23",
+                "by_activation": {
+                    "primary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "secondary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "stabilizer": {
+                        "sets": 12,
+                        "volume_kg": 10120
+                    }
+                },
+                "sets_per_week": 0,
+                "coverage_vs_region": null,
+                "coverage_vs_siblings": null,
+                "relative_status": "stabilizer_only",
+                "absolute_status": "below_target",
+                "target_sets_per_week": 10,
+                "share_of_region": 1
+            },
+            {
+                "muscle_id": 8,
+                "slug": "reto-abdominal",
+                "name": "Reto abdominal",
+                "anatomical_name": "Rectus abdominis",
+                "region": "core",
+                "region_label": "Core",
+                "parent_id": null,
+                "parent_slug": null,
+                "root_id": 8,
+                "svg_regions": [
+                    "abs-upper-left",
+                    "abs-upper-right"
+                ],
+                "sessions": 4,
+                "entries": 4,
+                "sets": 4,
+                "reps": 80,
+                "seconds": 0,
+                "bodyweight_sets": 4,
+                "volume_kg": 0,
+                "weighted_sets": 4,
+                "last_trained_at": "2026-06-23",
+                "by_activation": {
+                    "primary": {
+                        "sets": 4,
+                        "volume_kg": 0
+                    },
+                    "secondary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "stabilizer": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    }
+                },
+                "sets_per_week": 0.8,
+                "coverage_vs_region": null,
+                "coverage_vs_siblings": null,
+                "relative_status": "balanced",
+                "absolute_status": "below_target",
+                "target_sets_per_week": 10,
+                "share_of_region": 0
+            },
+            {
+                "muscle_id": 4,
+                "slug": "gluteo-maximo",
+                "name": "Glúteo máximo",
+                "anatomical_name": "Gluteus maximus",
+                "region": "lower_body",
+                "region_label": "Membros inferiores",
+                "parent_id": null,
+                "parent_slug": null,
+                "root_id": 4,
+                "svg_regions": [
+                    "gluteus-maximus-left",
+                    "gluteus-maximus-right"
+                ],
+                "sessions": 4,
+                "entries": 4,
+                "sets": 12,
+                "reps": 112,
+                "seconds": 0,
+                "bodyweight_sets": 0,
+                "volume_kg": 10120,
+                "weighted_sets": 12,
+                "last_trained_at": "2026-06-23",
+                "by_activation": {
+                    "primary": {
+                        "sets": 12,
+                        "volume_kg": 10120
+                    },
+                    "secondary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "stabilizer": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    }
+                },
+                "sets_per_week": 2.4,
+                "coverage_vs_region": {
+                    "value": 12,
+                    "pct": 1200,
+                    "baseline_sets_per_week": 0.2,
+                    "peers": 3
+                },
+                "coverage_vs_siblings": null,
+                "relative_status": "emphasized",
+                "absolute_status": "below_target",
+                "target_sets_per_week": 10,
+                "share_of_region": 0.3301
+            },
+            {
+                "muscle_id": 3,
+                "slug": "vasto-lateral",
+                "name": "Vasto lateral",
+                "anatomical_name": "Vastus lateralis",
+                "region": "lower_body",
+                "region_label": "Membros inferiores",
+                "parent_id": 1,
+                "parent_slug": "quadriceps",
+                "root_id": 1,
+                "svg_regions": [
+                    "quads-left",
+                    "quads-right"
+                ],
+                "sessions": 4,
+                "entries": 4,
+                "sets": 12,
+                "reps": 112,
+                "seconds": 0,
+                "bodyweight_sets": 0,
+                "volume_kg": 10120,
+                "weighted_sets": 12,
+                "last_trained_at": "2026-06-23",
+                "by_activation": {
+                    "primary": {
+                        "sets": 12,
+                        "volume_kg": 10120
+                    },
+                    "secondary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "stabilizer": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    }
+                },
+                "sets_per_week": 2.4,
+                "coverage_vs_region": {
+                    "value": 24,
+                    "pct": 2400,
+                    "baseline_sets_per_week": 0.2,
+                    "peers": 3
+                },
+                "coverage_vs_siblings": {
+                    "value": 1,
+                    "pct": 100,
+                    "baseline_sets_per_week": 2.4,
+                    "peers": 1
+                },
+                "relative_status": "balanced",
+                "absolute_status": "below_target",
+                "target_sets_per_week": 10,
+                "share_of_region": 0.3301
+            },
+            {
+                "muscle_id": 2,
+                "slug": "vasto-medial",
+                "name": "Vasto medial",
+                "anatomical_name": "Vastus medialis",
+                "region": "lower_body",
+                "region_label": "Membros inferiores",
+                "parent_id": 1,
+                "parent_slug": "quadriceps",
+                "root_id": 1,
+                "svg_regions": [
+                    "quads-left",
+                    "quads-right"
+                ],
+                "sessions": 4,
+                "entries": 4,
+                "sets": 12,
+                "reps": 112,
+                "seconds": 0,
+                "bodyweight_sets": 0,
+                "volume_kg": 10120,
+                "weighted_sets": 12,
+                "last_trained_at": "2026-06-23",
+                "by_activation": {
+                    "primary": {
+                        "sets": 12,
+                        "volume_kg": 10120
+                    },
+                    "secondary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "stabilizer": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    }
+                },
+                "sets_per_week": 2.4,
+                "coverage_vs_region": {
+                    "value": 24,
+                    "pct": 2400,
+                    "baseline_sets_per_week": 0.2,
+                    "peers": 3
+                },
+                "coverage_vs_siblings": {
+                    "value": 1,
+                    "pct": 100,
+                    "baseline_sets_per_week": 2.4,
+                    "peers": 1
+                },
+                "relative_status": "balanced",
+                "absolute_status": "below_target",
+                "target_sets_per_week": 10,
+                "share_of_region": 0.3301
+            },
+            {
+                "muscle_id": 5,
+                "slug": "gluteo-medio",
+                "name": "Glúteo médio",
+                "anatomical_name": "Gluteus medius",
+                "region": "lower_body",
+                "region_label": "Membros inferiores",
+                "parent_id": null,
+                "parent_slug": null,
+                "root_id": 5,
+                "svg_regions": [
+                    "gluteus-medius-left",
+                    "gluteus-medius-right"
+                ],
+                "sessions": 1,
+                "entries": 1,
+                "sets": 1,
+                "reps": 15,
+                "seconds": 0,
+                "bodyweight_sets": 0,
+                "volume_kg": 300,
+                "weighted_sets": 1,
+                "last_trained_at": "2026-06-30",
+                "by_activation": {
+                    "primary": {
+                        "sets": 1,
+                        "volume_kg": 300
+                    },
+                    "secondary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "stabilizer": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    }
+                },
+                "sets_per_week": 0.2,
+                "coverage_vs_region": {
+                    "value": 0.083,
+                    "pct": 8,
+                    "baseline_sets_per_week": 2.4,
+                    "peers": 3
+                },
+                "coverage_vs_siblings": null,
+                "relative_status": "undertrained",
+                "absolute_status": "below_target",
+                "target_sets_per_week": 10,
+                "share_of_region": 0.0098
+            },
+            {
+                "muscle_id": 7,
+                "slug": "tibial-anterior",
+                "name": "Tibial anterior",
+                "anatomical_name": "Tibialis anterior",
+                "region": "lower_body",
+                "region_label": "Membros inferiores",
+                "parent_id": null,
+                "parent_slug": null,
+                "root_id": 7,
+                "svg_regions": [
+                    "tibialis-anterior-left",
+                    "tibialis-anterior-right"
+                ],
+                "sessions": 0,
+                "entries": 0,
+                "sets": 0,
+                "reps": 0,
+                "seconds": 0,
+                "bodyweight_sets": 0,
+                "volume_kg": 0,
+                "weighted_sets": 0,
+                "last_trained_at": null,
+                "by_activation": {
+                    "primary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "secondary": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    },
+                    "stabilizer": {
+                        "sets": 0,
+                        "volume_kg": 0
+                    }
+                },
+                "sets_per_week": 0,
+                "coverage_vs_region": {
+                    "value": 0,
+                    "pct": 0,
+                    "baseline_sets_per_week": 2.4,
+                    "peers": 3
+                },
+                "coverage_vs_siblings": null,
+                "relative_status": "untrained",
+                "absolute_status": "below_target",
+                "target_sets_per_week": 10,
+                "share_of_region": 0
+            }
+        ],
+        "regions": [
+            {
+                "region": "back",
+                "label": "Costas",
+                "sets": 12,
+                "volume_kg": 10120,
+                "muscles_count": 1,
+                "untrained": 0,
+                "stabilizer_only": 1,
+                "undertrained": 0,
+                "median_sets_per_week": 0
+            },
+            {
+                "region": "core",
+                "label": "Core",
+                "sets": 4,
+                "volume_kg": 0,
+                "muscles_count": 1,
+                "untrained": 0,
+                "stabilizer_only": 0,
+                "undertrained": 0,
+                "median_sets_per_week": 0.8
+            },
+            {
+                "region": "lower_body",
+                "label": "Membros inferiores",
+                "sets": 37,
+                "volume_kg": 30660,
+                "muscles_count": 5,
+                "untrained": 1,
+                "stabilizer_only": 0,
+                "undertrained": 1,
+                "median_sets_per_week": 1.3
+            }
+        ],
+        "highlights": {
+            "untrained": [
+                {
+                    "slug": "tibial-anterior",
+                    "name": "Tibial anterior",
+                    "region_label": "Membros inferiores",
+                    "sets_per_week": 0,
+                    "pct": 0,
+                    "message": "Tibial anterior: nenhum estímulo no período."
+                }
+            ],
+            "stabilizer_only": [
+                {
+                    "slug": "eretores-da-espinha",
+                    "name": "Eretores da espinha",
+                    "region_label": "Costas",
+                    "sets_per_week": 0,
+                    "pct": null,
+                    "message": "Eretores da espinha: apenas estabilizador em 12 séries. Nenhum exercício do seu catálogo trabalha esse músculo diretamente."
+                }
+            ],
+            "undertrained": [
+                {
+                    "slug": "gluteo-medio",
+                    "name": "Glúteo médio",
+                    "region_label": "Membros inferiores",
+                    "sets_per_week": 0.2,
+                    "pct": 8,
+                    "message": "Glúteo médio: apenas 8% do volume médio dos demais músculos de Membros inferiores."
+                }
+            ],
+            "emphasized": [
+                {
+                    "slug": "gluteo-maximo",
+                    "name": "Glúteo máximo",
+                    "region_label": "Membros inferiores",
+                    "sets_per_week": 2.4,
+                    "pct": 1200,
+                    "message": "Glúteo máximo: 1200% do volume médio dos demais músculos de Membros inferiores."
+                }
+            ]
+        }
+    },
+    "misc": {
+        "attribution": "per_muscle",
+        "double_counted": true,
+        "session_volume_kg": 10420,
+        "attributed_volume_kg": 40780,
+        "attribution_factor": 3.91,
+        "unmapped": {
+            "sets": 4,
+            "volume_kg": 0,
+            "exercise_names": [
+                "Esteira"
+            ]
+        }
+    },
+    "error": null,
+    "success": true
+}

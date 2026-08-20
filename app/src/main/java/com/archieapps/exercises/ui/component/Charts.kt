@@ -37,6 +37,16 @@ data class ShareRow(val label: String, val value: String, val share: Double, val
 
 data class HeatDay(val date: java.time.LocalDate, val intensity: Float)
 
+/**
+ * Escala de calor da casa. Vive aqui e e usada tanto pelo Heatmap do calendario quanto
+ * pelo mapa anatomico, para as duas nunca divergirem.
+ */
+fun heatColor(intensity: Float): Color = if (intensity <= 0f) {
+    IronSurfaceHigh
+} else {
+    lerp(IronPrimary.copy(alpha = 0.35f), IronPrimary, intensity.coerceIn(0f, 1f))
+}
+
 @Composable
 fun Sparkline(
     values: List<Double>,
@@ -219,15 +229,8 @@ fun Heatmap(
                     val date = weekStart.plusDays(row.toLong())
                     if (date.isAfter(lastDate)) continue
 
-                    val intensity = byDate[date]?.intensity ?: 0f
-                    val color = if (intensity <= 0f) {
-                        IronSurfaceHigh
-                    } else {
-                        lerp(IronPrimary.copy(alpha = 0.35f), IronPrimary, intensity.coerceIn(0f, 1f))
-                    }
-
                     drawRoundRect(
-                        color = color,
+                        color = heatColor(byDate[date]?.intensity ?: 0f),
                         topLeft = Offset(column * (cellPx + gapPx), row * (cellPx + gapPx)),
                         size = Size(cellPx, cellPx),
                         cornerRadius = radius,

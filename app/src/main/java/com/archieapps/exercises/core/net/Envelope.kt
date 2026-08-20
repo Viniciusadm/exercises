@@ -2,6 +2,7 @@ package com.archieapps.exercises.core.net
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class Envelope<T>(
@@ -10,6 +11,7 @@ data class Envelope<T>(
     val error: String? = null,
     val success: Boolean = false,
     val pagination: Pagination? = null,
+    val misc: JsonElement? = null,
 )
 
 @Serializable

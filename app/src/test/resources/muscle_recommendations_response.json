@@ -1,0 +1,259 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": [
+        {
+            "muscle": {
+                "id": 7,
+                "slug": "eretores-da-espinha",
+                "name": "Eretores da espinha",
+                "region": "back",
+                "region_label": "Costas"
+            },
+            "relative_status": "stabilizer_only",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Eretores da espinha: apenas estabilizador em 16 séries. Nenhum exercício do seu catálogo trabalha esse músculo diretamente.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Hiperextensão lombar",
+                    "equipment": "Banco romano",
+                    "execution_type": "sets",
+                    "secondary_count": 5,
+                    "isolation_rank": 1
+                },
+                {
+                    "name": "Levantamento terra",
+                    "equipment": "Barra",
+                    "execution_type": "sets",
+                    "secondary_count": 7,
+                    "isolation_rank": 2
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 14,
+                "slug": "extensores-do-antebraco",
+                "name": "Extensores do antebraço",
+                "region": "arms",
+                "region_label": "Braços"
+            },
+            "relative_status": "untrained",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Extensores do antebraço: nenhum estímulo no período.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Extensão de punho",
+                    "equipment": "Barra",
+                    "execution_type": "sets",
+                    "secondary_count": 1,
+                    "isolation_rank": 1
+                },
+                {
+                    "name": "Rosca inversa",
+                    "equipment": "Barra",
+                    "execution_type": "sets",
+                    "secondary_count": 2,
+                    "isolation_rank": 2
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 13,
+                "slug": "flexores-do-antebraco",
+                "name": "Flexores do antebraço",
+                "region": "arms",
+                "region_label": "Braços"
+            },
+            "relative_status": "stabilizer_only",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Flexores do antebraço: apenas estabilizador em 16 séries. Nenhum exercício do seu catálogo trabalha esse músculo diretamente.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Rosca de punho",
+                    "equipment": "Barra",
+                    "execution_type": "sets",
+                    "secondary_count": 1,
+                    "isolation_rank": 1
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 17,
+                "slug": "iliopsoas",
+                "name": "Iliopsoas",
+                "region": "core",
+                "region_label": "Core"
+            },
+            "relative_status": "untrained",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Iliopsoas: nenhum estímulo no período.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Elevação de pernas suspenso",
+                    "equipment": "Barra fixa",
+                    "execution_type": "sets",
+                    "secondary_count": 2,
+                    "isolation_rank": 1
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 8,
+                "slug": "quadrado-lombar",
+                "name": "Quadrado lombar",
+                "region": "back",
+                "region_label": "Costas"
+            },
+            "relative_status": "untrained",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Quadrado lombar: nenhum estímulo no período.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Prancha lateral",
+                    "equipment": "Peso do corpo",
+                    "execution_type": "time",
+                    "secondary_count": 2,
+                    "isolation_rank": 1
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 2,
+                "slug": "serratil-anterior",
+                "name": "Serrátil anterior",
+                "region": "chest",
+                "region_label": "Peito"
+            },
+            "relative_status": "stabilizer_only",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Serrátil anterior: apenas estabilizador em 16 séries. Nenhum exercício do seu catálogo trabalha esse músculo diretamente.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Pullover com halter",
+                    "equipment": "Halteres",
+                    "execution_type": "sets",
+                    "secondary_count": 3,
+                    "isolation_rank": 1
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 25,
+                "slug": "tibial-anterior",
+                "name": "Tibial anterior",
+                "region": "lower_body",
+                "region_label": "Membros inferiores"
+            },
+            "relative_status": "untrained",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Tibial anterior: nenhum estímulo no período.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Dorsiflexão com elástico",
+                    "equipment": "Bandas",
+                    "execution_type": "sets",
+                    "secondary_count": 0,
+                    "isolation_rank": 1
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 33,
+                "slug": "trapezio-inferior",
+                "name": "Trapézio inferior",
+                "region": "back",
+                "region_label": "Costas"
+            },
+            "relative_status": "untrained",
+            "absolute_status": "below_target",
+            "sets_per_week": 0,
+            "target_sets_per_week": 10,
+            "coverage_pct": 0,
+            "message": "Trapézio inferior: nenhum estímulo no período.",
+            "from_your_history": [],
+            "new_options": [
+                {
+                    "name": "Elevação em Y no banco inclinado",
+                    "equipment": "Halteres",
+                    "execution_type": "sets",
+                    "secondary_count": 3,
+                    "isolation_rank": 1
+                }
+            ]
+        },
+        {
+            "muscle": {
+                "id": 19,
+                "slug": "gluteo-medio",
+                "name": "Glúteo médio",
+                "region": "lower_body",
+                "region_label": "Membros inferiores"
+            },
+            "relative_status": "undertrained",
+            "absolute_status": "below_target",
+            "sets_per_week": 0.2,
+            "target_sets_per_week": 10,
+            "coverage_pct": 6,
+            "message": "Glúteo médio: apenas 6% do volume médio dos demais músculos de Membros inferiores.",
+            "from_your_history": [
+                {
+                    "exercise_id": 5,
+                    "name": "Cadeira abdutora",
+                    "equipment": "Máquina",
+                    "execution_type": "sets",
+                    "secondary_count": 0,
+                    "sessions_count": 1,
+                    "last_performed_at": "2026-06-03",
+                    "days_since": 27,
+                    "isolation_rank": 1
+                }
+            ],
+            "new_options": [
+                {
+                    "name": "Abdução de quadril em pé",
+                    "equipment": "Caneleira",
+                    "execution_type": "sets",
+                    "secondary_count": 3,
+                    "isolation_rank": 1
+                }
+            ]
+        }
+    ],
+    "misc": null,
+    "error": null,
+    "success": true
+}

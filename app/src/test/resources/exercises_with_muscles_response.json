@@ -1,0 +1,107 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": [
+        {
+            "id": 2,
+            "name": "Esteira",
+            "execution_type": "time",
+            "uses_weight": false,
+            "muscle_group": "Cardio",
+            "difficulty": null,
+            "equipment": "Esteira",
+            "rest_seconds": null,
+            "notes": null,
+            "last_performed_at": null,
+            "sessions_count": 0,
+            "best_weight_kg": null,
+            "total_volume_kg": 0,
+            "created_at": "2026-08-20T18:40:30.000000Z",
+            "updated_at": "2026-08-20T18:40:30.000000Z",
+            "muscles": {
+                "primary": [],
+                "secondary": [],
+                "stabilizer": []
+            },
+            "muscles_mapped": false,
+            "muscles_unmapped_reason": "Cardio aeróbico: não recebe mapeamento anatômico."
+        },
+        {
+            "id": 1,
+            "name": "Leg press",
+            "execution_type": "sets",
+            "uses_weight": true,
+            "muscle_group": "Pernas",
+            "difficulty": null,
+            "equipment": "Máquina",
+            "rest_seconds": null,
+            "notes": null,
+            "last_performed_at": "2026-08-18",
+            "sessions_count": 1,
+            "best_weight_kg": 80,
+            "total_volume_kg": 800,
+            "created_at": "2026-08-20T18:40:30.000000Z",
+            "updated_at": "2026-08-20T18:40:30.000000Z",
+            "muscles": {
+                "primary": [
+                    {
+                        "id": 2,
+                        "slug": "vasto-medial",
+                        "name": "Vasto medial",
+                        "anatomical_name": "Vastus medialis",
+                        "region": "lower_body",
+                        "region_label": "Membros inferiores",
+                        "parent_id": 1,
+                        "svg_regions": [
+                            "quads-left",
+                            "quads-right"
+                        ]
+                    }
+                ],
+                "secondary": [
+                    {
+                        "id": 3,
+                        "slug": "gluteo-maximo",
+                        "name": "Glúteo máximo",
+                        "anatomical_name": "Gluteus maximus",
+                        "region": "lower_body",
+                        "region_label": "Membros inferiores",
+                        "parent_id": null,
+                        "svg_regions": [
+                            "gluteus-maximus-left",
+                            "gluteus-maximus-right"
+                        ]
+                    }
+                ],
+                "stabilizer": [
+                    {
+                        "id": 4,
+                        "slug": "reto-abdominal",
+                        "name": "Reto abdominal",
+                        "anatomical_name": "Rectus abdominis",
+                        "region": "core",
+                        "region_label": "Core",
+                        "parent_id": null,
+                        "svg_regions": [
+                            "abs-upper-left",
+                            "abs-upper-right",
+                            "abs-lower-left",
+                            "abs-lower-right"
+                        ]
+                    }
+                ]
+            },
+            "muscles_mapped": true,
+            "muscles_unmapped_reason": null
+        }
+    ],
+    "pagination": {
+        "limit": 100,
+        "current": 1,
+        "last": 1,
+        "count": 2,
+        "total": 2
+    },
+    "misc": null,
+    "error": null,
+    "success": true
+}

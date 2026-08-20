@@ -38,7 +38,9 @@ import com.archieapps.exercises.core.net.dto.TemplateDto
 import com.archieapps.exercises.ui.component.CardHeader
 import com.archieapps.exercises.ui.component.EmptyState
 import com.archieapps.exercises.ui.component.GhostButton
+import com.archieapps.exercises.core.net.dto.ExerciseMusclesDto
 import com.archieapps.exercises.ui.component.IronCard
+import com.archieapps.exercises.ui.component.MuscleActivationSection
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
@@ -198,6 +200,8 @@ fun CatalogScreen(
                 form = form,
                 saving = state.saving,
                 muscleGroups = state.muscleGroups,
+                muscles = state.muscleMap.of(form.id),
+                unmappedReason = state.muscleMap.reasonFor(form.id),
                 onChange = onFormChange,
                 onSubmit = onSubmitForm,
                 onCancel = onCancelForm,
@@ -301,6 +305,8 @@ private fun ExerciseFormOverlay(
     form: ExerciseForm,
     saving: Boolean,
     muscleGroups: List<String>,
+    muscles: ExerciseMusclesDto,
+    unmappedReason: String?,
     onChange: ((ExerciseForm) -> ExerciseForm) -> Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
@@ -350,6 +356,15 @@ private fun ExerciseFormOverlay(
                         )
                     }
                 }
+            }
+
+            if (form.id != null) {
+                SectionLabel(text = "músculos trabalhados")
+                MuscleActivationSection(
+                    muscles = muscles,
+                    unmappedReason = unmappedReason,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
 
             IronTextField(

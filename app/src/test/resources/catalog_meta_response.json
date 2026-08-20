@@ -1,0 +1,104 @@
+{
+    "message": "Dados retornados com sucesso.",
+    "body": {
+        "muscle_groups": [
+            {
+                "value": "Cardio",
+                "total": 1
+            },
+            {
+                "value": "Pernas",
+                "total": 1
+            }
+        ],
+        "equipments": [
+            {
+                "value": "Esteira",
+                "total": 1
+            },
+            {
+                "value": "Máquina",
+                "total": 1
+            }
+        ],
+        "execution_types": [
+            "sets",
+            "time"
+        ],
+        "difficulties": [
+            "beginner",
+            "intermediate",
+            "advanced"
+        ],
+        "effort_difficulties": [
+            "easy",
+            "medium",
+            "hard"
+        ],
+        "workout_types": [
+            "Musculação",
+            "Cardio",
+            "Funcional",
+            "HIIT",
+            "Yoga",
+            "Pilates",
+            "Natação",
+            "Corrida"
+        ],
+        "muscles": [
+            {
+                "id": 4,
+                "slug": "reto-abdominal",
+                "name": "Reto abdominal",
+                "region": "core",
+                "parent_id": null
+            },
+            {
+                "id": 1,
+                "slug": "quadriceps",
+                "name": "Quadríceps",
+                "region": "lower_body",
+                "parent_id": null
+            },
+            {
+                "id": 2,
+                "slug": "vasto-medial",
+                "name": "Vasto medial",
+                "region": "lower_body",
+                "parent_id": 1
+            },
+            {
+                "id": 3,
+                "slug": "gluteo-maximo",
+                "name": "Glúteo máximo",
+                "region": "lower_body",
+                "parent_id": null
+            }
+        ],
+        "muscle_regions": [
+            "chest",
+            "back",
+            "shoulders",
+            "arms",
+            "core",
+            "lower_body"
+        ],
+        "muscle_region_labels": {
+            "chest": "Peito",
+            "back": "Costas",
+            "shoulders": "Ombros",
+            "arms": "Braços",
+            "core": "Core",
+            "lower_body": "Membros inferiores"
+        },
+        "activation_types": [
+            "primary",
+            "secondary",
+            "stabilizer"
+        ],
+        "unmapped_exercises_count": 0
+    },
+    "misc": null,
+    "error": null,
+    "success": true
+}

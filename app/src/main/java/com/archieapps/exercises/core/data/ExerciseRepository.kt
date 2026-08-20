@@ -13,6 +13,7 @@ class ExerciseRepository(
     private val api: ExercisesApi,
     private val dao: ExerciseDao,
     private val caller: ApiCaller,
+    private val anatomy: AnatomyRepository? = null,
 ) {
     val catalog: Flow<List<ExerciseEntity>> = dao.observeAll()
 
@@ -26,6 +27,7 @@ class ExerciseRepository(
                 val entities = result.value.map(::toEntity)
                 dao.upsertAll(entities)
                 dao.deleteMissing(entities.map { it.id })
+                anatomy?.putExerciseMuscles(result.value)
                 ApiResult.Success(entities.size)
             }
 

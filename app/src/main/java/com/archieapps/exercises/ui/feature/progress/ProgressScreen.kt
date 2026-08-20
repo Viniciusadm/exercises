@@ -44,11 +44,13 @@ import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
+import com.archieapps.exercises.ui.component.GhostButton
 
 @Composable
 fun ProgressScreen(
     state: ProgressUiState,
     onSelect: (Int) -> Unit,
+    onOpenAnatomy: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -58,9 +60,17 @@ fun ProgressScreen(
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         item {
-            Column(Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)) {
-                SectionLabel(text = "progresso")
-                Text(text = "Evolução", style = MaterialTheme.typography.headlineMedium)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.lg, vertical = Spacing.md),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(Modifier.weight(1f)) {
+                    SectionLabel(text = "progresso")
+                    Text(text = "Evolução", style = MaterialTheme.typography.headlineMedium)
+                }
+                GhostButton(text = "Músculos", onClick = onOpenAnatomy)
             }
         }
 

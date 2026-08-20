@@ -3,6 +3,8 @@ package com.archieapps.exercises.core.di
 import android.content.Context
 import com.archieapps.exercises.BuildConfig
 import androidx.room.Room
+import com.archieapps.exercises.core.anatomy.BodyGeometryLoader
+import com.archieapps.exercises.core.data.AnatomyRepository
 import com.archieapps.exercises.core.data.AuthRepository
 import com.archieapps.exercises.core.data.ExerciseRepository
 import com.archieapps.exercises.core.data.HomeRepository
@@ -60,7 +62,11 @@ class AppContainer(context: Context) {
 
     val homeRepository = HomeRepository(api, database.jsonCache(), caller, ApiJson)
 
-    val exerciseRepository = ExerciseRepository(api, database.exercises(), caller)
+    val anatomyRepository = AnatomyRepository(api, database.jsonCache(), caller, ApiJson)
+
+    val bodyGeometry = BodyGeometryLoader(context, ApiJson)
+
+    val exerciseRepository = ExerciseRepository(api, database.exercises(), caller, anatomyRepository)
 
     val workoutRepository = WorkoutRepository(api, database.jsonCache(), caller, ApiJson)
 
@@ -85,6 +91,7 @@ class AppContainer(context: Context) {
                     if (loggedIn) {
                         sessionRepository.flushPending()
                         exerciseRepository.sync()
+                        anatomyRepository.refresh()
                     }
                 }
         }

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.archieapps.exercises.core.data.ExerciseRepository
 import com.archieapps.exercises.core.data.FinishOutcome
+import com.archieapps.exercises.core.data.AnatomyRepository
+import com.archieapps.exercises.core.data.ExerciseMuscleMap
 import com.archieapps.exercises.core.data.SessionRepository
 import com.archieapps.exercises.core.data.TemplateRepository
 import com.archieapps.exercises.core.data.WorkoutRepository
@@ -29,6 +31,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.archieapps.exercises.core.anatomy.BodyGeometry
+import com.archieapps.exercises.core.anatomy.BodyGeometryLoader
 
 data class RestState(
     val exerciseName: String,
@@ -51,6 +55,8 @@ data class SessionUiState(
     val message: String? = null,
     val outcome: FinishOutcome? = null,
     val keepScreenOn: Boolean = true,
+    val muscleMap: ExerciseMuscleMap = ExerciseMuscleMap(),
+    val geometry: BodyGeometry? = null,
 )
 
 class SessionViewModel(
@@ -58,6 +64,8 @@ class SessionViewModel(
     private val workouts: WorkoutRepository,
     private val templates: TemplateRepository,
     private val exercises: ExerciseRepository,
+    private val anatomy: AnatomyRepository,
+    private val geometryLoader: BodyGeometryLoader,
     private val settings: SettingsStore,
     private val restTimer: RestTimerController,
 ) : ViewModel() {
@@ -66,9 +74,10 @@ class SessionViewModel(
     val state: StateFlow<SessionUiState> = combine(
         sessions.observeDraft(),
         exercises.catalog,
+        anatomy.observeExerciseMuscles(),
         transient,
         RestTimerBus.state,
-    ) { draft, catalog, extra, rest ->
+    ) { draft, catalog, muscleMap, extra, rest ->
         SessionUiState(
             draft = draft,
             templates = extra.templates,
@@ -88,11 +97,17 @@ class SessionViewModel(
             message = extra.message,
             outcome = extra.outcome,
             keepScreenOn = settings.current.keepScreenOnDuringWorkout,
+            muscleMap = muscleMap,
+            geometry = extra.geometry,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SessionUiState())
 
     init {
         loadStarters()
+
+        viewModelScope.launch {
+            transient.value = transient.value.copy(geometry = geometryLoader.load())
+        }
         startClock()
     }
 
@@ -391,5 +406,6 @@ class SessionViewModel(
         val saving: Boolean = false,
         val message: String? = null,
         val outcome: FinishOutcome? = null,
+        val geometry: BodyGeometry? = null,
     )
 }

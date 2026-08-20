@@ -2,6 +2,8 @@ package com.archieapps.exercises.ui.feature.catalog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.archieapps.exercises.core.data.AnatomyRepository
+import com.archieapps.exercises.core.data.ExerciseMuscleMap
 import com.archieapps.exercises.core.data.ExerciseRepository
 import com.archieapps.exercises.core.data.TemplateRepository
 import com.archieapps.exercises.core.db.ExerciseEntity
@@ -50,15 +52,21 @@ data class CatalogUiState(
     val saving: Boolean = false,
     val message: String? = null,
     val isError: Boolean = false,
+    val muscleMap: ExerciseMuscleMap = ExerciseMuscleMap(),
 )
 
 class CatalogViewModel(
     private val exercises: ExerciseRepository,
     private val templates: TemplateRepository,
+    private val anatomy: AnatomyRepository,
 ) : ViewModel() {
     private val local = MutableStateFlow(LocalState())
 
-    val state: StateFlow<CatalogUiState> = combine(exercises.catalog, local) { catalog, extra ->
+    val state: StateFlow<CatalogUiState> = combine(
+        exercises.catalog,
+        anatomy.observeExerciseMuscles(),
+        local,
+    ) { catalog, muscleMap, extra ->
         val filtered = catalog
             .filter { exercise ->
                 extra.muscleFilter == null || exercise.muscleGroup == extra.muscleFilter
@@ -80,6 +88,7 @@ class CatalogViewModel(
             saving = extra.saving,
             message = extra.message,
             isError = extra.isError,
+            muscleMap = muscleMap,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CatalogUiState())
 

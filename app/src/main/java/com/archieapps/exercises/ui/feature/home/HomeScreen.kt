@@ -55,9 +55,15 @@ import com.archieapps.exercises.ui.design.IronRecord
 import com.archieapps.exercises.ui.design.IronText
 import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextSecondary
-import com.archieapps.exercises.ui.design.MuscleGroupColors
+import com.archieapps.exercises.ui.design.muscleColorFor
 import com.archieapps.exercises.ui.design.Spacing
 import java.time.LocalDate
+import com.archieapps.exercises.core.net.dto.MuscleRecommendationDto
+import com.archieapps.exercises.ui.component.GhostButton
+import com.archieapps.exercises.core.anatomy.BodyGeometry
+import com.archieapps.exercises.core.anatomy.BodyView
+import com.archieapps.exercises.ui.component.BodyMap
+import com.archieapps.exercises.ui.component.MuscleRegionValue
 
 @Composable
 fun HomeScreen(
@@ -65,6 +71,7 @@ fun HomeScreen(
     onRefresh: () -> Unit,
     onOpenSettings: () -> Unit,
     onStartWorkout: () -> Unit,
+    onOpenAnatomy: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -139,6 +146,16 @@ fun HomeScreen(
 
         if (stats.byMuscleGroup.isNotEmpty()) {
             item { MuscleGroupCard(stats, Modifier.padding(horizontal = Spacing.lg)) }
+
+            item {
+                AnatomyCard(
+                    neglected = state.neglected,
+                    geometry = state.geometry,
+                    regions = state.muscleRegions,
+                    onOpen = onOpenAnatomy,
+                    modifier = Modifier.padding(horizontal = Spacing.lg),
+                )
+            }
         }
 
         if (stats.recentRecords.isNotEmpty()) {
@@ -360,12 +377,14 @@ private fun VolumeCard(monthly: List<MonthlyDto>, modifier: Modifier = Modifier)
 
 @Composable
 private fun MuscleGroupCard(stats: StatsDto, modifier: Modifier = Modifier) {
-    val rows = stats.byMuscleGroup.take(6).mapIndexed { index, group ->
+    val rows = stats.byMuscleGroup.take(6).map { group ->
+        val label = group.muscleGroup ?: "Sem grupo"
+
         ShareRow(
-            label = group.muscleGroup ?: "Sem grupo",
+            label = label,
             value = "${Format.volume(group.volumeKg)} · ${Format.percent(group.share)}",
             share = group.share,
-            color = MuscleGroupColors[index % MuscleGroupColors.size],
+            color = muscleColorFor(label),
         )
     }
 
@@ -373,6 +392,55 @@ private fun MuscleGroupCard(stats: StatsDto, modifier: Modifier = Modifier) {
         CardHeader(title = "Distribuição por grupo", caption = "volume dos últimos 12 meses")
         Spacer(Modifier.height(Spacing.lg))
         ShareBars(rows = rows, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun AnatomyCard(
+    neglected: List<MuscleRecommendationDto>,
+    geometry: BodyGeometry?,
+    regions: List<MuscleRegionValue>,
+    onOpen: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    IronCard(modifier) {
+        CardHeader(title = "Cobertura muscular", caption = "séries por semana em cada músculo")
+        Spacer(Modifier.height(Spacing.md))
+
+        if (geometry != null && regions.isNotEmpty()) {
+            BodyMap(
+                geometry = geometry,
+                values = regions,
+                view = BodyView.FRONT,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(180.dp),
+                interactive = false,
+                contentDescription = "Prévia do mapa anatômico, vista frontal",
+            )
+            Spacer(Modifier.height(Spacing.md))
+        }
+
+        val worst = neglected.firstOrNull()
+
+        Text(
+            text = worst?.message
+                ?: "Veja quanto estímulo cada músculo recebeu e onde o volume está desequilibrado.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (worst == null) IronTextMuted else IronRecord,
+        )
+
+        if (neglected.size > 1) {
+            Spacer(Modifier.height(Spacing.xs))
+            Text(
+                text = "e outros ${neglected.size - 1} músculos com exercício sugerido",
+                style = MaterialTheme.typography.bodyMedium,
+                color = IronTextMuted,
+            )
+        }
+
+        Spacer(Modifier.height(Spacing.md))
+        GhostButton(text = "Ver músculos", onClick = onOpen, modifier = Modifier.fillMaxWidth())
     }
 }
 
