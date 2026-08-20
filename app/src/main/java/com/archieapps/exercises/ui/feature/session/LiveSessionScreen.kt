@@ -53,6 +53,7 @@ import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.core.session.SessionSet
 import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.ExercisePickerOverlay
+import com.archieapps.exercises.ui.component.SetEditorRow
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.ui.component.NoticeBanner
@@ -450,7 +451,7 @@ private fun ExerciseCard(
         Spacer(Modifier.height(Spacing.sm))
 
         exercise.sets.forEachIndexed { setIndex, set ->
-            SetRow(
+            SetEditorRow(
                 position = setIndex + 1,
                 set = set,
                 exercise = exercise,
@@ -477,119 +478,6 @@ private fun ExerciseCard(
                 modifier = Modifier.weight(1f),
             )
         }
-    }
-}
-
-@Composable
-private fun SetRow(
-    position: Int,
-    set: SessionSet,
-    exercise: SessionExercise,
-    onRepsChange: (Int) -> Unit,
-    onWeightChange: (Double) -> Unit,
-    onDurationChange: (Int) -> Unit,
-    onToggle: () -> Unit,
-    onRemove: () -> Unit,
-) {
-    val background = if (set.done) IronPositive.copy(alpha = 0.10f) else IronSurfaceHigh
-
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(background)
-            .padding(horizontal = Spacing.sm, vertical = Spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            Modifier
-                .width(40.dp)
-                .clickable(onClick = onRemove),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = position.toString(),
-                style = IronText.metricSmall,
-                color = if (set.done) IronPositive else IronTextSecondary,
-            )
-        }
-
-        if (exercise.executionType == "time") {
-            Stepper(
-                value = Format.integer(set.durationSeconds ?: 0) + "s",
-                onDecrease = { onDurationChange(-15) },
-                onIncrease = { onDurationChange(15) },
-                modifier = Modifier.weight(1f),
-            )
-        } else {
-            Stepper(
-                value = Format.integer(set.repetitions ?: 0),
-                onDecrease = { onRepsChange(-1) },
-                onIncrease = { onRepsChange(1) },
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        if (exercise.usesWeight) {
-            Stepper(
-                value = Format.weightValue(set.weightKg ?: 0.0),
-                onDecrease = { onWeightChange(-2.5) },
-                onIncrease = { onWeightChange(2.5) },
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        Box(
-            Modifier
-                .padding(start = Spacing.sm)
-                .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(if (set.done) IronPositive else IronSurface)
-                .border(1.dp, if (set.done) IronPositive else IronBorder, RoundedCornerShape(12.dp))
-                .clickable(onClick = onToggle),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_check),
-                contentDescription = if (set.done) "Desmarcar série" else "Concluir série",
-                tint = if (set.done) IronBackground else IronTextMuted,
-                modifier = Modifier.size(20.dp),
-            )
-        }
-    }
-}
-
-@Composable
-private fun Stepper(
-    value: String,
-    onDecrease: () -> Unit,
-    onIncrease: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        StepperButton(label = "−", onClick = onDecrease)
-        Text(
-            text = value,
-            style = IronText.metricSmall,
-            color = IronTextPrimary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f),
-        )
-        StepperButton(label = "+", onClick = onIncrease)
-    }
-}
-
-@Composable
-private fun StepperButton(label: String, onClick: () -> Unit) {
-    Box(
-        Modifier
-            .size(34.dp)
-            .clip(CircleShape)
-            .background(IronSurface)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = label, style = MaterialTheme.typography.titleMedium, color = IronTextSecondary)
     }
 }
 

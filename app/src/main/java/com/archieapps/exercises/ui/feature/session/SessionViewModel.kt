@@ -42,6 +42,7 @@ data class SessionUiState(
     val draft: ActiveSession? = null,
     val templates: List<TemplateDto> = emptyList(),
     val lastWorkout: WorkoutDto? = null,
+    val recentWorkouts: List<WorkoutDto> = emptyList(),
     val catalog: List<ExerciseEntity> = emptyList(),
     val nowMillis: Long = System.currentTimeMillis(),
     val rest: RestState? = null,
@@ -72,6 +73,7 @@ class SessionViewModel(
             draft = draft,
             templates = extra.templates,
             lastWorkout = extra.lastWorkout,
+            recentWorkouts = extra.recentWorkouts,
             catalog = catalog,
             nowMillis = extra.nowMillis,
             rest = rest?.let {
@@ -128,15 +130,21 @@ class SessionViewModel(
     }
 
     fun repeatLastWorkout() {
+        val last = transient.value.lastWorkout
+
+        if (last == null) {
+            transient.update { it.copy(message = "Nenhum treino anterior para repetir.") }
+
+            return
+        }
+
+        repeatWorkout(last)
+    }
+
+    fun repeatWorkout(workout: WorkoutDto) {
         viewModelScope.launch {
             transient.update { it.copy(preparing = true) }
-            val last = transient.value.lastWorkout
-
-            if (last == null) {
-                transient.update { it.copy(preparing = false, message = "Nenhum treino anterior para repetir.") }
-
-                return@launch
-            }
+            val last = workout
 
             val skeleton = last.exercises.sortedBy { it.order }.map { item ->
                 SessionExercise(
@@ -286,14 +294,16 @@ class SessionViewModel(
             if (cachedTemplates.isNotEmpty()) transient.update { it.copy(templates = cachedTemplates) }
 
             val cachedWorkouts = workouts.cachedFirstPage()
-            cachedWorkouts.firstOrNull()?.let { last -> transient.update { it.copy(lastWorkout = last) } }
+            if (cachedWorkouts.isNotEmpty()) {
+                transient.update { it.copy(lastWorkout = cachedWorkouts.first(), recentWorkouts = cachedWorkouts) }
+            }
 
             (templates.list() as? ApiResult.Success)?.let { result ->
                 transient.update { it.copy(templates = result.value) }
             }
 
-            (workouts.page(page = 1, perPage = 3) as? ApiResult.Success)?.value?.firstOrNull()?.let { last ->
-                transient.update { it.copy(lastWorkout = last) }
+            (workouts.page(page = 1, perPage = 8) as? ApiResult.Success)?.value?.let { page ->
+                transient.update { it.copy(lastWorkout = page.firstOrNull(), recentWorkouts = page) }
             }
         }
     }
@@ -375,6 +385,7 @@ class SessionViewModel(
     private data class TransientState(
         val templates: List<TemplateDto> = emptyList(),
         val lastWorkout: WorkoutDto? = null,
+        val recentWorkouts: List<WorkoutDto> = emptyList(),
         val nowMillis: Long = System.currentTimeMillis(),
         val preparing: Boolean = false,
         val saving: Boolean = false,

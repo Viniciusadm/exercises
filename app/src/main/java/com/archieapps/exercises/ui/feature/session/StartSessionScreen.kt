@@ -1,5 +1,6 @@
 package com.archieapps.exercises.ui.feature.session
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,6 +30,7 @@ import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
+import com.archieapps.exercises.ui.design.IronPrimary
 import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
@@ -38,7 +40,9 @@ fun StartSessionScreen(
     state: SessionUiState,
     onRepeatLast: () -> Unit,
     onStartTemplate: (TemplateDto) -> Unit,
+    onRepeatWorkout: (WorkoutDto) -> Unit,
     onStartEmpty: () -> Unit,
+    onManageTemplates: () -> Unit,
     onDismissMessage: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -71,18 +75,69 @@ fun StartSessionScreen(
             item { RepeatLastCard(last, onRepeatLast, Modifier.padding(horizontal = Spacing.lg)) }
         }
 
-        if (state.templates.isNotEmpty()) {
-            item {
-                SectionLabel(
-                    text = "templates",
-                    modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+        item {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SectionLabel(text = "templates", modifier = Modifier.weight(1f))
+                Text(
+                    text = if (state.templates.isEmpty()) "criar" else "gerenciar",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = IronPrimary,
+                    modifier = Modifier.clickable(onClick = onManageTemplates),
                 )
             }
+        }
 
+        if (state.templates.isEmpty()) {
+            item {
+                IronCard(Modifier.padding(horizontal = Spacing.lg)) {
+                    Text(
+                        text = "Nenhum template ainda",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.height(Spacing.xs))
+                    Text(
+                        text = "Monte uma rotina fixa com séries, repetições e carga alvo para começar o treino " +
+                            "já preenchido.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = IronTextSecondary,
+                    )
+                    Spacer(Modifier.height(Spacing.md))
+                    GhostButton(
+                        text = "Criar template",
+                        onClick = onManageTemplates,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+        } else {
             items(state.templates, key = { it.id }) { template ->
                 TemplateCard(
                     template = template,
                     onStart = { onStartTemplate(template) },
+                    modifier = Modifier.padding(horizontal = Spacing.lg),
+                )
+            }
+        }
+
+        val others = state.recentWorkouts.drop(1).take(6)
+
+        if (others.isNotEmpty()) {
+            item {
+                SectionLabel(
+                    text = "repetir outro treino",
+                    modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                )
+            }
+
+            items(others, key = { "recent-${it.id}" }) { workout ->
+                RecentWorkoutCard(
+                    workout = workout,
+                    onStart = { onRepeatWorkout(workout) },
                     modifier = Modifier.padding(horizontal = Spacing.lg),
                 )
             }
@@ -133,6 +188,30 @@ private fun RepeatLastCard(workout: WorkoutDto, onRepeat: () -> Unit, modifier: 
             iconRes = R.drawable.ic_refresh,
             modifier = Modifier.fillMaxWidth(),
         )
+    }
+}
+
+@Composable
+private fun RecentWorkoutCard(workout: WorkoutDto, onStart: () -> Unit, modifier: Modifier = Modifier) {
+    IronCard(modifier = modifier, onClick = onStart) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = Format.parseDate(workout.date)?.let(Format::dateWithWeekday) ?: workout.date,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = workout.muscleGroups.take(4).joinToString(" · ").ifBlank {
+                        "${workout.exerciseCount} exercícios"
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = IronTextSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            PillTag(text = Format.volume(workout.totalVolumeKg))
+        }
     }
 }
 

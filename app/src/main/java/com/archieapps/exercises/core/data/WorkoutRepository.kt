@@ -7,6 +7,7 @@ import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.dto.ExerciseHistoryDto
 import com.archieapps.exercises.core.net.dto.WorkoutDto
+import com.archieapps.exercises.core.net.dto.WorkoutRequest
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
@@ -31,6 +32,11 @@ class WorkoutRepository(
     } ?: emptyList()
 
     suspend fun detail(id: Int): ApiResult<WorkoutDto> = caller.call { api.workout(id) }
+
+    suspend fun update(id: Int, request: WorkoutRequest): ApiResult<WorkoutDto> =
+        caller.call { api.updateWorkout(id, request) }
+
+    suspend fun delete(id: Int): ApiResult<Map<String, Int>> = caller.call { api.deleteWorkout(id) }
 
     suspend fun history(exerciseId: Int): ApiResult<ExerciseHistoryDto> {
         val result = caller.call { api.exerciseHistory(exerciseId) }

@@ -52,6 +52,12 @@ interface ExercisesApi {
     @POST("api/workouts")
     suspend fun createWorkout(@Body request: WorkoutRequest): Envelope<WorkoutDto>
 
+    @PUT("api/workouts/{id}")
+    suspend fun updateWorkout(@Path("id") id: Int, @Body request: WorkoutRequest): Envelope<WorkoutDto>
+
+    @DELETE("api/workouts/{id}")
+    suspend fun deleteWorkout(@Path("id") id: Int): Envelope<Map<String, Int>>
+
     @GET("api/exercises")
     suspend fun exercises(
         @Query("per_page") perPage: Int = 500,

@@ -92,5 +92,24 @@ class HistoryViewModel(
         }
     }
 
+    fun delete(workout: WorkoutDto) {
+        viewModelScope.launch {
+            when (val result = workouts.delete(workout.id)) {
+                is ApiResult.Success -> {
+                    _state.update { current ->
+                        current.copy(
+                            workouts = current.workouts.filterNot { it.id == workout.id },
+                            expandedId = null,
+                            message = "Treino excluído.",
+                        )
+                    }
+                    workouts.page(page = 1)
+                }
+
+                is ApiResult.Failure -> _state.update { it.copy(message = result.message, error = result.message) }
+            }
+        }
+    }
+
     fun dismissMessage() = _state.update { it.copy(message = null, error = null) }
 }

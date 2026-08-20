@@ -12,13 +12,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +39,10 @@ import com.archieapps.exercises.ui.component.LoadingSkeleton
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.SectionLabel
+import com.archieapps.exercises.ui.design.IronSurface
 import com.archieapps.exercises.ui.design.IronText
 import com.archieapps.exercises.ui.design.IronTextMuted
+import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 import java.time.YearMonth
@@ -47,6 +53,8 @@ fun HistoryScreen(
     onToggle: (Int) -> Unit,
     onLoadMore: () -> Unit,
     onCreateTemplate: (WorkoutDto) -> Unit,
+    onEdit: (WorkoutDto) -> Unit,
+    onDelete: (WorkoutDto) -> Unit,
     onDismissMessage: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -123,6 +131,8 @@ fun HistoryScreen(
                     expanded = state.expandedId == workout.id,
                     onToggle = { onToggle(workout.id) },
                     onCreateTemplate = { onCreateTemplate(workout) },
+                    onEdit = { onEdit(workout) },
+                    onDelete = { onDelete(workout) },
                     modifier = Modifier.padding(horizontal = Spacing.lg),
                 )
             }
@@ -172,8 +182,12 @@ private fun WorkoutCard(
     expanded: Boolean,
     onToggle: () -> Unit,
     onCreateTemplate: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var confirmDelete by remember { mutableStateOf(false) }
+
     IronCard(modifier = modifier, onClick = onToggle) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -200,7 +214,18 @@ private fun WorkoutCard(
             }
         }
 
-        AnimatedVisibility(visible = expanded) {
+        if (confirmDelete) {
+        DeleteWorkoutDialog(
+            workout = workout,
+            onConfirm = {
+                confirmDelete = false
+                onDelete()
+            },
+            onDismiss = { confirmDelete = false },
+        )
+    }
+
+    AnimatedVisibility(visible = expanded) {
             Column(Modifier.fillMaxWidth()) {
                 Spacer(Modifier.height(Spacing.md))
                 HairLine()
@@ -219,6 +244,15 @@ private fun WorkoutCard(
                 }
 
                 Spacer(Modifier.height(Spacing.md))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    GhostButton(text = "Editar", onClick = onEdit, modifier = Modifier.weight(1f))
+                    GhostButton(
+                        text = "Excluir",
+                        onClick = { confirmDelete = true },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                Spacer(Modifier.height(Spacing.sm))
                 GhostButton(
                     text = "Criar template com este treino",
                     onClick = onCreateTemplate,
@@ -227,4 +261,34 @@ private fun WorkoutCard(
             }
         }
     }
+}
+
+@Composable
+private fun DeleteWorkoutDialog(
+    workout: WorkoutDto,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = IronSurface,
+        titleContentColor = IronTextPrimary,
+        textContentColor = IronTextSecondary,
+        title = { Text("Excluir treino?", style = MaterialTheme.typography.titleLarge) },
+        text = {
+            Text(
+                "A sessão de " +
+                    (Format.parseDate(workout.date)?.let(Format::dateWithWeekday) ?: workout.date) +
+                    " sai do histórico e das estatísticas."
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Excluir", color = MaterialTheme.colorScheme.error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Manter", color = IronTextMuted) }
+        },
+    )
 }

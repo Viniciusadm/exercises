@@ -44,6 +44,9 @@ import com.archieapps.exercises.ui.feature.progress.ProgressViewModel
 import com.archieapps.exercises.ui.feature.session.SessionActions
 import com.archieapps.exercises.ui.feature.templates.TemplateEditorScreen
 import com.archieapps.exercises.ui.feature.templates.TemplateEditorViewModel
+import com.archieapps.exercises.ui.feature.workout.WorkoutEditorActions
+import com.archieapps.exercises.ui.feature.workout.WorkoutEditorScreen
+import com.archieapps.exercises.ui.feature.workout.WorkoutEditorViewModel
 import com.archieapps.exercises.ui.feature.session.SessionRoute
 import com.archieapps.exercises.ui.feature.session.SessionViewModel
 
@@ -115,11 +118,18 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                 )
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
+                LifecycleResumeEffect(Unit) {
+                    viewModel.refresh()
+                    onPauseOrDispose { }
+                }
+
                 HistoryScreen(
                     state = state,
                     onToggle = viewModel::toggleExpanded,
                     onLoadMore = viewModel::loadMore,
                     onCreateTemplate = viewModel::createTemplate,
+                    onEdit = { workout -> navController.navigate(Routes.workout(workout.id)) },
+                    onDelete = viewModel::delete,
                     onDismissMessage = viewModel::dismissMessage,
                     contentPadding = contentPadding,
                 )
@@ -209,11 +219,58 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     ),
                     onRepeatLast = viewModel::repeatLastWorkout,
                     onStartTemplate = viewModel::startFromTemplate,
+                    onRepeatWorkout = viewModel::repeatWorkout,
                     onStartEmpty = viewModel::startEmpty,
+                    onManageTemplates = { navController.navigate(Routes.template(null)) },
                     onDone = {
                         viewModel.acknowledgeOutcome()
                         navController.popBackStack()
                     },
+                    contentPadding = contentPadding,
+                )
+            }
+
+            composable(
+                route = Routes.WORKOUT_PATTERN,
+                arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            ) { entry ->
+                val workoutId = entry.arguments?.getInt("id") ?: 0
+                val viewModel: WorkoutEditorViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer {
+                            WorkoutEditorViewModel(
+                                workoutId,
+                                container.workoutRepository,
+                                container.exerciseRepository,
+                            )
+                        }
+                    }
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                LaunchedEffect(state.closed) {
+                    if (state.closed) navController.popBackStack()
+                }
+
+                WorkoutEditorScreen(
+                    state = state,
+                    actions = WorkoutEditorActions(
+                        onNameChange = viewModel::setName,
+                        onNotesChange = viewModel::setNotes,
+                        onShiftDate = viewModel::shiftDate,
+                        onChangeDuration = viewModel::changeDuration,
+                        onAddExercise = viewModel::addExercise,
+                        onRemoveExercise = viewModel::removeExercise,
+                        onAddSet = viewModel::addSet,
+                        onRemoveSet = viewModel::removeSet,
+                        onChangeReps = viewModel::changeReps,
+                        onChangeWeight = viewModel::changeWeight,
+                        onChangeDurationSeconds = viewModel::changeDurationSeconds,
+                        onToggleSet = viewModel::toggleSet,
+                        onSave = viewModel::save,
+                        onDelete = viewModel::delete,
+                        onDismissMessage = viewModel::dismissMessage,
+                    ),
                     contentPadding = contentPadding,
                 )
             }
