@@ -56,11 +56,14 @@ import com.archieapps.exercises.ui.feature.history.HistoryScreen
 import com.archieapps.exercises.ui.feature.history.HistoryViewModel
 import com.archieapps.exercises.ui.feature.progress.ProgressScreen
 import com.archieapps.exercises.ui.feature.progress.ProgressViewModel
+import com.archieapps.exercises.ui.feature.session.PreviewActions
 import com.archieapps.exercises.ui.feature.session.SessionActions
 import com.archieapps.exercises.ui.feature.templates.TemplateEditorScreen
 import com.archieapps.exercises.ui.feature.templates.TemplateEditorViewModel
 import com.archieapps.exercises.ui.feature.workout.WorkoutEditorActions
 import com.archieapps.exercises.ui.feature.workout.WorkoutEditorScreen
+import com.archieapps.exercises.ui.feature.workout.WorkoutDetailScreen
+import com.archieapps.exercises.ui.feature.workout.WorkoutDetailViewModel
 import com.archieapps.exercises.ui.feature.workout.WorkoutEditorViewModel
 import com.archieapps.exercises.ui.feature.session.SessionRoute
 import com.archieapps.exercises.ui.feature.session.SessionViewModel
@@ -192,6 +195,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onToggle = viewModel::toggleExpanded,
                     onLoadMore = viewModel::loadMore,
                     onCreateTemplate = viewModel::createTemplate,
+                    onOpenDetail = { workout -> navController.navigate(Routes.workoutDetail(workout.id)) },
                     onEdit = { workout -> navController.navigate(Routes.workout(workout.id)) },
                     onDelete = viewModel::delete,
                     onDismissMessage = viewModel::dismissMessage,
@@ -285,7 +289,10 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                         onChangeWeight = viewModel::changeWeight,
                         onSetWeight = viewModel::setWeight,
                         onChangeDuration = viewModel::changeDuration,
-                        onToggleSet = viewModel::toggleSetDone,
+                        onStartSet = viewModel::startSet,
+                        onStartNextSet = viewModel::startNextSet,
+                        onFinishSet = viewModel::finishSet,
+                        onUndoSet = viewModel::undoSet,
                         onAddRest = viewModel::addRest,
                         onSkipRest = viewModel::skipRest,
                         onFinish = viewModel::finish,
@@ -295,10 +302,16 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                         },
                         onDismissMessage = viewModel::dismissMessage,
                     ),
+                    previewActions = PreviewActions(
+                        onStart = viewModel::startPending,
+                        onCancel = viewModel::cancelPreview,
+                        onAddExercise = viewModel::addPreviewExercise,
+                        onRemoveExercise = viewModel::removePreviewExercise,
+                    ),
                     onClose = { navController.popBackStack() },
-                    onRepeatLast = viewModel::repeatLastWorkout,
-                    onStartTemplate = viewModel::startFromTemplate,
-                    onRepeatWorkout = viewModel::repeatWorkout,
+                    onRepeatLast = viewModel::previewLastWorkout,
+                    onStartTemplate = viewModel::previewTemplate,
+                    onRepeatWorkout = viewModel::previewWorkout,
                     onStartEmpty = viewModel::startEmpty,
                     onManageTemplates = { navController.navigate(Routes.template(null)) },
                     onPlanWorkout = { navController.navigate(Routes.PLAN) },
@@ -306,6 +319,33 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                         viewModel.acknowledgeOutcome()
                         navController.popBackStack()
                     },
+                    onOpenWorkout = { id ->
+                        viewModel.acknowledgeOutcome()
+                        navController.popBackStack()
+                        navController.navigate(Routes.workoutDetail(id))
+                    },
+                    contentPadding = contentPadding,
+                )
+            }
+
+            composable(
+                route = Routes.WORKOUT_DETAIL_PATTERN,
+                arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            ) { entry ->
+                val workoutId = entry.arguments?.getInt("id") ?: 0
+                val viewModel: WorkoutDetailViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer { WorkoutDetailViewModel(workoutId, container.workoutRepository) }
+                    }
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                WorkoutDetailScreen(
+                    state = state,
+                    onBack = { navController.popBackStack() },
+                    onEdit = { navController.navigate(Routes.workout(workoutId)) },
+                    onAdjustSegment = viewModel::adjustSegment,
+                    onDismissMessage = viewModel::dismissMessage,
                     contentPadding = contentPadding,
                 )
             }

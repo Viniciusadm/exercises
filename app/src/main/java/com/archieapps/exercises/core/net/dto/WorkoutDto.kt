@@ -13,6 +13,8 @@ data class WorkoutDto(
     @SerialName("started_at") val startedAt: String? = null,
     @SerialName("finished_at") val finishedAt: String? = null,
     @SerialName("duration_minutes") val durationMinutes: Int = 0,
+    @SerialName("metrics_version") val metricsVersion: Int = 1,
+    val time: WorkoutTimeDto? = null,
     @SerialName("workout_type") val workoutType: String? = null,
     val notes: String? = null,
     @SerialName("exercise_count") val exerciseCount: Int = 0,
@@ -21,6 +23,44 @@ data class WorkoutDto(
     @SerialName("total_volume_kg") val totalVolumeKg: Double = 0.0,
     @SerialName("muscle_groups") val muscleGroups: List<String> = emptyList(),
     val exercises: List<WorkoutExerciseDto> = emptyList(),
+)
+
+@Serializable
+data class WorkoutTimeDto(
+    @SerialName("total_seconds") val totalSeconds: Int = 0,
+    @SerialName("execution_seconds") val executionSeconds: Int = 0,
+    @SerialName("rest_seconds") val restSeconds: Int = 0,
+    @SerialName("idle_seconds") val idleSeconds: Int = 0,
+    @SerialName("execution_share") val executionShare: Float = 0f,
+    @SerialName("rest_share") val restShare: Float = 0f,
+    @SerialName("idle_share") val idleShare: Float = 0f,
+    @SerialName("sets_count") val setsCount: Int = 0,
+    @SerialName("rest_periods_count") val restPeriodsCount: Int = 0,
+    @SerialName("avg_set_seconds") val avgSetSeconds: Int? = null,
+    @SerialName("avg_rest_seconds") val avgRestSeconds: Int? = null,
+)
+
+@Serializable
+data class WorkoutTimelineDto(
+    val id: Int,
+    @SerialName("metrics_version") val metricsVersion: Int = 1,
+    @SerialName("started_at") val startedAt: String? = null,
+    @SerialName("finished_at") val finishedAt: String? = null,
+    val metrics: WorkoutTimeDto? = null,
+    val segments: List<TimelineSegmentDto> = emptyList(),
+)
+
+@Serializable
+data class TimelineSegmentDto(
+    val sequence: Int,
+    val phase: String,
+    val label: String,
+    val at: String,
+    @SerialName("duration_seconds") val durationSeconds: Int = 0,
+    @SerialName("exercise_name") val exerciseName: String? = null,
+    @SerialName("set_number") val setNumber: Int? = null,
+    val editable: Boolean = false,
+    val adjusted: Boolean = false,
 )
 
 @Serializable

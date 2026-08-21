@@ -15,6 +15,18 @@ data class WorkoutRequest(
     @SerialName("workout_template_id") val templateId: Int? = null,
     val notes: String? = null,
     val exercises: List<WorkoutExerciseRequest>,
+    val events: List<WorkoutEventRequest> = emptyList(),
+)
+
+@Serializable
+data class WorkoutEventRequest(
+    val sequence: Int,
+    val type: String,
+    @SerialName("occurred_at") val occurredAt: String,
+    @SerialName("exercise_order") val exerciseOrder: Int? = null,
+    @SerialName("exercise_name") val exerciseName: String? = null,
+    @SerialName("set_number") val setNumber: Int? = null,
+    val meta: Map<String, String>? = null,
 )
 
 @Serializable
@@ -35,6 +47,12 @@ data class WorkoutSetRequest(
     val repetitions: Int? = null,
     @SerialName("duration_seconds") val durationSeconds: Int? = null,
     @SerialName("weight_kg") val weightKg: Double? = null,
+)
+
+@Serializable
+data class SegmentAdjustmentRequest(
+    val sequence: Int,
+    @SerialName("duration_seconds") val durationSeconds: Int,
 )
 
 @Serializable

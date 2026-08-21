@@ -18,8 +18,13 @@ import com.archieapps.exercises.core.net.dto.ExerciseSessionDto
 import com.archieapps.exercises.core.net.dto.TemplateDto
 import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.session.ActiveSession
+import com.archieapps.exercises.core.session.SessionBuilder
+import com.archieapps.exercises.core.session.SessionEventType
 import com.archieapps.exercises.core.session.SessionExercise
+import com.archieapps.exercises.core.session.SessionPhase
 import com.archieapps.exercises.core.session.SessionSet
+import com.archieapps.exercises.core.session.SessionTimeBreakdown
+import com.archieapps.exercises.core.session.SetRunState
 import com.archieapps.exercises.core.session.WeightLadder
 import com.archieapps.exercises.core.settings.SettingsStore
 import java.util.UUID
@@ -32,6 +37,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import com.archieapps.exercises.core.anatomy.BodyGeometry
 import com.archieapps.exercises.core.anatomy.BodyGeometryLoader
 
@@ -45,6 +52,8 @@ data class RestState(
 
 data class SessionUiState(
     val draft: ActiveSession? = null,
+    val pendingStart: ActiveSession? = null,
+    val finished: ActiveSession? = null,
     val templates: List<TemplateDto> = emptyList(),
     val lastWorkout: WorkoutDto? = null,
     val recentWorkouts: List<WorkoutDto> = emptyList(),
@@ -56,11 +65,20 @@ data class SessionUiState(
     val message: String? = null,
     val outcome: FinishOutcome? = null,
     val keepScreenOn: Boolean = true,
+    val defaultRestSeconds: Int = 90,
     val muscleMap: ExerciseMuscleMap = ExerciseMuscleMap(),
     val geometry: BodyGeometry? = null,
 ) {
+    val breakdown: SessionTimeBreakdown
+        get() = draft?.let { SessionTimeBreakdown.of(it, nowMillis) } ?: SessionTimeBreakdown()
+
+    val phase: SessionPhase get() = draft?.phase ?: SessionPhase.Idle
+
     fun weightOptionsFor(exerciseId: Int?): List<Double> =
         catalog.firstOrNull { it.id == exerciseId }?.weightOptions.orEmpty()
+
+    fun setRunState(exerciseIndex: Int, setIndex: Int): SetRunState =
+        draft?.setRunState(exerciseIndex, setIndex) ?: SetRunState.Pending
 }
 
 class SessionViewModel(
@@ -74,6 +92,7 @@ class SessionViewModel(
     private val restTimer: RestTimerController,
 ) : ViewModel() {
     private val transient = MutableStateFlow(TransientState())
+    private val mutations = Mutex()
 
     val state: StateFlow<SessionUiState> = combine(
         sessions.observeDraft(),
@@ -84,6 +103,8 @@ class SessionViewModel(
     ) { draft, catalog, muscleMap, extra, rest ->
         SessionUiState(
             draft = draft,
+            pendingStart = extra.pendingStart,
+            finished = extra.finished,
             templates = extra.templates,
             lastWorkout = extra.lastWorkout,
             recentWorkouts = extra.recentWorkouts,
@@ -101,6 +122,7 @@ class SessionViewModel(
             message = extra.message,
             outcome = extra.outcome,
             keepScreenOn = settings.current.keepScreenOnDuringWorkout,
+            defaultRestSeconds = settings.current.defaultRestSeconds,
             muscleMap = muscleMap,
             geometry = extra.geometry,
         )
@@ -118,37 +140,27 @@ class SessionViewModel(
     fun dismissMessage() = transient.update { it.copy(message = null) }
 
     fun startEmpty() {
-        viewModelScope.launch { sessions.saveDraft(newDraft(name = "Treino", exercises = emptyList())) }
-    }
-
-    fun startFromTemplate(template: TemplateDto) {
         viewModelScope.launch {
-            transient.update { it.copy(preparing = true) }
+            val now = System.currentTimeMillis()
+            val draft = newDraft(name = "Treino", exercises = emptyList(), startedAtMillis = now)
 
-            val skeleton = template.exercises.sortedBy { it.order }.map { item ->
-                SessionExercise(
-                    exerciseId = item.exerciseId,
-                    name = item.name,
-                    executionType = item.executionType,
-                    usesWeight = item.usesWeight,
-                    muscleGroup = item.muscleGroup,
-                    equipment = item.equipment,
-                    restSeconds = item.restSeconds ?: settings.current.defaultRestSeconds,
-                    targetReps = item.targetReps,
-                    notes = item.notes,
-                    sets = List((item.targetSets ?: 3).coerceIn(1, 12)) {
-                        SessionSet(repetitions = item.targetReps, weightKg = item.targetWeightKg)
-                    },
-                )
-            }
-
-            sessions.saveDraft(newDraft(template.name, skeleton, template.id))
-            enrich()
-            transient.update { it.copy(preparing = false) }
+            sessions.saveDraft(draft.record(SessionEventType.SESSION_STARTED, now))
         }
     }
 
-    fun repeatLastWorkout() {
+    fun previewTemplate(template: TemplateDto) {
+        preview(template.name, template.id) {
+            SessionBuilder.fromTemplate(template, settings.current.defaultRestSeconds)
+        }
+    }
+
+    fun previewWorkout(workout: WorkoutDto) {
+        preview(workout.name, workout.templateId) {
+            SessionBuilder.fromWorkout(workout, settings.current.defaultRestSeconds)
+        }
+    }
+
+    fun previewLastWorkout() {
         val last = transient.value.lastWorkout
 
         if (last == null) {
@@ -157,35 +169,39 @@ class SessionViewModel(
             return
         }
 
-        repeatWorkout(last)
+        previewWorkout(last)
     }
 
-    fun repeatWorkout(workout: WorkoutDto) {
+    fun cancelPreview() = transient.update { it.copy(pendingStart = null) }
+
+    fun addPreviewExercise(exercise: ExerciseEntity) = transient.update { extra ->
+        val pending = extra.pendingStart ?: return@update extra
+
+        extra.copy(pendingStart = pending.copy(exercises = pending.exercises + sessionExercise(exercise)))
+    }
+
+    fun removePreviewExercise(index: Int) = transient.update { extra ->
+        val pending = extra.pendingStart ?: return@update extra
+
+        extra.copy(
+            pendingStart = pending.copy(
+                exercises = pending.exercises.filterIndexed { position, _ -> position != index },
+            ),
+        )
+    }
+
+    fun startPending() {
+        val pending = transient.value.pendingStart ?: return
+
         viewModelScope.launch {
-            transient.update { it.copy(preparing = true) }
-            val last = workout
+            val now = System.currentTimeMillis()
 
-            val skeleton = last.exercises.sortedBy { it.order }.map { item ->
-                SessionExercise(
-                    exerciseId = item.exerciseId,
-                    name = item.name,
-                    executionType = item.executionType,
-                    usesWeight = item.usesWeight,
-                    muscleGroup = item.muscleGroup,
-                    restSeconds = settings.current.defaultRestSeconds,
-                    sets = item.sets.map { set ->
-                        SessionSet(
-                            repetitions = set.repetitions,
-                            weightKg = set.weightKg,
-                            durationSeconds = set.durationSeconds,
-                        )
-                    }.ifEmpty { listOf(SessionSet()) },
-                )
-            }
-
-            sessions.saveDraft(newDraft(last.name, skeleton, last.templateId))
-            enrich()
-            transient.update { it.copy(preparing = false) }
+            sessions.saveDraft(
+                pending
+                    .copy(startedAtEpochMillis = now)
+                    .record(SessionEventType.SESSION_STARTED, now),
+            )
+            transient.update { it.copy(pendingStart = null) }
         }
     }
 
@@ -196,26 +212,20 @@ class SessionViewModel(
     fun addExercise(exercise: ExerciseEntity) {
         mutate { draft ->
             draft.copy(
-                exercises = draft.exercises + SessionExercise(
-                    exerciseId = exercise.id,
-                    name = exercise.name,
-                    executionType = exercise.executionType,
-                    usesWeight = exercise.usesWeight,
-                    muscleGroup = exercise.muscleGroup,
-                    equipment = exercise.equipment,
-                    restSeconds = exercise.restSeconds ?: settings.current.defaultRestSeconds,
-                    bestWeightKg = exercise.bestWeightKg,
-                    sets = listOf(SessionSet(repetitions = 12, weightKg = exercise.bestWeightKg)),
-                ),
+                exercises = draft.exercises + sessionExercise(exercise),
                 openExerciseIndex = draft.exercises.size,
             )
         }
 
-        viewModelScope.launch { enrich(onlyIndex = state.value.draft?.exercises?.lastIndex) }
+        viewModelScope.launch { enrichDraft(onlyIndex = state.value.draft?.exercises?.lastIndex) }
     }
 
     fun removeExercise(index: Int) {
         mutate { draft ->
+            if (!draft.canRemoveExercise(index)) {
+                return@mutate draft
+            }
+
             draft.copy(
                 exercises = draft.exercises.filterIndexed { position, _ -> position != index },
                 openExerciseIndex = null,
@@ -238,6 +248,10 @@ class SessionViewModel(
     }
 
     fun removeSet(exerciseIndex: Int, setIndex: Int) = mutate { draft ->
+        if (!draft.canRemoveSet(exerciseIndex, setIndex)) {
+            return@mutate draft
+        }
+
         draft.updateExercise(exerciseIndex) { exercise ->
             exercise.copy(sets = exercise.sets.filterIndexed { position, _ -> position != setIndex })
         }
@@ -271,54 +285,217 @@ class SessionViewModel(
         set.copy(durationSeconds = ((set.durationSeconds ?: 0) + delta).coerceIn(0, 7200))
     }
 
-    fun toggleSetDone(exerciseIndex: Int, setIndex: Int) {
-        val draft = state.value.draft ?: return
-        val exercise = draft.exercises.getOrNull(exerciseIndex) ?: return
-        val wasDone = exercise.sets.getOrNull(setIndex)?.done ?: return
+    fun startSet(exerciseIndex: Int, setIndex: Int) {
+        viewModelScope.launch {
+            val wasResting = mutations.withLock {
+                val draft = sessions.observeDraft().first() ?: return@launch
 
-        updateSet(exerciseIndex, setIndex) { it.copy(done = !wasDone) }
+                if (draft.phase is SessionPhase.Executing) return@launch
+                if (draft.exercises.getOrNull(exerciseIndex)?.sets?.getOrNull(setIndex) == null) return@launch
 
-        if (!wasDone) {
-            restTimer.start(exercise.name, exercise.restSeconds ?: settings.current.defaultRestSeconds)
+                val now = System.currentTimeMillis()
+                val resting = draft.phase is SessionPhase.Resting
+
+                sessions.saveDraft(
+                    closeRest(draft, now, skipped = true)
+                        .record(SessionEventType.SET_STARTED, now, exerciseIndex, setIndex)
+                        .copy(phase = SessionPhase.Executing(exerciseIndex, setIndex, now)),
+                )
+
+                resting
+            }
+
+            if (wasResting) restTimer.skip()
         }
     }
 
-    fun addRest(seconds: Int) = restTimer.add(seconds)
+    fun startNextSet(exerciseIndex: Int) {
+        val setIndex = state.value.draft?.nextPendingSet(exerciseIndex) ?: return
 
-    fun skipRest() = restTimer.skip()
+        startSet(exerciseIndex, setIndex)
+    }
+
+    fun finishSet() {
+        viewModelScope.launch {
+            val rest = mutations.withLock {
+                val draft = sessions.observeDraft().first() ?: return@launch
+                val executing = draft.phase as? SessionPhase.Executing ?: return@launch
+                val exercise = draft.exercises.getOrNull(executing.exerciseIndex) ?: return@launch
+                val now = System.currentTimeMillis()
+                val restSeconds = (exercise.restSeconds ?: settings.current.defaultRestSeconds).coerceAtLeast(1)
+
+                sessions.saveDraft(
+                    draft
+                        .updateExercise(executing.exerciseIndex) { target ->
+                            target.copy(
+                                sets = target.sets.mapIndexed { position, set ->
+                                    if (position == executing.setIndex) set.copy(done = true) else set
+                                },
+                            )
+                        }
+                        .record(SessionEventType.SET_FINISHED, now, executing.exerciseIndex, executing.setIndex)
+                        .record(SessionEventType.REST_STARTED, now, executing.exerciseIndex, executing.setIndex)
+                        .copy(
+                            phase = SessionPhase.Resting(
+                                exerciseIndex = executing.exerciseIndex,
+                                setIndex = executing.setIndex,
+                                startedAtMillis = now,
+                                endsAtMillis = now + restSeconds * 1_000L,
+                            ),
+                        ),
+                )
+
+                exercise.name to restSeconds
+            }
+
+            restTimer.start(rest.first, rest.second)
+        }
+    }
+
+    fun undoSet(exerciseIndex: Int, setIndex: Int) = updateSet(exerciseIndex, setIndex) { it.copy(done = false) }
+
+    fun addRest(seconds: Int) {
+        restTimer.add(seconds)
+
+        mutate { draft ->
+            val resting = draft.phase as? SessionPhase.Resting ?: return@mutate draft
+
+            draft.copy(phase = resting.copy(endsAtMillis = resting.endsAtMillis + seconds * 1_000L))
+        }
+    }
+
+    fun skipRest() {
+        restTimer.skip()
+
+        mutate { draft -> closeRest(draft, System.currentTimeMillis(), skipped = true) }
+    }
 
     fun discard() {
         viewModelScope.launch {
-            skipRest()
+            restTimer.skip()
             sessions.discardDraft()
         }
     }
 
     fun finish() {
-        val draft = state.value.draft ?: return
-
         viewModelScope.launch {
+            val closed = mutations.withLock {
+                val draft = sessions.observeDraft().first() ?: return@launch
+                val now = System.currentTimeMillis()
+                val closed = closeRest(closeExecution(draft, now), now, skipped = true)
+                    .record(SessionEventType.SESSION_FINISHED, now)
+                    .copy(phase = SessionPhase.Idle)
+
+                sessions.saveDraft(closed)
+
+                closed
+            }
+
+            restTimer.skip()
             transient.update { it.copy(saving = true) }
-            val outcome = sessions.finish(draft, System.currentTimeMillis())
+
+            val finishedAt = closed.events.lastOrNull()?.atEpochMillis ?: System.currentTimeMillis()
+            val outcome = sessions.finish(closed, finishedAt)
 
             transient.update {
                 when (outcome) {
                     is FinishOutcome.Rejected -> it.copy(saving = false, message = outcome.reason)
-                    else -> it.copy(saving = false, outcome = outcome)
+                    else -> it.copy(saving = false, outcome = outcome, finished = closed)
                 }
             }
-
-            skipRest()
         }
     }
 
-    fun acknowledgeOutcome() = transient.update { it.copy(outcome = null) }
+    fun acknowledgeOutcome() = transient.update { it.copy(outcome = null, finished = null) }
+
+    private fun preview(name: String, templateId: Int?, skeleton: () -> List<SessionExercise>) {
+        viewModelScope.launch {
+            transient.update { it.copy(preparing = true, pendingStart = null) }
+
+            val base = newDraft(name, skeleton(), System.currentTimeMillis(), templateId)
+
+            transient.update { it.copy(pendingStart = base) }
+
+            val enriched = enrich(base)
+
+            transient.update { extra ->
+                if (extra.pendingStart?.clientUuid == enriched.clientUuid) {
+                    extra.copy(pendingStart = enriched, preparing = false)
+                } else {
+                    extra.copy(preparing = false)
+                }
+            }
+        }
+    }
+
+    private fun closeExecution(draft: ActiveSession, nowMillis: Long): ActiveSession {
+        val executing = draft.phase as? SessionPhase.Executing ?: return draft
+
+        return draft
+            .updateExercise(executing.exerciseIndex) { target ->
+                target.copy(
+                    sets = target.sets.mapIndexed { position, set ->
+                        if (position == executing.setIndex) set.copy(done = true) else set
+                    },
+                )
+            }
+            .record(SessionEventType.SET_FINISHED, nowMillis, executing.exerciseIndex, executing.setIndex)
+            .copy(phase = SessionPhase.Idle)
+    }
+
+    private fun closeRest(draft: ActiveSession, nowMillis: Long, skipped: Boolean): ActiveSession {
+        val resting = draft.phase as? SessionPhase.Resting ?: return draft
+
+        return draft
+            .record(
+                type = SessionEventType.REST_FINISHED,
+                atMillis = nowMillis,
+                exerciseIndex = resting.exerciseIndex,
+                setIndex = resting.setIndex,
+                meta = if (skipped) mapOf("skipped" to "true") else null,
+            )
+            .copy(phase = SessionPhase.Idle)
+    }
 
     private fun startClock() {
         viewModelScope.launch {
             while (true) {
                 transient.update { it.copy(nowMillis = System.currentTimeMillis()) }
+                reconcilePhase()
                 delay(1_000)
+            }
+        }
+    }
+
+    private suspend fun reconcilePhase() {
+        val snapshot = state.value.draft ?: return
+
+        if (snapshot.events.isNotEmpty() && snapshot.phase !is SessionPhase.Resting) return
+
+        mutations.withLock {
+            val draft = sessions.observeDraft().first() ?: return
+            val now = System.currentTimeMillis()
+
+            if (draft.events.isEmpty()) {
+                sessions.saveDraft(
+                    draft.record(SessionEventType.SESSION_STARTED, draft.startedAtEpochMillis),
+                )
+
+                return
+            }
+
+            val resting = draft.phase as? SessionPhase.Resting ?: return
+
+            if (resting.endsAtMillis <= now) {
+                sessions.saveDraft(closeRest(draft, resting.endsAtMillis, skipped = false))
+
+                return
+            }
+
+            if (RestTimerBus.current == null) {
+                val name = draft.exercises.getOrNull(resting.exerciseIndex)?.name.orEmpty()
+
+                restTimer.start(name, ((resting.endsAtMillis - now) / 1_000L).toInt().coerceAtLeast(1))
             }
         }
     }
@@ -343,39 +520,52 @@ class SessionViewModel(
         }
     }
 
-    private suspend fun enrich(onlyIndex: Int? = null) {
+    private suspend fun enrichDraft(onlyIndex: Int? = null) {
         val draft = sessions.observeDraft().first() ?: return
+        val enriched = enrich(draft, onlyIndex)
 
-        draft.exercises.forEachIndexed { index, exercise ->
+        mutate { current ->
+            current.copy(
+                exercises = current.exercises.mapIndexed { index, exercise ->
+                    enriched.exercises.getOrNull(index)?.takeIf { it.name == exercise.name } ?: exercise
+                },
+            )
+        }
+    }
+
+    private suspend fun enrich(session: ActiveSession, onlyIndex: Int? = null): ActiveSession {
+        var result = session
+
+        session.exercises.forEachIndexed { index, exercise ->
             if (onlyIndex != null && index != onlyIndex) return@forEachIndexed
 
             val latest = sessions.latest(exercise.exerciseId, exercise.name) ?: return@forEachIndexed
             val previous = latest.sessions.firstOrNull()
 
-            mutate { current ->
-                current.updateExercise(index) { target ->
-                    val weight = target.sets.firstOrNull()?.weightKg
-                        ?: latest.suggestion?.weightKg
-                        ?: previous?.topSet?.weightKg
-                    val reps = target.targetReps ?: previous?.topSet?.repetitions
+            result = result.updateExercise(index) { target ->
+                val weight = target.sets.firstOrNull()?.weightKg
+                    ?: latest.suggestion?.weightKg
+                    ?: previous?.topSet?.weightKg
+                val reps = target.targetReps ?: previous?.topSet?.repetitions
 
-                    target.copy(
-                        restSeconds = target.restSeconds ?: latest.restSeconds,
-                        previousSummary = previous?.let(::summarize),
-                        suggestion = latest.suggestion?.let { "${Format.weight(it.weightKg)} · ${it.reason}" },
-                        bestWeightKg = latest.sessions.mapNotNull { it.topSet?.weightKg }.maxOrNull(),
-                        sets = target.sets.map { set ->
-                            set.copy(
-                                weightKg = set.weightKg ?: weight,
-                                repetitions = set.repetitions ?: reps,
-                            )
-                        }.ifEmpty {
-                            List(previous?.sets?.size ?: 3) { SessionSet(repetitions = reps, weightKg = weight) }
-                        },
-                    )
-                }
+                target.copy(
+                    restSeconds = target.restSeconds ?: latest.restSeconds,
+                    previousSummary = previous?.let(::summarize),
+                    suggestion = latest.suggestion?.let { "${Format.weight(it.weightKg)} · ${it.reason}" },
+                    bestWeightKg = latest.sessions.mapNotNull { it.topSet?.weightKg }.maxOrNull(),
+                    sets = target.sets.map { set ->
+                        set.copy(
+                            weightKg = set.weightKg ?: weight,
+                            repetitions = set.repetitions ?: reps,
+                        )
+                    }.ifEmpty {
+                        List(previous?.sets?.size ?: 3) { SessionSet(repetitions = reps, weightKg = weight) }
+                    },
+                )
             }
         }
+
+        return result
     }
 
     private fun summarize(session: ExerciseSessionDto): String {
@@ -390,6 +580,18 @@ class SessionViewModel(
         return listOfNotNull(core.takeIf { it.isNotBlank() }, date).joinToString(" · ")
     }
 
+    private fun sessionExercise(exercise: ExerciseEntity) = SessionExercise(
+        exerciseId = exercise.id,
+        name = exercise.name,
+        executionType = exercise.executionType,
+        usesWeight = exercise.usesWeight,
+        muscleGroup = exercise.muscleGroup,
+        equipment = exercise.equipment,
+        restSeconds = exercise.restSeconds ?: settings.current.defaultRestSeconds,
+        bestWeightKg = exercise.bestWeightKg,
+        sets = listOf(SessionSet(repetitions = 12, weightKg = exercise.bestWeightKg)),
+    )
+
     private fun updateSet(exerciseIndex: Int, setIndex: Int, transform: (SessionSet) -> SessionSet) =
         mutate { draft ->
             draft.updateExercise(exerciseIndex) { exercise ->
@@ -403,21 +605,32 @@ class SessionViewModel(
 
     private fun mutate(transform: (ActiveSession) -> ActiveSession) {
         viewModelScope.launch {
-            val draft = sessions.observeDraft().first() ?: return@launch
-            sessions.saveDraft(transform(draft))
+            mutations.withLock {
+                val draft = sessions.observeDraft().first() ?: return@withLock
+                val next = transform(draft)
+
+                if (next !== draft) sessions.saveDraft(next)
+            }
         }
     }
 
-    private fun newDraft(name: String, exercises: List<SessionExercise>, templateId: Int? = null) = ActiveSession(
+    private fun newDraft(
+        name: String,
+        exercises: List<SessionExercise>,
+        startedAtMillis: Long,
+        templateId: Int? = null,
+    ) = ActiveSession(
         clientUuid = UUID.randomUUID().toString(),
         name = name,
         workoutType = "Musculação",
         templateId = templateId,
-        startedAtEpochMillis = System.currentTimeMillis(),
+        startedAtEpochMillis = startedAtMillis,
         exercises = exercises,
     )
 
     private data class TransientState(
+        val pendingStart: ActiveSession? = null,
+        val finished: ActiveSession? = null,
         val templates: List<TemplateDto> = emptyList(),
         val lastWorkout: WorkoutDto? = null,
         val recentWorkouts: List<WorkoutDto> = emptyList(),

@@ -40,6 +40,7 @@ import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
+import com.archieapps.exercises.ui.component.SetAction
 import com.archieapps.exercises.ui.component.SetEditorHeader
 import com.archieapps.exercises.ui.component.SetEditorRow
 import com.archieapps.exercises.ui.design.IronPrimary
@@ -283,7 +284,10 @@ private fun ExerciseEditorCard(
                 onWeightStep = { direction -> actions.onChangeWeight(index, setIndex, direction) },
                 onWeightSet = { weight -> actions.onSetWeight(index, setIndex, weight) },
                 onDurationChange = { delta -> actions.onChangeDurationSeconds(index, setIndex, delta) },
-                onToggle = { actions.onToggleSet(index, setIndex) },
+                action = SetAction.Toggle(
+                    done = set.done,
+                    onToggle = { actions.onToggleSet(index, setIndex) },
+                ),
                 onRemove = { actions.onRemoveSet(index, setIndex) },
                 weightOptions = weightOptions,
             )

@@ -214,7 +214,7 @@ private fun RepeatLastCard(workout: WorkoutDto, onRepeat: () -> Unit, modifier: 
         }
         Spacer(Modifier.height(Spacing.md))
         PrimaryButton(
-            text = "Repetir treino",
+            text = "Revisar e repetir",
             onClick = onRepeat,
             iconRes = R.drawable.ic_refresh,
             modifier = Modifier.fillMaxWidth(),

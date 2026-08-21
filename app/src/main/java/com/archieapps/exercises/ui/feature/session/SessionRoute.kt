@@ -1,53 +1,39 @@
 package com.archieapps.exercises.ui.feature.session
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.core.data.FinishOutcome
 import com.archieapps.exercises.core.db.ExerciseEntity
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.net.dto.TemplateDto
-import com.archieapps.exercises.ui.component.CardHeader
+import com.archieapps.exercises.core.session.ActiveSession
+import com.archieapps.exercises.core.session.SessionTimeBreakdown
+import com.archieapps.exercises.core.session.SessionTimelineLocal
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.HeroSurface
-import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.ui.component.MetricValue
-import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
-import com.archieapps.exercises.ui.design.IronBackground
+import com.archieapps.exercises.ui.component.SessionTimeCard
+import com.archieapps.exercises.ui.component.SessionTimeMetrics
+import com.archieapps.exercises.ui.component.SessionTimelineList
+import com.archieapps.exercises.ui.component.TimelineEntry
 import com.archieapps.exercises.ui.design.IronPositive
 import com.archieapps.exercises.ui.design.IronRecord
-import com.archieapps.exercises.ui.design.IronSurface
-import com.archieapps.exercises.ui.design.IronTextMuted
 import com.archieapps.exercises.ui.design.IronTextSecondary
-import com.archieapps.exercises.ui.feature.auth.IronTextField
 import com.archieapps.exercises.ui.design.Spacing
 
 data class SessionActions(
@@ -61,7 +47,10 @@ data class SessionActions(
     val onChangeWeight: (Int, Int, Int) -> Unit,
     val onSetWeight: (Int, Int, Double) -> Unit,
     val onChangeDuration: (Int, Int, Int) -> Unit,
-    val onToggleSet: (Int, Int) -> Unit,
+    val onStartSet: (Int, Int) -> Unit,
+    val onStartNextSet: (Int) -> Unit,
+    val onFinishSet: () -> Unit,
+    val onUndoSet: (Int, Int) -> Unit,
     val onAddRest: (Int) -> Unit,
     val onSkipRest: () -> Unit,
     val onFinish: () -> Unit,
@@ -69,10 +58,18 @@ data class SessionActions(
     val onDismissMessage: () -> Unit,
 )
 
+data class PreviewActions(
+    val onStart: () -> Unit,
+    val onCancel: () -> Unit,
+    val onAddExercise: (ExerciseEntity) -> Unit,
+    val onRemoveExercise: (Int) -> Unit,
+)
+
 @Composable
 fun SessionRoute(
     state: SessionUiState,
     actions: SessionActions,
+    previewActions: PreviewActions,
     onClose: () -> Unit,
     onRepeatLast: () -> Unit,
     onStartTemplate: (TemplateDto) -> Unit,
@@ -81,16 +78,20 @@ fun SessionRoute(
     onManageTemplates: () -> Unit,
     onPlanWorkout: () -> Unit,
     onDone: () -> Unit,
+    onOpenWorkout: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val outcome = state.outcome
     val draft = state.draft
+    val pending = state.pendingStart
 
     when {
         outcome != null -> SessionSummary(
             outcome = outcome,
+            finished = state.finished,
             onDone = onDone,
+            onOpenWorkout = onOpenWorkout,
             modifier = modifier,
             contentPadding = contentPadding,
         )
@@ -99,6 +100,14 @@ fun SessionRoute(
             state = state,
             draft = draft,
             actions = actions,
+            modifier = modifier,
+            contentPadding = contentPadding,
+        )
+
+        pending != null -> SessionPreviewScreen(
+            state = state,
+            pending = pending,
+            actions = previewActions,
             modifier = modifier,
             contentPadding = contentPadding,
         )
@@ -122,24 +131,34 @@ fun SessionRoute(
 @Composable
 private fun SessionSummary(
     outcome: FinishOutcome,
+    finished: ActiveSession?,
     onDone: () -> Unit,
+    onOpenWorkout: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val saved = outcome is FinishOutcome.Saved
+    val nowMillis = finished?.events?.lastOrNull()?.atEpochMillis ?: System.currentTimeMillis()
+    val breakdown = finished?.let { SessionTimeBreakdown.of(it, nowMillis) }
+    val entries = finished?.let { session ->
+        SessionTimelineLocal.segments(session, nowMillis).map(TimelineEntry::of)
+    }.orEmpty()
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(contentPadding)
             .padding(horizontal = Spacing.lg),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
+        Spacer(Modifier.height(Spacing.md))
+
         HeroSurface {
             SectionLabel(text = if (saved) "treino salvo" else "guardado no aparelho")
             Spacer(Modifier.height(Spacing.md))
             MetricValue(
-                value = if (saved) "OK" else "OFF",
+                value = Format.clock(breakdown?.totalSeconds),
                 style = MaterialTheme.typography.displayMedium,
                 color = if (saved) IronPositive else IronRecord,
             )
@@ -153,8 +172,32 @@ private fun SessionSummary(
                 style = MaterialTheme.typography.bodyLarge,
                 color = IronTextSecondary,
             )
-            Spacer(Modifier.height(Spacing.xl))
-            PrimaryButton(text = "Voltar para a home", onClick = onDone, modifier = Modifier.fillMaxWidth())
         }
+
+        SessionTimeCard(
+            metrics = breakdown?.let(SessionTimeMetrics::of),
+            fallbackTotalSeconds = breakdown?.totalSeconds,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        if (entries.isNotEmpty()) {
+            SessionTimelineList(
+                entries = entries,
+                startLabel = Format.timeOfDay(finished?.startedAtEpochMillis),
+                endLabel = Format.timeOfDay(nowMillis),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        if (outcome is FinishOutcome.Saved) {
+            GhostButton(
+                text = "Ver treino completo",
+                onClick = { onOpenWorkout(outcome.workoutId) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        PrimaryButton(text = "Voltar para a home", onClick = onDone, modifier = Modifier.fillMaxWidth())
+        Spacer(Modifier.height(Spacing.xl))
     }
 }

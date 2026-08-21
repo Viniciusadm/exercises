@@ -33,6 +33,7 @@ import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.net.dto.WorkoutExerciseDto
 import com.archieapps.exercises.ui.component.EmptyState
 import com.archieapps.exercises.ui.component.GhostButton
+import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.HairLine
 import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.ui.component.KeyValueRow
@@ -54,6 +55,7 @@ fun HistoryScreen(
     onToggle: (Int) -> Unit,
     onLoadMore: () -> Unit,
     onCreateTemplate: (WorkoutDto) -> Unit,
+    onOpenDetail: (WorkoutDto) -> Unit,
     onEdit: (WorkoutDto) -> Unit,
     onDelete: (WorkoutDto) -> Unit,
     onDismissMessage: () -> Unit,
@@ -131,6 +133,7 @@ fun HistoryScreen(
                     expanded = state.expandedId == workout.id,
                     onToggle = { onToggle(workout.id) },
                     onCreateTemplate = { onCreateTemplate(workout) },
+                    onOpenDetail = { onOpenDetail(workout) },
                     onEdit = { onEdit(workout) },
                     onDelete = { onDelete(workout) },
                     modifier = Modifier.padding(horizontal = Spacing.lg),
@@ -181,6 +184,7 @@ private fun WorkoutCard(
     expanded: Boolean,
     onToggle: () -> Unit,
     onCreateTemplate: () -> Unit,
+    onOpenDetail: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
@@ -202,6 +206,17 @@ private fun WorkoutCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                workout.time?.let { time ->
+                    Text(
+                        text = "execução ${Format.percent(time.executionShare.toDouble())} · " +
+                            "descanso ${Format.percent(time.restShare.toDouble())} · " +
+                            "ocioso ${Format.percent(time.idleShare.toDouble())}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = IronTextMuted,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
             Text(text = Format.volume(workout.totalVolumeKg), style = IronText.metricSmall)
         }
@@ -235,6 +250,12 @@ private fun WorkoutCard(
                 }
 
                 Spacer(Modifier.height(Spacing.md))
+                PrimaryButton(
+                    text = "Ver detalhes e tempos",
+                    onClick = onOpenDetail,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(Spacing.sm))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
                     GhostButton(text = "Editar", onClick = onEdit, modifier = Modifier.weight(1f))
                     GhostButton(

@@ -19,6 +19,8 @@ import com.archieapps.exercises.core.net.dto.TemplateDto
 import com.archieapps.exercises.core.net.dto.TemplateRequest
 import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.net.dto.WorkoutRequest
+import com.archieapps.exercises.core.net.dto.WorkoutTimelineDto
+import com.archieapps.exercises.core.net.dto.SegmentAdjustmentRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import com.archieapps.exercises.core.net.dto.PlanConfirmRequest
@@ -63,6 +65,15 @@ interface ExercisesApi {
 
     @GET("api/workouts/{id}")
     suspend fun workout(@Path("id") id: Int): Envelope<WorkoutDto>
+
+    @GET("api/workouts/{id}/timeline")
+    suspend fun workoutTimeline(@Path("id") id: Int): Envelope<WorkoutTimelineDto>
+
+    @POST("api/workouts/{id}/adjustments")
+    suspend fun adjustWorkoutSegment(
+        @Path("id") id: Int,
+        @Body request: SegmentAdjustmentRequest,
+    ): Envelope<WorkoutDto>
 
     @POST("api/workouts")
     suspend fun createWorkout(@Body request: WorkoutRequest): Envelope<WorkoutDto>

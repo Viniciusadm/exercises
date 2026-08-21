@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,9 +32,11 @@ import com.archieapps.exercises.R
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.core.session.SessionSet
+import com.archieapps.exercises.core.session.SetRunState
 import com.archieapps.exercises.ui.design.IronBackground
 import com.archieapps.exercises.ui.design.IronBorder
 import com.archieapps.exercises.ui.design.IronPositive
+import com.archieapps.exercises.ui.design.IronPrimary
 import com.archieapps.exercises.ui.design.IronSurface
 import com.archieapps.exercises.ui.design.IronSurfaceHigh
 import com.archieapps.exercises.ui.design.IronText
@@ -43,7 +46,7 @@ import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 
 private val ColumnNumberWidth = 34.dp
-private val ColumnActionWidth = 44.dp
+private val ColumnActionWidth = 62.dp
 private val StepButtonSize = 32.dp
 
 @Composable
@@ -90,11 +93,17 @@ fun SetEditorRow(
     onWeightStep: (Int) -> Unit,
     onWeightSet: (Double) -> Unit,
     onDurationChange: (Int) -> Unit,
-    onToggle: () -> Unit,
+    action: SetAction,
     onRemove: () -> Unit,
+    removable: Boolean = true,
     weightOptions: List<Double> = emptyList(),
 ) {
-    val background = if (set.done) IronPositive.copy(alpha = 0.10f) else IronSurfaceHigh
+    val state = action.runState
+    val background = when (state) {
+        SetRunState.Running -> IronPrimary.copy(alpha = 0.14f)
+        SetRunState.Done -> IronPositive.copy(alpha = 0.10f)
+        SetRunState.Pending -> IronSurfaceHigh
+    }
     var pickingWeight by remember { mutableStateOf(false) }
 
     Row(
@@ -109,13 +118,17 @@ fun SetEditorRow(
         Box(
             Modifier
                 .width(ColumnNumberWidth)
-                .clickable(onClick = onRemove),
+                .clickable(enabled = removable, onClick = onRemove),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = position.toString(),
                 style = IronText.metricSmall,
-                color = if (set.done) IronPositive else IronTextSecondary,
+                color = when (state) {
+                    SetRunState.Running -> IronPrimary
+                    SetRunState.Done -> IronPositive
+                    SetRunState.Pending -> IronTextSecondary
+                },
             )
         }
 
@@ -145,22 +158,7 @@ fun SetEditorRow(
             )
         }
 
-        Box(
-            Modifier
-                .size(ColumnActionWidth)
-                .clip(RoundedCornerShape(12.dp))
-                .background(if (set.done) IronPositive else IronSurface)
-                .border(1.dp, if (set.done) IronPositive else IronBorder, RoundedCornerShape(12.dp))
-                .clickable(onClick = onToggle),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_check),
-                contentDescription = if (set.done) "Desmarcar série" else "Concluir série",
-                tint = if (set.done) IronBackground else IronTextMuted,
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        SetActionButton(action = action)
     }
 
     if (pickingWeight) {
@@ -173,6 +171,95 @@ fun SetEditorRow(
                 pickingWeight = false
             },
         )
+    }
+}
+
+@Composable
+private fun SetActionButton(action: SetAction) {
+    val shape = RoundedCornerShape(12.dp)
+    val enabled = action.enabled
+
+    val style = when (action.runState) {
+        SetRunState.Running -> SetActionStyle(IronPrimary, IronPrimary, action.runningLabel, IronBackground)
+        SetRunState.Done -> SetActionStyle(IronPositive, IronPositive, action.doneLabel, IronBackground)
+        SetRunState.Pending -> SetActionStyle(
+            IronSurface,
+            if (enabled) IronBorder else IronBorder.copy(alpha = 0.4f),
+            action.pendingLabel,
+            if (enabled) IronTextSecondary else IronTextMuted,
+        )
+    }
+
+    Box(
+        Modifier
+            .width(ColumnActionWidth)
+            .clip(shape)
+            .background(style.background)
+            .border(1.dp, style.border, shape)
+            .clickable(enabled = enabled, onClick = action::invoke)
+            .padding(vertical = Spacing.sm),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = style.label,
+            style = MaterialTheme.typography.labelSmall,
+            color = style.tint,
+            maxLines = 1,
+            softWrap = false,
+        )
+    }
+}
+
+private data class SetActionStyle(
+    val background: Color,
+    val border: Color,
+    val label: String,
+    val tint: Color,
+)
+
+sealed interface SetAction {
+    val runState: SetRunState
+    val enabled: Boolean
+    val pendingLabel: String
+    val runningLabel: String
+    val doneLabel: String
+
+    fun invoke()
+
+    data class Live(
+        override val runState: SetRunState,
+        val startEnabled: Boolean,
+        val onStart: () -> Unit,
+        val onFinish: () -> Unit,
+        val onUndo: () -> Unit,
+    ) : SetAction {
+        override val enabled: Boolean get() = runState != SetRunState.Pending || startEnabled
+
+        override val pendingLabel = "INICIAR"
+
+        override val runningLabel = "PARAR"
+
+        override val doneLabel = "FEITA"
+
+        override fun invoke() = when (runState) {
+            SetRunState.Running -> onFinish()
+            SetRunState.Done -> onUndo()
+            SetRunState.Pending -> onStart()
+        }
+    }
+
+    data class Toggle(val done: Boolean, val onToggle: () -> Unit) : SetAction {
+        override val runState: SetRunState get() = if (done) SetRunState.Done else SetRunState.Pending
+
+        override val enabled = true
+
+        override val pendingLabel = "MARCAR"
+
+        override val runningLabel = "MARCAR"
+
+        override val doneLabel = "FEITA"
+
+        override fun invoke() = onToggle()
     }
 }
 

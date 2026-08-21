@@ -1,7 +1,10 @@
 package com.archieapps.exercises.core.format
 
 import java.text.NumberFormat
+import java.time.Instant
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -15,6 +18,7 @@ private val decimalFormat: NumberFormat = NumberFormat.getNumberInstance(PtBr).a
     minimumFractionDigits = 1
 }
 private val monthDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM", PtBr)
+private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", PtBr)
 
 object Format {
     const val PLACEHOLDER = "-"
@@ -41,6 +45,39 @@ object Format {
         minutes < 60 -> "$minutes min"
         minutes % 60 == 0 -> "${minutes / 60}h"
         else -> "${minutes / 60}h${(minutes % 60).toString().padStart(2, '0')}"
+    }
+
+    fun clock(seconds: Long?): String {
+        if (seconds == null) return PLACEHOLDER
+        val safe = if (seconds < 0) 0 else seconds
+
+        return "%d:%02d:%02d".format(safe / 3600, (safe % 3600) / 60, safe % 60)
+    }
+
+    fun duration(seconds: Long?): String = when {
+        seconds == null -> PLACEHOLDER
+        seconds < 60 -> "${seconds}s"
+        seconds < 3600 -> {
+            val remainder = seconds % 60
+            if (remainder == 0L) "${seconds / 60}min" else "${seconds / 60}min ${remainder}s"
+        }
+
+        else -> {
+            val remainder = (seconds % 3600) / 60
+            if (remainder == 0L) "${seconds / 3600}h" else "${seconds / 3600}h${remainder.toString().padStart(2, '0')}"
+        }
+    }
+
+    fun duration(seconds: Int?): String = duration(seconds?.toLong())
+
+    fun timeOfDay(epochMillis: Long?): String = epochMillis?.let {
+        timeFormatter.format(Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()))
+    } ?: PLACEHOLDER
+
+    fun timeOfDay(isoInstant: String?): String = parseInstant(isoInstant)?.let { timeOfDay(it) } ?: PLACEHOLDER
+
+    fun parseInstant(value: String?): Long? = value?.let {
+        runCatching { OffsetDateTime.parse(it).toInstant().toEpochMilli() }.getOrNull()
     }
 
     fun percent(share: Double?): String = if (share == null) PLACEHOLDER else "${Math.round(share * 100)}%"

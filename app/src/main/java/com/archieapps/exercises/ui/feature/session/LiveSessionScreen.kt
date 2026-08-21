@@ -40,8 +40,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.session.ActiveSession
+import com.archieapps.exercises.core.session.SessionPhase
 import com.archieapps.exercises.ui.component.ExercisePickerOverlay
 import com.archieapps.exercises.ui.component.GhostButton
+import com.archieapps.exercises.ui.component.IdleColor
 import com.archieapps.exercises.ui.design.IronBorder
 import com.archieapps.exercises.ui.design.IronPrimary
 import com.archieapps.exercises.ui.design.IronSurface
@@ -86,6 +88,8 @@ fun LiveSessionScreen(
                 state = state,
                 draft = draft,
                 onOpenExercise = actions.onOpenExercise,
+                onStartNextSet = actions.onStartNextSet,
+                onFinishSet = actions.onFinishSet,
                 onAddExercise = { pickingExercise = true },
                 onFinish = { confirmFinish = true },
                 onDiscard = { confirmDiscard = true },
@@ -94,8 +98,10 @@ fun LiveSessionScreen(
             )
         }
 
+        val resting = state.phase is SessionPhase.Resting
+
         AnimatedVisibility(
-            visible = state.rest != null,
+            visible = resting && state.rest != null,
             modifier = Modifier.align(Alignment.BottomCenter),
         ) {
             state.rest?.let { rest ->
@@ -106,6 +112,16 @@ fun LiveSessionScreen(
                     modifier = Modifier.padding(Spacing.lg),
                 )
             }
+        }
+
+        AnimatedVisibility(
+            visible = !resting && state.phase is SessionPhase.Idle && draft.completedSets > 0,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        ) {
+            IdleBar(
+                seconds = state.breakdown.idleSeconds,
+                modifier = Modifier.padding(Spacing.lg),
+            )
         }
 
         if (pickingExercise) {
@@ -129,8 +145,10 @@ fun LiveSessionScreen(
             title = { Text("Finalizar treino?", style = MaterialTheme.typography.titleLarge) },
             text = {
                 Text(
-                    text = "${draft.completedSets} séries · ${Format.volume(draft.totalVolumeKg)} · " +
-                        Format.minutes(draft.durationMinutes(state.nowMillis)),
+                    text = "${draft.completedSets} séries · ${Format.volume(draft.totalVolumeKg)}\n" +
+                        "execução ${Format.duration(state.breakdown.executionSeconds)} · " +
+                        "descanso ${Format.duration(state.breakdown.restSeconds)} · " +
+                        "ocioso ${Format.duration(state.breakdown.idleSeconds)}",
                     style = MaterialTheme.typography.bodyLarge,
                 )
             },
@@ -172,6 +190,41 @@ fun LiveSessionScreen(
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun IdleBar(seconds: Long, modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(IronSurfaceHigh)
+            .border(1.dp, IronBorder, RoundedCornerShape(20.dp))
+            .padding(Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(10.dp)
+                .clip(RoundedCornerShape(5.dp))
+                .background(IdleColor)
+        )
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(horizontal = Spacing.md)
+        ) {
+            Text(text = "Tempo ocioso", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "Escolha a próxima série quando estiver pronto",
+                style = MaterialTheme.typography.labelMedium,
+                color = IronTextMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Text(text = Format.duration(seconds), style = MaterialTheme.typography.titleMedium, color = IdleColor)
     }
 }
 

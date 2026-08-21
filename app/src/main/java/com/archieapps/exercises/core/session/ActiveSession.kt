@@ -1,5 +1,6 @@
 package com.archieapps.exercises.core.session
 
+import com.archieapps.exercises.core.net.dto.WorkoutEventRequest
 import com.archieapps.exercises.core.net.dto.WorkoutExerciseRequest
 import com.archieapps.exercises.core.net.dto.WorkoutRequest
 import com.archieapps.exercises.core.net.dto.WorkoutSetRequest
@@ -19,6 +20,9 @@ data class ActiveSession(
     val notes: String? = null,
     val openExerciseIndex: Int? = null,
     val exercises: List<SessionExercise> = emptyList(),
+    val phase: SessionPhase = SessionPhase.Idle,
+    val events: List<SessionEvent> = emptyList(),
+    val nextSequence: Int = 0,
 ) {
     val completedSets: Int get() = exercises.sumOf { exercise -> exercise.sets.count { it.done } }
 
@@ -35,7 +39,61 @@ data class ActiveSession(
 
     fun durationMinutes(nowMillis: Long): Int = max(1, Math.round(elapsedSeconds(nowMillis) / 60.0).toInt())
 
+    val executingSet: Pair<Int, Int>?
+        get() = (phase as? SessionPhase.Executing)?.let { it.exerciseIndex to it.setIndex }
+
+    val restingSet: Pair<Int, Int>?
+        get() = (phase as? SessionPhase.Resting)?.let { it.exerciseIndex to it.setIndex }
+
     fun openExercise(): SessionExercise? = openExerciseIndex?.let { exercises.getOrNull(it) }
+
+    fun record(
+        type: String,
+        atMillis: Long,
+        exerciseIndex: Int? = null,
+        setIndex: Int? = null,
+        meta: Map<String, String>? = null,
+    ): ActiveSession {
+        val exercise = exerciseIndex?.let { exercises.getOrNull(it) }
+
+        return copy(
+            events = events + SessionEvent(
+                sequence = nextSequence,
+                type = type,
+                atEpochMillis = maxOf(atMillis, events.lastOrNull()?.atEpochMillis ?: atMillis),
+                exerciseOrder = exerciseIndex,
+                exerciseName = exercise?.name,
+                setNumber = setIndex?.let { it + 1 },
+                meta = meta,
+            ),
+            nextSequence = nextSequence + 1,
+        )
+    }
+
+    fun setRunState(exerciseIndex: Int, setIndex: Int): SetRunState {
+        val set = exercises.getOrNull(exerciseIndex)?.sets?.getOrNull(setIndex) ?: return SetRunState.Pending
+
+        return when {
+            executingSet == exerciseIndex to setIndex -> SetRunState.Running
+            set.done -> SetRunState.Done
+            else -> SetRunState.Pending
+        }
+    }
+
+    fun nextPendingSet(exerciseIndex: Int): Int? =
+        exercises.getOrNull(exerciseIndex)?.sets?.indexOfFirst { !it.done }?.takeIf { it >= 0 }
+
+    fun canRemoveExercise(index: Int): Boolean {
+        val anchored = executingSet ?: restingSet ?: return true
+
+        return index > anchored.first
+    }
+
+    fun canRemoveSet(exerciseIndex: Int, setIndex: Int): Boolean {
+        val anchored = executingSet ?: restingSet ?: return true
+
+        return anchored.first != exerciseIndex || setIndex > anchored.second
+    }
 
     fun updateExercise(index: Int, transform: (SessionExercise) -> SessionExercise): ActiveSession =
         copy(exercises = exercises.mapIndexed { position, exercise ->
@@ -80,9 +138,50 @@ data class ActiveSession(
                     )
                 }
             },
+            events = eventRequests(zone),
         )
     }
+
+    private fun eventRequests(zone: ZoneId): List<WorkoutEventRequest> {
+        val exerciseOrders = mutableMapOf<Int, Int>()
+        val setNumbers = mutableMapOf<Pair<Int, Int>, Int>()
+        var keptExercises = 0
+
+        exercises.forEachIndexed { exerciseIndex, exercise ->
+            val done = exercise.sets.withIndex().filter { it.value.done }
+
+            if (done.isEmpty()) return@forEachIndexed
+
+            exerciseOrders[exerciseIndex] = keptExercises++
+            done.forEachIndexed { position, (setIndex, _) ->
+                setNumbers[exerciseIndex to setIndex] = position + 1
+            }
+        }
+
+        return events.map { event ->
+            val exerciseIndex = event.exerciseOrder
+            val setIndex = event.setNumber?.let { it - 1 }
+            val remappedSet = if (exerciseIndex != null && setIndex != null) {
+                setNumbers[exerciseIndex to setIndex]
+            } else {
+                null
+            }
+
+            WorkoutEventRequest(
+                sequence = event.sequence,
+                type = event.type,
+                occurredAt = Instant.ofEpochMilli(event.atEpochMillis).atZone(zone)
+                    .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                exerciseOrder = exerciseIndex?.let { exerciseOrders[it] } ?: exerciseIndex,
+                exerciseName = event.exerciseName,
+                setNumber = remappedSet ?: event.setNumber,
+                meta = event.meta,
+            )
+        }
+    }
 }
+
+enum class SetRunState { Pending, Running, Done }
 
 @Serializable
 data class SessionExercise(

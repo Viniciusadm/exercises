@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.R
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.session.SessionExercise
+import com.archieapps.exercises.core.session.SessionPhase
 import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.IronCard
@@ -27,6 +28,7 @@ import com.archieapps.exercises.ui.component.MuscleChipsRow
 import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
+import com.archieapps.exercises.ui.component.SetAction
 import com.archieapps.exercises.ui.component.SetEditorHeader
 import com.archieapps.exercises.ui.component.SetEditorRow
 import com.archieapps.exercises.ui.design.IronPositive
@@ -38,6 +40,17 @@ import com.archieapps.exercises.ui.design.Spacing
 import com.archieapps.exercises.core.anatomy.BodyView
 import com.archieapps.exercises.ui.component.BodyMap
 import com.archieapps.exercises.ui.feature.anatomy.activationRegions
+
+private fun exercisePhaseLabel(state: SessionUiState, index: Int, exercise: SessionExercise): String {
+    val phase = state.phase
+
+    return when {
+        phase is SessionPhase.Executing && phase.exerciseIndex == index -> "série ${phase.setIndex + 1} em andamento"
+        phase is SessionPhase.Resting && phase.exerciseIndex == index -> "em descanso"
+        exercise.isComplete -> "concluído"
+        else -> "ocioso"
+    }
+}
 
 @Composable
 fun ExerciseLogScreen(
@@ -71,7 +84,7 @@ fun ExerciseLogScreen(
                         .weight(1f)
                         .padding(start = Spacing.md)
                 ) {
-                    SectionLabel(text = if (exercise.isComplete) "concluído" else "em execução")
+                    SectionLabel(text = exercisePhaseLabel(state, index, exercise))
                     Text(
                         text = exercise.name,
                         style = MaterialTheme.typography.headlineMedium,
@@ -151,6 +164,8 @@ fun ExerciseLogScreen(
 
                 val weightOptions = state.weightOptionsFor(exercise.exerciseId)
 
+                val canStartSet = state.phase !is SessionPhase.Executing
+
                 exercise.sets.forEachIndexed { setIndex, set ->
                     SetEditorRow(
                         position = setIndex + 1,
@@ -160,8 +175,15 @@ fun ExerciseLogScreen(
                         onWeightStep = { direction -> actions.onChangeWeight(index, setIndex, direction) },
                         onWeightSet = { weight -> actions.onSetWeight(index, setIndex, weight) },
                         onDurationChange = { delta -> actions.onChangeDuration(index, setIndex, delta) },
-                        onToggle = { actions.onToggleSet(index, setIndex) },
+                        action = SetAction.Live(
+                            runState = state.setRunState(index, setIndex),
+                            startEnabled = canStartSet,
+                            onStart = { actions.onStartSet(index, setIndex) },
+                            onFinish = actions.onFinishSet,
+                            onUndo = { actions.onUndoSet(index, setIndex) },
+                        ),
                         onRemove = { actions.onRemoveSet(index, setIndex) },
+                        removable = state.draft?.canRemoveSet(index, setIndex) ?: true,
                         weightOptions = weightOptions,
                     )
                     Spacer(Modifier.height(Spacing.sm))
@@ -190,6 +212,7 @@ fun ExerciseLogScreen(
                 GhostButton(
                     text = "Remover exercício do treino",
                     onClick = { actions.onRemoveExercise(index) },
+                    enabled = state.draft?.canRemoveExercise(index) ?: true,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

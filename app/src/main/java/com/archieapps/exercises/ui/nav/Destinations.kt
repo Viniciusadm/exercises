@@ -22,8 +22,11 @@ object Routes {
     const val LICENSES = "licenses"
     const val TEMPLATE_PATTERN = "template/{id}"
     const val WORKOUT_PATTERN = "workout/{id}/edit"
+    const val WORKOUT_DETAIL_PATTERN = "workout/{id}"
 
     fun workout(id: Int) = "workout/$id/edit"
+
+    fun workoutDetail(id: Int) = "workout/$id"
 
     fun template(id: Int?) = "template/${id ?: 0}"
 }

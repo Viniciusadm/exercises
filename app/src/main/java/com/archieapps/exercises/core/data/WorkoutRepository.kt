@@ -8,6 +8,8 @@ import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.dto.ExerciseHistoryDto
 import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.net.dto.WorkoutRequest
+import com.archieapps.exercises.core.net.dto.SegmentAdjustmentRequest
+import com.archieapps.exercises.core.net.dto.WorkoutTimelineDto
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
@@ -32,6 +34,11 @@ class WorkoutRepository(
     } ?: emptyList()
 
     suspend fun detail(id: Int): ApiResult<WorkoutDto> = caller.call { api.workout(id) }
+
+    suspend fun timeline(id: Int): ApiResult<WorkoutTimelineDto> = caller.call { api.workoutTimeline(id) }
+
+    suspend fun adjustSegment(id: Int, sequence: Int, durationSeconds: Int): ApiResult<WorkoutDto> =
+        caller.call { api.adjustWorkoutSegment(id, SegmentAdjustmentRequest(sequence, durationSeconds)) }
 
     suspend fun update(id: Int, request: WorkoutRequest): ApiResult<WorkoutDto> =
         caller.call { api.updateWorkout(id, request) }
