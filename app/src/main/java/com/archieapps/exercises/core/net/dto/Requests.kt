@@ -68,3 +68,10 @@ data class TemplateExerciseRequest(
 
 @Serializable
 data class NameRequest(val name: String? = null)
+
+@Serializable
+data class ExerciseMusclesRequest(
+    val primary: List<Int> = emptyList(),
+    val secondary: List<Int> = emptyList(),
+    val stabilizer: List<Int> = emptyList(),
+)

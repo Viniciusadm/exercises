@@ -202,6 +202,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onOpenTemplate = { id -> navController.navigate(Routes.template(id)) },
                     onPlanWorkout = { navController.navigate(Routes.PLAN) },
                     onDismissMessage = viewModel::dismissMessage,
+                    onRetryMuscleCatalog = viewModel::retryMuscleCatalog,
                     contentPadding = contentPadding,
                 )
             }

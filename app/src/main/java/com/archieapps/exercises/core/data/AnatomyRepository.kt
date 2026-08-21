@@ -6,7 +6,9 @@ import com.archieapps.exercises.core.net.ApiCaller
 import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.dto.ExerciseDto
+import com.archieapps.exercises.core.net.dto.ExerciseMuscleMappingDto
 import com.archieapps.exercises.core.net.dto.ExerciseMusclesDto
+import com.archieapps.exercises.core.net.dto.ExerciseMusclesRequest
 import com.archieapps.exercises.core.net.dto.MuscleAnalysisDto
 import com.archieapps.exercises.core.net.dto.MuscleAttributionDto
 import com.archieapps.exercises.core.net.dto.AdoptExerciseRequest
@@ -72,11 +74,59 @@ class AnatomyRepository(
         write(MAP_KEY, json.encodeToString(map))
     }
 
+    fun observeMuscleCatalog(): Flow<List<MuscleDto>> = cache.observe(MUSCLES_KEY).map { entity ->
+        entity?.let {
+            runCatching { json.decodeFromString<List<MuscleDto>>(it.payload) }.getOrNull()
+        }.orEmpty()
+    }
+
+    suspend fun cachedMuscleCatalog(): List<MuscleDto> = cache.find(MUSCLES_KEY)
+        ?.let { runCatching { json.decodeFromString<List<MuscleDto>>(it.payload) }.getOrNull() }
+        .orEmpty()
+
+    suspend fun syncMuscleCatalog(): ApiResult<List<MuscleDto>> {
+        val result = caller.call { api.muscles() }
+
+        if (result is ApiResult.Success) write(MUSCLES_KEY, json.encodeToString(result.value))
+
+        return result
+    }
+
+    suspend fun syncExerciseMuscles(
+        exerciseId: Int,
+        request: ExerciseMusclesRequest,
+    ): ApiResult<ExerciseMuscleMappingDto> {
+        val result = caller.call { api.syncExerciseMuscles(exerciseId, request) }
+
+        if (result is ApiResult.Success) mergeExerciseMuscles(exerciseId, result.value)
+
+        return result
+    }
+
+    private suspend fun cachedExerciseMuscles(): ExerciseMuscleMap = cache.find(MAP_KEY)
+        ?.let { runCatching { json.decodeFromString<ExerciseMuscleMap>(it.payload) }.getOrNull() }
+        ?: ExerciseMuscleMap()
+
+    private suspend fun mergeExerciseMuscles(exerciseId: Int, mapping: ExerciseMuscleMappingDto) {
+        val current = cachedExerciseMuscles()
+
+        val byExercise = current.byExercise.toMutableMap().apply {
+            if (mapping.muscles.isEmpty) remove(exerciseId) else put(exerciseId, mapping.muscles)
+        }
+
+        val reasons = current.unmappedReasons.toMutableMap().apply {
+            val reason = mapping.musclesUnmappedReason
+            if (reason == null) remove(exerciseId) else put(exerciseId, reason)
+        }
+
+        write(MAP_KEY, json.encodeToString(ExerciseMuscleMap(byExercise, reasons)))
+    }
+
     suspend fun adopt(canonical: String): ApiResult<ExerciseDto> =
         caller.call { api.adoptExercise(AdoptExerciseRequest(canonical)) }
 
     suspend fun refresh(): ApiResult<Unit> {
-        val catalog = caller.call { api.muscles() }
+        val catalog = syncMuscleCatalog()
         if (catalog is ApiResult.Failure) return catalog
 
         val envelope = caller.envelope { api.muscleAnalysis(granularity = "as_mapped") }
@@ -115,5 +165,6 @@ class AnatomyRepository(
     private companion object {
         const val MAP_KEY = "exercise_muscles"
         const val CATALOG_KEY = "anatomy"
+        const val MUSCLES_KEY = "muscle_catalog"
     }
 }

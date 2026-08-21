@@ -3,6 +3,7 @@ package com.archieapps.exercises.core.net
 import com.archieapps.exercises.core.net.dto.CalendarDayDto
 import com.archieapps.exercises.core.net.dto.CatalogMetaDto
 import com.archieapps.exercises.core.net.dto.ExerciseMuscleMappingDto
+import com.archieapps.exercises.core.net.dto.ExerciseMusclesRequest
 import com.archieapps.exercises.core.net.dto.MuscleAnalysisDto
 import com.archieapps.exercises.core.net.dto.MuscleHeatmapDto
 import com.archieapps.exercises.core.net.dto.MuscleRecommendationDto
@@ -106,6 +107,12 @@ interface ExercisesApi {
 
     @GET("api/exercises/{id}/muscles")
     suspend fun exerciseMuscles(@Path("id") id: Int): Envelope<ExerciseMuscleMappingDto>
+
+    @PUT("api/exercises/{id}/muscles")
+    suspend fun syncExerciseMuscles(
+        @Path("id") id: Int,
+        @Body request: ExerciseMusclesRequest,
+    ): Envelope<ExerciseMuscleMappingDto>
 
     @GET("api/exercises/{id}/history")
     suspend fun exerciseHistory(

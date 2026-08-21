@@ -9,7 +9,9 @@ import com.archieapps.exercises.core.data.TemplateRepository
 import com.archieapps.exercises.core.db.ExerciseEntity
 import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.dto.ExerciseRequest
+import com.archieapps.exercises.core.net.dto.MuscleDto
 import com.archieapps.exercises.core.session.WeightLadder
+import com.archieapps.exercises.ui.component.MuscleSelection
 import com.archieapps.exercises.core.net.dto.TemplateDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,6 +31,7 @@ data class ExerciseForm(
     val restSeconds: Int = 90,
     val weightOptions: List<Double> = emptyList(),
     val notes: String = "",
+    val muscles: MuscleSelection = MuscleSelection(),
 ) {
     val isValid: Boolean get() = name.isNotBlank()
 
@@ -56,6 +59,8 @@ data class CatalogUiState(
     val message: String? = null,
     val isError: Boolean = false,
     val muscleMap: ExerciseMuscleMap = ExerciseMuscleMap(),
+    val muscleCatalog: List<MuscleDto> = emptyList(),
+    val formDirty: Boolean = false,
 )
 
 class CatalogViewModel(
@@ -68,8 +73,9 @@ class CatalogViewModel(
     val state: StateFlow<CatalogUiState> = combine(
         exercises.catalog,
         anatomy.observeExerciseMuscles(),
+        anatomy.observeMuscleCatalog(),
         local,
-    ) { catalog, muscleMap, extra ->
+    ) { catalog, muscleMap, muscleCatalog, extra ->
         val filtered = catalog
             .filter { exercise ->
                 extra.muscleFilter == null || exercise.muscleGroup == extra.muscleFilter
@@ -92,12 +98,15 @@ class CatalogViewModel(
             message = extra.message,
             isError = extra.isError,
             muscleMap = muscleMap,
+            muscleCatalog = muscleCatalog,
+            formDirty = extra.form != null && extra.form != extra.pristineForm,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CatalogUiState())
 
     init {
         viewModelScope.launch {
             exercises.sync()
+            if (anatomy.cachedMuscleCatalog().isEmpty()) anatomy.syncMuscleCatalog()
             local.update { it.copy(templates = templates.cached()) }
 
             (templates.list() as? ApiResult.Success)?.let { result ->
@@ -114,34 +123,43 @@ class CatalogViewModel(
 
     fun showTemplates(show: Boolean) = local.update { it.copy(showTemplates = show) }
 
-    fun startCreate() = local.update { it.copy(form = ExerciseForm()) }
+    fun startCreate() {
+        val blank = ExerciseForm()
+        local.update { it.copy(form = blank, pristineForm = blank) }
+    }
 
-    fun startEdit(exercise: ExerciseEntity) = local.update {
-        it.copy(
-            form = ExerciseForm(
-                id = exercise.id,
-                name = exercise.name,
-                muscleGroup = exercise.muscleGroup.orEmpty(),
-                equipment = exercise.equipment.orEmpty(),
-                executionType = exercise.executionType,
-                usesWeight = exercise.usesWeight,
-                restSeconds = exercise.restSeconds ?: 90,
-                weightOptions = exercise.weightOptions,
-                notes = exercise.notes.orEmpty(),
-            )
+    fun startEdit(exercise: ExerciseEntity) {
+        val seeded = ExerciseForm(
+            id = exercise.id,
+            name = exercise.name,
+            muscleGroup = exercise.muscleGroup.orEmpty(),
+            equipment = exercise.equipment.orEmpty(),
+            executionType = exercise.executionType,
+            usesWeight = exercise.usesWeight,
+            restSeconds = exercise.restSeconds ?: 90,
+            weightOptions = exercise.weightOptions,
+            notes = exercise.notes.orEmpty(),
+            muscles = MuscleSelection.from(state.value.muscleMap.of(exercise.id)),
         )
+
+        local.update { it.copy(form = seeded, pristineForm = seeded) }
+    }
+
+    fun retryMuscleCatalog() {
+        viewModelScope.launch { anatomy.syncMuscleCatalog() }
     }
 
     fun updateForm(transform: (ExerciseForm) -> ExerciseForm) = local.update {
         it.copy(form = it.form?.let(transform))
     }
 
-    fun cancelForm() = local.update { it.copy(form = null) }
+    fun cancelForm() = local.update { it.copy(form = null, pristineForm = null) }
 
     fun dismissMessage() = local.update { it.copy(message = null, isError = false) }
 
     fun submitForm() {
         val form = local.value.form ?: return
+        val pristine = local.value.pristineForm
         if (!form.isValid) return
 
         viewModelScope.launch {
@@ -153,17 +171,34 @@ class CatalogViewModel(
                 exercises.update(form.id, form.toRequest())
             }
 
-            local.update {
-                when (result) {
-                    is ApiResult.Success -> it.copy(
-                        saving = false,
-                        form = null,
-                        message = "\"${result.value.name}\" salvo.",
-                        isError = false,
-                    )
+            if (result is ApiResult.Failure) {
+                local.update { it.copy(saving = false, message = result.message, isError = true) }
+                return@launch
+            }
 
-                    is ApiResult.Failure -> it.copy(saving = false, message = result.message, isError = true)
-                }
+            val saved = (result as ApiResult.Success).value
+
+            val musclesChanged = form.muscles != (pristine?.muscles ?: MuscleSelection())
+            val mapping = if (musclesChanged) {
+                anatomy.syncExerciseMuscles(saved.id, form.muscles.toRequest())
+            } else {
+                null
+            }
+
+            val failedMapping = mapping as? ApiResult.Failure
+
+            local.update {
+                it.copy(
+                    saving = false,
+                    form = null,
+                    pristineForm = null,
+                    message = failedMapping
+                        ?.let { failure ->
+                            "\"${saved.name}\" salvo, mas o mapeamento de músculos falhou: ${failure.message}"
+                        }
+                        ?: "\"${saved.name}\" salvo.",
+                    isError = failedMapping != null,
+                )
             }
         }
     }
@@ -189,6 +224,7 @@ class CatalogViewModel(
         val muscleFilter: String? = null,
         val showTemplates: Boolean = false,
         val form: ExerciseForm? = null,
+        val pristineForm: ExerciseForm? = null,
         val saving: Boolean = false,
         val message: String? = null,
         val isError: Boolean = false,

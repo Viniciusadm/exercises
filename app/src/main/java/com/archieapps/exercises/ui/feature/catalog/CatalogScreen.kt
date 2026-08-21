@@ -1,30 +1,25 @@
 package com.archieapps.exercises.ui.feature.catalog
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,8 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,12 +36,14 @@ import com.archieapps.exercises.core.net.dto.TemplateDto
 import com.archieapps.exercises.ui.component.CardHeader
 import com.archieapps.exercises.ui.component.EmptyState
 import com.archieapps.exercises.ui.component.GhostButton
-import com.archieapps.exercises.core.net.dto.ExerciseMusclesDto
+import com.archieapps.exercises.core.net.dto.MuscleDto
 import com.archieapps.exercises.ui.component.IronCard
 import com.archieapps.exercises.core.session.WeightLadder
-import com.archieapps.exercises.ui.component.MuscleActivationSection
+import com.archieapps.exercises.ui.component.IronBottomSheet
+import com.archieapps.exercises.ui.component.MusclePickerSheet
+import com.archieapps.exercises.ui.component.MuscleSelectionSummary
+import com.archieapps.exercises.ui.component.SelectChip
 import com.archieapps.exercises.ui.component.NoticeBanner
-import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
 import com.archieapps.exercises.ui.design.IronBackground
@@ -77,6 +72,7 @@ fun CatalogScreen(
     onOpenTemplate: (Int?) -> Unit,
     onPlanWorkout: () -> Unit,
     onDismissMessage: () -> Unit,
+    onRetryMuscleCatalog: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -100,13 +96,13 @@ fun CatalogScreen(
                         .padding(horizontal = Spacing.lg),
                     horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                 ) {
-                    Chip(
-                        text = "Catálogo",
+                    SelectChip(
+                        label = "Catálogo",
                         selected = !state.showTemplates,
                         onClick = { onShowTemplates(false) },
                     )
-                    Chip(
-                        text = "Templates (${state.templates.size})",
+                    SelectChip(
+                        label = "Templates (${state.templates.size})",
                         selected = state.showTemplates,
                         onClick = { onShowTemplates(true) },
                     )
@@ -182,8 +178,8 @@ fun CatalogScreen(
                         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                     ) {
                         items(state.muscleGroups) { group ->
-                            Chip(
-                                text = group,
+                            SelectChip(
+                                label = group,
                                 selected = state.muscleFilter == group,
                                 onClick = { onMuscleFilter(group) },
                             )
@@ -213,38 +209,27 @@ fun CatalogScreen(
         }
 
         state.form?.let { form ->
+            val mapped = state.muscleMap.of(form.id)
+            val muscleNames = remember(state.muscleCatalog, mapped) {
+                mapped.all.associate { it.id to it.name } +
+                    state.muscleCatalog.associate { it.id to it.name }
+            }
+
             ExerciseFormOverlay(
                 form = form,
                 saving = state.saving,
+                dirty = state.formDirty,
                 muscleGroups = state.muscleGroups,
-                muscles = state.muscleMap.of(form.id),
+                muscleCatalog = state.muscleCatalog,
+                muscleNames = muscleNames,
                 unmappedReason = state.muscleMap.reasonFor(form.id),
                 onChange = onFormChange,
                 onSubmit = onSubmitForm,
                 onCancel = onCancelForm,
+                onRetryMuscleCatalog = onRetryMuscleCatalog,
             )
         }
     }
-}
-
-@Composable
-private fun Chip(text: String, selected: Boolean, onClick: () -> Unit) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelMedium,
-        color = if (selected) IronTextPrimary else IronTextSecondary,
-        maxLines = 1,
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(if (selected) IronPrimary.copy(alpha = 0.18f) else IronSurfaceHigh)
-            .border(
-                width = 1.dp,
-                color = if (selected) IronPrimary else Color.Transparent,
-                shape = RoundedCornerShape(999.dp),
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = Spacing.md, vertical = Spacing.sm),
-    )
 }
 
 @Composable
@@ -321,138 +306,32 @@ private fun TemplateRow(
 private fun ExerciseFormOverlay(
     form: ExerciseForm,
     saving: Boolean,
+    dirty: Boolean,
     muscleGroups: List<String>,
-    muscles: ExerciseMusclesDto,
+    muscleCatalog: List<MuscleDto>,
+    muscleNames: Map<Int, String>,
     unmappedReason: String?,
     onChange: ((ExerciseForm) -> ExerciseForm) -> Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
+    onRetryMuscleCatalog: () -> Unit,
 ) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(IronBackground.copy(alpha = 0.9f))
-            .clickable(onClick = onCancel),
-    ) {
-        Column(
-            Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .fillMaxHeight(0.9f)
-                .clip(RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp))
-                .background(IronSurface)
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(Spacing.lg),
-            verticalArrangement = Arrangement.spacedBy(Spacing.md),
-        ) {
+    var confirmDiscard by remember { mutableStateOf(false) }
+    var pickingMuscles by remember { mutableStateOf(false) }
+
+    val requestDismiss: () -> Unit = { if (dirty) confirmDiscard = true else onCancel() }
+
+    IronBottomSheet(
+        onDismissRequest = requestDismiss,
+        onBack = requestDismiss,
+        header = {
             SectionLabel(text = if (form.id == null) "novo exercício" else "editar exercício")
             Text(
                 text = form.name.ifBlank { "Sem nome" },
                 style = MaterialTheme.typography.titleLarge,
             )
-
-            IronTextField(
-                value = form.name,
-                onValueChange = { value -> onChange { it.copy(name = value) } },
-                label = "Nome",
-            )
-            IronTextField(
-                value = form.muscleGroup,
-                onValueChange = { value -> onChange { it.copy(muscleGroup = value) } },
-                label = "Grupo muscular",
-            )
-
-            if (muscleGroups.isNotEmpty()) {
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    items(muscleGroups) { group ->
-                        Chip(
-                            text = group,
-                            selected = form.muscleGroup == group,
-                            onClick = { onChange { it.copy(muscleGroup = group) } },
-                        )
-                    }
-                }
-            }
-
-            if (form.id != null) {
-                SectionLabel(text = "músculos trabalhados")
-                MuscleActivationSection(
-                    muscles = muscles,
-                    unmappedReason = unmappedReason,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            IronTextField(
-                value = form.equipment,
-                onValueChange = { value -> onChange { it.copy(equipment = value) } },
-                label = "Equipamento",
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                Chip(
-                    text = "Séries e reps",
-                    selected = form.executionType == "sets",
-                    onClick = { onChange { it.copy(executionType = "sets") } },
-                )
-                Chip(
-                    text = "Por tempo",
-                    selected = form.executionType == "time",
-                    onClick = { onChange { it.copy(executionType = "time") } },
-                )
-            }
-
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Usa carga",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                )
-                Switch(
-                    checked = form.usesWeight,
-                    onCheckedChange = { value -> onChange { it.copy(usesWeight = value) } },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = IronBackground,
-                        checkedTrackColor = IronPrimary,
-                        uncheckedTrackColor = IronSurfaceHigh,
-                    ),
-                )
-            }
-
-            if (form.usesWeight) {
-                WeightOptionsSection(
-                    options = form.weightOptions,
-                    onChange = { options -> onChange { it.copy(weightOptions = options) } },
-                )
-            }
-
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Descanso padrão",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                )
-                GhostButton(text = "−15s", onClick = {
-                    onChange { it.copy(restSeconds = (it.restSeconds - 15).coerceAtLeast(15)) }
-                })
-                Spacer(Modifier.padding(horizontal = Spacing.xs))
-                Text(
-                    text = "${form.restSeconds}s",
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Spacer(Modifier.padding(horizontal = Spacing.xs))
-                GhostButton(text = "+15s", onClick = {
-                    onChange { it.copy(restSeconds = (it.restSeconds + 15).coerceAtMost(600)) }
-                })
-            }
-
-            IronTextField(
-                value = form.notes,
-                onValueChange = { value -> onChange { it.copy(notes = value) } },
-                label = "Observações",
-            )
-
+        },
+        footer = {
             PrimaryButton(
                 text = if (form.id == null) "Criar exercício" else "Salvar alterações",
                 onClick = onSubmit,
@@ -460,9 +339,158 @@ private fun ExerciseFormOverlay(
                 loading = saving,
                 modifier = Modifier.fillMaxWidth(),
             )
-            GhostButton(text = "Cancelar", onClick = onCancel, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier.height(Spacing.lg))
+            GhostButton(
+                text = "Cancelar",
+                onClick = requestDismiss,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        },
+    ) {
+        IronTextField(
+            value = form.name,
+            onValueChange = { value -> onChange { it.copy(name = value) } },
+            label = "Nome",
+        )
+        IronTextField(
+            value = form.muscleGroup,
+            onValueChange = { value -> onChange { it.copy(muscleGroup = value) } },
+            label = "Grupo muscular",
+        )
+
+        if (muscleGroups.isNotEmpty()) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                muscleGroups.forEach { group ->
+                    SelectChip(
+                        label = group,
+                        selected = form.muscleGroup == group,
+                        onClick = { onChange { it.copy(muscleGroup = group) } },
+                    )
+                }
+            }
         }
+
+        SectionLabel(text = "músculos trabalhados")
+        MuscleSelectionSummary(
+            selection = form.muscles,
+            names = muscleNames,
+            emptyMessage = unmappedReason ?: "Nenhum músculo escolhido ainda.",
+            modifier = Modifier.fillMaxWidth(),
+        )
+        GhostButton(
+            text = if (form.muscles.isEmpty) {
+                "Escolher músculos"
+            } else {
+                "Editar músculos (${form.muscles.total})"
+            },
+            onClick = { pickingMuscles = true },
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        IronTextField(
+            value = form.equipment,
+            onValueChange = { value -> onChange { it.copy(equipment = value) } },
+            label = "Equipamento",
+        )
+
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+            SelectChip(
+                label = "Séries e reps",
+                selected = form.executionType == "sets",
+                onClick = { onChange { it.copy(executionType = "sets") } },
+            )
+            SelectChip(
+                label = "Por tempo",
+                selected = form.executionType == "time",
+                onClick = { onChange { it.copy(executionType = "time") } },
+            )
+        }
+
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Usa carga",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+            )
+            Switch(
+                checked = form.usesWeight,
+                onCheckedChange = { value -> onChange { it.copy(usesWeight = value) } },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = IronBackground,
+                    checkedTrackColor = IronPrimary,
+                    uncheckedTrackColor = IronSurfaceHigh,
+                ),
+            )
+        }
+
+        if (form.usesWeight) {
+            WeightOptionsSection(
+                options = form.weightOptions,
+                onChange = { options -> onChange { it.copy(weightOptions = options) } },
+            )
+        }
+
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Descanso padrão",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+            )
+            GhostButton(text = "\u221215s", onClick = {
+                onChange { it.copy(restSeconds = (it.restSeconds - 15).coerceAtLeast(15)) }
+            })
+            Spacer(Modifier.padding(horizontal = Spacing.xs))
+            Text(
+                text = "${form.restSeconds}s",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(Modifier.padding(horizontal = Spacing.xs))
+            GhostButton(text = "+15s", onClick = {
+                onChange { it.copy(restSeconds = (it.restSeconds + 15).coerceAtMost(600)) }
+            })
+        }
+
+        IronTextField(
+            value = form.notes,
+            onValueChange = { value -> onChange { it.copy(notes = value) } },
+            label = "Observações",
+        )
+    }
+
+    if (pickingMuscles) {
+        MusclePickerSheet(
+            catalog = muscleCatalog,
+            selection = form.muscles,
+            onSelectionChange = { selection -> onChange { it.copy(muscles = selection) } },
+            onClose = { pickingMuscles = false },
+            onRetryCatalog = onRetryMuscleCatalog,
+        )
+    }
+
+    if (confirmDiscard) {
+        AlertDialog(
+            onDismissRequest = { confirmDiscard = false },
+            containerColor = IronSurface,
+            titleContentColor = IronTextPrimary,
+            textContentColor = IronTextSecondary,
+            title = { Text("Descartar alterações?", style = MaterialTheme.typography.titleLarge) },
+            text = { Text("O que você mudou neste exercício será perdido.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDiscard = false
+                    onCancel()
+                }) {
+                    Text("Descartar", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDiscard = false }) {
+                    Text("Continuar editando", color = IronTextMuted)
+                }
+            },
+        )
     }
 }
 
@@ -488,8 +516,8 @@ private fun WeightOptionsSection(options: List<Double>, onChange: (List<Double>)
         if (options.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 items(options) { weight ->
-                    Chip(
-                        text = Format.weight(weight),
+                    SelectChip(
+                        label = Format.weight(weight),
                         selected = false,
                         onClick = { onChange(options.filterNot { it == weight }) },
                     )
