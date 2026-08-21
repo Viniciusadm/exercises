@@ -57,14 +57,7 @@ fun WeightPickerDialog(
         title = { Text("Carga", style = MaterialTheme.typography.titleLarge) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                if (ladder.isEmpty()) {
-                    Text(
-                        text = "Este exercício ainda não tem cargas cadastradas. " +
-                            "Cadastre no catálogo para o +/- andar de peso em peso.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = IronTextMuted,
-                    )
-                } else {
+                if (!ladder.isEmpty()) {
                     SectionLabel(text = "cargas disponíveis")
                     LazyRow(
                         modifier = Modifier

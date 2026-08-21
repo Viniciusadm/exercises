@@ -124,7 +124,6 @@ fun AnatomyScreen(
             item {
                 EmptyState(
                     title = "Sem dados anatômicos",
-                    message = "Registre treinos com exercícios mapeados para ver o volume por músculo.",
                     modifier = Modifier.padding(horizontal = Spacing.lg),
                 )
             }
@@ -219,7 +218,7 @@ private fun MapCard(
         if (state.geometry?.hitTestingAvailable == false) {
             Spacer(Modifier.height(Spacing.sm))
             Text(
-                text = "Toque no mapa indisponível neste aparelho. Use a lista abaixo.",
+                text = "Toque no mapa indisponível neste aparelho.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = IronTextMuted,
             )
@@ -514,34 +513,4 @@ private fun MuscleRow(muscle: MuscleVolumeDto) {
 private fun AttributionCard(state: AnatomyUiState) {
     val attribution = state.attribution
     val unmapped = attribution.unmapped
-
-    IronCard(Modifier.padding(horizontal = Spacing.lg)) {
-        CardHeader(title = "Como esta conta é feita", caption = "para os números não enganarem")
-        Spacer(Modifier.height(Spacing.sm))
-
-        Text(
-            text = "Um exercício conta para todos os músculos que recruta, então a soma por " +
-                "músculo é maior que o volume da sessão. É proposital: mede carga recebida " +
-                "por músculo, não divisão do treino.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = IronTextMuted,
-        )
-
-        Spacer(Modifier.height(Spacing.md))
-        KeyValueRow(label = "Volume das sessões", value = Format.volume(attribution.sessionVolumeKg))
-        KeyValueRow(label = "Somado por músculo", value = Format.volume(attribution.attributedVolumeKg))
-        attribution.attributionFactor?.let {
-            KeyValueRow(label = "Fator de atribuição", value = "${trimZero(it)}×")
-        }
-
-        if (unmapped.sets > 0) {
-            Spacer(Modifier.height(Spacing.md))
-            Text(
-                text = "${unmapped.sets} séries ficaram fora da conta por falta de mapeamento: " +
-                    unmapped.exerciseNames.joinToString(", "),
-                style = MaterialTheme.typography.bodyMedium,
-                color = IronRecord,
-            )
-        }
-    }
 }

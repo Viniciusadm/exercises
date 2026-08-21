@@ -90,12 +90,6 @@ fun SessionExerciseListScreen(
             item {
                 Column(Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)) {
                     Text(text = "Treino vazio", style = MaterialTheme.typography.titleLarge)
-                    Spacer(Modifier.height(Spacing.xs))
-                    Text(
-                        text = "Adicione o primeiro exercício para começar a registrar as séries.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = IronTextSecondary,
-                    )
                 }
             }
         } else {

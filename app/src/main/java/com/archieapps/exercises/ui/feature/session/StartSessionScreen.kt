@@ -115,13 +115,6 @@ fun StartSessionScreen(
                         text = "Nenhum template ainda",
                         style = MaterialTheme.typography.titleMedium,
                     )
-                    Spacer(Modifier.height(Spacing.xs))
-                    Text(
-                        text = "Monte uma rotina fixa com séries, repetições e carga alvo para começar o treino " +
-                            "já preenchido.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = IronTextSecondary,
-                    )
                     Spacer(Modifier.height(Spacing.md))
                     PrimaryButton(
                         text = "Gerar plano com IA",

@@ -116,7 +116,6 @@ fun ProgressScreen(
                 } else {
                     EmptyState(
                         title = "Escolha um exercício",
-                        message = "Sincronize o catálogo e selecione um exercício para ver a evolução da carga.",
                     )
                 }
             }

@@ -36,13 +36,6 @@ fun AccessCodeDialog(
         title = { Text("Código de acesso") },
         text = {
             Column {
-                Text(
-                    "Toque no par que contém o dígito. Quem olhar a tela não vê qual você escolheu.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = IronTextSecondary,
-                )
-
-                Spacer(Modifier.height(12.dp))
                 Text("•".repeat(code.length / 2).ifEmpty { "————" }, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(12.dp))
 

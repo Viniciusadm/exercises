@@ -116,7 +116,6 @@ fun HomeScreen(
                 item {
                     EmptyState(
                         title = "Nada sincronizado ainda",
-                        message = "Confira o endereço do servidor nos ajustes e tente sincronizar de novo.",
                         actionText = "Sincronizar",
                         onAction = onRefresh,
                     )
@@ -232,7 +231,7 @@ private fun HeroCard(stats: StatsDto, onStartWorkout: () -> Unit, modifier: Modi
                 Text(
                     text = when {
                         days == null -> "Nenhum treino registrado"
-                        days == 0 -> "Você treinou hoje. Bom trabalho."
+                        days == 0 -> "Você treinou hoje."
                         days <= 2 -> "Ritmo em dia."
                         days <= 4 -> "Dá pra voltar hoje."
                         else -> "Faz tempo. Hora de voltar."
@@ -424,8 +423,7 @@ private fun AnatomyCard(
         val worst = neglected.firstOrNull()
 
         Text(
-            text = worst?.message
-                ?: "Veja quanto estímulo cada músculo recebeu e onde o volume está desequilibrado.",
+            text = worst?.message ?: "Volume equilibrado.",
             style = MaterialTheme.typography.bodyMedium,
             color = if (worst == null) IronTextMuted else IronRecord,
         )

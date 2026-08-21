@@ -146,8 +146,6 @@ fun CatalogScreen(
                     item {
                         EmptyState(
                             title = "Nenhum template",
-                            message = "Monte um aqui definindo séries, repetições e carga alvo, ou abra um treino " +
-                                "no histórico e use “criar template com este treino”.",
                         )
                     }
                 }
@@ -503,15 +501,6 @@ private fun WeightOptionsSection(options: List<Double>, onChange: (List<Double>)
 
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
         SectionLabel(text = "cargas disponíveis")
-        Text(
-            text = if (options.isEmpty()) {
-                "Sem cargas cadastradas o +/- anda de 1 em 1 kg."
-            } else {
-                "Toque numa carga para removê-la."
-            },
-            style = MaterialTheme.typography.bodyMedium,
-            color = IronTextMuted,
-        )
 
         if (options.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {

@@ -88,7 +88,7 @@ fun ExercisePickerOverlay(
 
             if (catalog.isEmpty()) {
                 Text(
-                    text = "Catálogo vazio no aparelho. Sincronize nos ajustes para escolher exercícios.",
+                    text = "Catálogo vazio no aparelho.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = IronTextMuted,
                 )

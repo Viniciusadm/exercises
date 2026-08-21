@@ -25,7 +25,6 @@ class RestNotifications(private val context: Context) {
             "Descanso em andamento",
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
-            description = "Mostra o tempo restante do descanso entre séries."
             setShowBadge(false)
         }
 
@@ -34,7 +33,6 @@ class RestNotifications(private val context: Context) {
             "Fim do descanso",
             NotificationManager.IMPORTANCE_HIGH,
         ).apply {
-            description = "Avisa quando o descanso termina."
             enableVibration(true)
             vibrationPattern = longArrayOf(0, 160, 120, 260)
             setSound(

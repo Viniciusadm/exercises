@@ -171,16 +171,6 @@ private fun PlanFormScreen(state: PlanUiState, actions: PlanActions, contentPadd
                             }
                         },
                     )
-                    Spacer(Modifier.height(Spacing.xs))
-                    Text(
-                        text = if (state.equipment.isEmpty()) {
-                            "Sem filtro: vale tudo que você tem."
-                        } else {
-                            "Só exercícios com o que você marcou."
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = IronTextMuted,
-                    )
                     Spacer(Modifier.height(Spacing.sm))
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                         items(state.equipmentOptions, key = { it }) { option ->
@@ -224,13 +214,6 @@ private fun PlanGeneratingScreen(state: PlanUiState, contentPadding: PaddingValu
         Text(
             text = "Montando ${state.daysPerWeek} ${if (state.daysPerWeek == 1) "treino" else "treinos"}",
             style = MaterialTheme.typography.titleMedium,
-        )
-        Spacer(Modifier.height(Spacing.sm))
-        Text(
-            text = "Olhando o que seus músculos andaram recebendo nas últimas 4 semanas.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = IronTextSecondary,
-            textAlign = TextAlign.Center,
         )
     }
 }

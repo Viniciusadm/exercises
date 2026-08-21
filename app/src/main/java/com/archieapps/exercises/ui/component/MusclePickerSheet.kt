@@ -80,12 +80,6 @@ fun MusclePickerSheet(
     ) {
         IronTextField(value = query, onValueChange = { query = it }, label = "Buscar músculo")
 
-        Text(
-            text = "Principal faz o movimento · Auxiliar ajuda · Estabilizador segura a postura.",
-            style = MaterialTheme.typography.bodySmall,
-            color = IronTextMuted,
-        )
-
         if (catalog.isEmpty()) {
             Text(
                 text = "O catálogo de músculos ainda não foi baixado neste aparelho.",

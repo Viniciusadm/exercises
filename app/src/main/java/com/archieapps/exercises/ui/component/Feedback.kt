@@ -115,7 +115,7 @@ fun NoticeBanner(
 @Composable
 fun EmptyState(
     title: String,
-    message: String,
+    message: String? = null,
     modifier: Modifier = Modifier,
     actionText: String? = null,
     onAction: (() -> Unit)? = null,
@@ -132,13 +132,16 @@ fun EmptyState(
             color = IronTextPrimary,
             textAlign = TextAlign.Center,
         )
-        Spacer(Modifier.height(Spacing.sm))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = IronTextSecondary,
-            textAlign = TextAlign.Center,
-        )
+        if (message != null) {
+            Spacer(Modifier.height(Spacing.sm))
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = IronTextSecondary,
+                textAlign = TextAlign.Center,
+            )
+        }
+
         if (actionText != null && onAction != null) {
             Spacer(Modifier.height(Spacing.lg))
             PrimaryButton(text = actionText, onClick = onAction)

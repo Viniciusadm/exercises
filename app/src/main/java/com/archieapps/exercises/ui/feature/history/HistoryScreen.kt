@@ -105,7 +105,6 @@ fun HistoryScreen(
                 } else {
                     EmptyState(
                         title = "Sem treinos por aqui",
-                        message = "Quando você registrar uma sessão, ela aparece nesta lista.",
                     )
                 }
             }
