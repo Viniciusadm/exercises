@@ -41,6 +41,8 @@ import com.archieapps.exercises.core.anatomy.BodyView
 import com.archieapps.exercises.ui.component.BodyMap
 import com.archieapps.exercises.ui.feature.anatomy.activationRegions
 
+private val FloatingBarClearance = 116.dp
+
 private fun exercisePhaseLabel(state: SessionUiState, index: Int, exercise: SessionExercise): String {
     val phase = state.phase
 
@@ -217,5 +219,7 @@ fun ExerciseLogScreen(
                 )
             }
         }
+
+        item { Spacer(Modifier.height(FloatingBarClearance)) }
     }
 }

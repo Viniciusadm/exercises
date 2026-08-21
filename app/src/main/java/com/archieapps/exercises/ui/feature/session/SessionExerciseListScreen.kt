@@ -55,6 +55,8 @@ import com.archieapps.exercises.ui.design.IronTextPrimary
 import com.archieapps.exercises.ui.design.IronTextSecondary
 import com.archieapps.exercises.ui.design.Spacing
 
+private val FloatingBarClearance = 116.dp
+
 @Composable
 fun SessionExerciseListScreen(
     state: SessionUiState,
@@ -147,6 +149,8 @@ fun SessionExerciseListScreen(
                     .padding(horizontal = Spacing.lg),
             )
         }
+
+        item { Spacer(Modifier.height(FloatingBarClearance)) }
     }
 }
 
