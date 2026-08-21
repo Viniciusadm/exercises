@@ -27,6 +27,9 @@ data class Pagination(
 data class LoginRequest(val email: String, val password: String)
 
 @Serializable
+data class AccessCodeRequest(val code: String)
+
+@Serializable
 data class Session(
     val user: SessionUser? = null,
     val token: String,

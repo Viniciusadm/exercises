@@ -5,6 +5,7 @@ import com.archieapps.exercises.BuildConfig
 import androidx.room.Room
 import com.archieapps.exercises.core.anatomy.BodyGeometryLoader
 import com.archieapps.exercises.core.data.AnatomyRepository
+import com.archieapps.exercises.core.data.AccessRepository
 import com.archieapps.exercises.core.data.AuthRepository
 import com.archieapps.exercises.core.data.ExerciseRepository
 import com.archieapps.exercises.core.data.HomeRepository
@@ -69,6 +70,8 @@ class AppContainer(context: Context) {
     private val caller = ApiCaller(ApiJson)
 
     val authRepository = AuthRepository(api, caller, settings)
+
+    val accessRepository = AccessRepository(api, caller)
 
     val homeRepository = HomeRepository(api, database.jsonCache(), caller, ApiJson)
 

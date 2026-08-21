@@ -30,10 +30,14 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
+import kotlinx.serialization.json.JsonElement
 
 interface ExercisesApi {
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): Envelope<Session>
+
+    @POST("api/user/test")
+    suspend fun validateAccessCode(@Body request: AccessCodeRequest): Envelope<JsonElement>
 
     @GET("api/workouts/stats")
     suspend fun stats(

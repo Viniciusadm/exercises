@@ -29,6 +29,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import com.archieapps.exercises.core.access.AccessCode
+import com.archieapps.exercises.core.net.ApiResult
+import com.archieapps.exercises.ui.feature.access.AccessCodeDialog
+import kotlinx.coroutines.launch
 import com.archieapps.exercises.core.di.AppContainer
 import com.archieapps.exercises.core.rest.OpenSessionBus
 import com.archieapps.exercises.ui.design.IronBackground
@@ -60,6 +68,10 @@ import com.archieapps.exercises.ui.feature.session.SessionViewModel
 @Composable
 fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val scope = rememberCoroutineScope()
+    val codeRequestedAt by AccessCode.requestedAt.collectAsState()
+    var validatingCode by remember { mutableStateOf(false) }
+    var codeError by remember { mutableStateOf<String?>(null) }
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val showBottomBar = TopLevelDestination.entries.any { it.route == currentRoute } || currentRoute == null
@@ -74,6 +86,35 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
 
             OpenSessionBus.consume()
         }
+    }
+
+    if (codeRequestedAt != null) {
+        AccessCodeDialog(
+            submitting = validatingCode,
+            error = codeError,
+            onSubmit = { code ->
+                validatingCode = true
+                codeError = null
+
+                scope.launch {
+                    when (val result = container.accessRepository.validate(code)) {
+                        is ApiResult.Success -> {
+                            validatingCode = false
+                            AccessCode.consume()
+                        }
+
+                        is ApiResult.Failure -> {
+                            validatingCode = false
+                            codeError = result.message
+                        }
+                    }
+                }
+            },
+            onDismiss = {
+                codeError = null
+                AccessCode.consume()
+            },
+        )
     }
 
     Scaffold(
