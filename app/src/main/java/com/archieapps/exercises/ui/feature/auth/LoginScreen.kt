@@ -16,13 +16,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.archieapps.exercises.BuildConfig
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
@@ -89,15 +87,6 @@ fun LoginScreen(
             enabled = state.canSubmit,
             loading = state.loading,
             modifier = Modifier.fillMaxWidth(),
-        )
-
-        Spacer(Modifier.height(Spacing.lg))
-
-        Text(
-            text = "Servidor: ${BuildConfig.BASE_URL}",
-            style = MaterialTheme.typography.labelMedium,
-            color = IronTextMuted,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
         Spacer(Modifier.height(Spacing.xxl))
