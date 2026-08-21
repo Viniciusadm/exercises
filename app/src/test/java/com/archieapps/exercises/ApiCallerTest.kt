@@ -14,7 +14,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -29,7 +28,7 @@ class ApiCallerTest {
 
     private val api: ExercisesApi by lazy {
         val client = OkHttpClient.Builder()
-            .addInterceptor(SessionInterceptor({ token }, { "12345678" }))
+            .addInterceptor(SessionInterceptor { token })
             .build()
 
         Retrofit.Builder()
@@ -52,7 +51,7 @@ class ApiCallerTest {
     }
 
     @Test
-    fun `successful envelope is unwrapped and the session headers are sent`() = runTest {
+    fun `successful envelope is unwrapped and the auth header is sent`() = runTest {
         server.enqueue(json(200, """{"message":"ok","body":[],"success":true}"""))
 
         val result = caller.call { api.calendar("2026-08-01", "2026-08-19") }
@@ -61,20 +60,9 @@ class ApiCallerTest {
         val request = server.takeRequest()
         assertEquals("Bearer abc123", request.getHeader("Authorization"))
         assertEquals("application/json", request.getHeader("Accept"))
-        assertNull("GET não deve enviar o header code", request.getHeader("code"))
         assertEquals("/api/workouts/calendar?from=2026-08-01&to=2026-08-19", request.path)
     }
 
-    @Test
-    fun `writes carry the safe code header`() = runTest {
-        server.enqueue(json(200, """{"body":{"token":"t"},"success":true}"""))
-
-        caller.call { api.login(LoginRequest("a@b.c", "secret")) }
-
-        val request = server.takeRequest()
-        assertEquals("POST", request.method)
-        assertEquals("12345678", request.getHeader("code"))
-    }
 
     @Test
     fun `envelope with success false becomes a server failure carrying the message`() = runTest {

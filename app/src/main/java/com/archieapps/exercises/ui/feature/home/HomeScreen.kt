@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.R
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.format.PtBr
-import com.archieapps.exercises.core.net.SafeCode
+import com.archieapps.exercises.core.net.ServerTime
 import com.archieapps.exercises.core.net.dto.CalendarDayDto
 import com.archieapps.exercises.core.net.dto.MonthlyDto
 import com.archieapps.exercises.core.net.dto.RecordDto
@@ -181,7 +181,7 @@ private fun HomeHeader(
     onRefresh: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    val today = LocalDate.now(SafeCode.ServerZone)
+    val today = ServerTime.today()
 
     Row(
         Modifier

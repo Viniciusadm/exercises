@@ -5,7 +5,7 @@ import com.archieapps.exercises.core.db.JsonCacheEntity
 import com.archieapps.exercises.core.net.ApiCaller
 import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.ExercisesApi
-import com.archieapps.exercises.core.net.SafeCode
+import com.archieapps.exercises.core.net.ServerTime
 import com.archieapps.exercises.core.net.dto.CalendarDayDto
 import com.archieapps.exercises.core.net.dto.StatsDto
 import java.time.DayOfWeek
@@ -36,7 +36,7 @@ class HomeRepository(
         }
     }
 
-    suspend fun refresh(today: LocalDate = SafeCode.today()): ApiResult<Unit> {
+    suspend fun refresh(today: LocalDate = ServerTime.today()): ApiResult<Unit> {
         val stats = caller.call { api.stats() }
         if (stats is ApiResult.Failure) return stats
 

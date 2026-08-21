@@ -8,7 +8,7 @@ import com.archieapps.exercises.core.net.ApiCaller
 import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.ExercisesApi
 import com.archieapps.exercises.core.net.FailureKind
-import com.archieapps.exercises.core.net.SafeCode
+import com.archieapps.exercises.core.net.ServerTime
 import com.archieapps.exercises.core.net.dto.LatestExerciseDto
 import com.archieapps.exercises.core.net.dto.WorkoutRequest
 import com.archieapps.exercises.core.session.ActiveSession
@@ -58,7 +58,7 @@ class SessionRepository(
     suspend fun finish(session: ActiveSession, finishedAtMillis: Long): FinishOutcome {
         if (!session.hasWork) return FinishOutcome.Rejected("Nenhuma série concluída neste treino.")
 
-        val request = session.toRequest(SafeCode.ServerZone, finishedAtMillis)
+        val request = session.toRequest(ServerTime.zone, finishedAtMillis)
         val outcome = send(request)
 
         if (outcome !is FinishOutcome.Rejected) discardDraft()

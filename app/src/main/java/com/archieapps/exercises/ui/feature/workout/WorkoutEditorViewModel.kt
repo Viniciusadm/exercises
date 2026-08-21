@@ -6,7 +6,7 @@ import com.archieapps.exercises.core.data.ExerciseRepository
 import com.archieapps.exercises.core.data.WorkoutRepository
 import com.archieapps.exercises.core.db.ExerciseEntity
 import com.archieapps.exercises.core.net.ApiResult
-import com.archieapps.exercises.core.net.SafeCode
+import com.archieapps.exercises.core.net.ServerTime
 import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.net.dto.WorkoutExerciseRequest
 import com.archieapps.exercises.core.net.dto.WorkoutRequest
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 data class WorkoutEditorUiState(
     val workoutId: Int = 0,
     val name: String = "",
-    val date: LocalDate = LocalDate.now(SafeCode.ServerZone),
+    val date: LocalDate = ServerTime.today(),
     val durationMinutes: Int = 50,
     val notes: String = "",
     val exercises: List<SessionExercise> = emptyList(),
@@ -254,7 +254,7 @@ class WorkoutEditorViewModel(
 
     private data class FormState(
         val name: String = "",
-        val date: LocalDate = LocalDate.now(SafeCode.ServerZone),
+        val date: LocalDate = ServerTime.today(),
         val durationMinutes: Int = 50,
         val notes: String = "",
         val workoutType: String = "Musculação",
