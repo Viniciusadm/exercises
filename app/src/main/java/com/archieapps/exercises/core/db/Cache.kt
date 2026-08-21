@@ -97,6 +97,9 @@ interface ExerciseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertAll(exercises: List<ExerciseEntity>)
 
+    @Query("DELETE FROM exercises WHERE id = :id")
+    suspend fun delete(id: Int)
+
     @Query("DELETE FROM exercises WHERE id NOT IN (:keepIds)")
     suspend fun deleteMissing(keepIds: List<Int>)
 }

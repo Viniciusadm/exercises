@@ -203,6 +203,31 @@ class CatalogViewModel(
         }
     }
 
+    fun deleteExercise() {
+        val form = local.value.form ?: return
+        val id = form.id ?: return
+
+        viewModelScope.launch {
+            local.update { it.copy(saving = true) }
+
+            when (val result = exercises.delete(id)) {
+                is ApiResult.Success -> local.update {
+                    it.copy(
+                        saving = false,
+                        form = null,
+                        pristineForm = null,
+                        message = "\"${form.name.trim()}\" excluído.",
+                        isError = false,
+                    )
+                }
+
+                is ApiResult.Failure -> local.update {
+                    it.copy(saving = false, message = result.message, isError = true)
+                }
+            }
+        }
+    }
+
     fun deleteTemplate(template: TemplateDto) {
         viewModelScope.launch {
             when (val result = templates.delete(template.id)) {

@@ -68,6 +68,7 @@ fun CatalogScreen(
     onFormChange: ((ExerciseForm) -> ExerciseForm) -> Unit,
     onSubmitForm: () -> Unit,
     onCancelForm: () -> Unit,
+    onDeleteExercise: () -> Unit,
     onDeleteTemplate: (TemplateDto) -> Unit,
     onOpenTemplate: (Int?) -> Unit,
     onPlanWorkout: () -> Unit,
@@ -224,6 +225,7 @@ fun CatalogScreen(
                 onChange = onFormChange,
                 onSubmit = onSubmitForm,
                 onCancel = onCancelForm,
+                onDelete = onDeleteExercise,
                 onRetryMuscleCatalog = onRetryMuscleCatalog,
             )
         }
@@ -312,9 +314,11 @@ private fun ExerciseFormOverlay(
     onChange: ((ExerciseForm) -> ExerciseForm) -> Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
+    onDelete: () -> Unit,
     onRetryMuscleCatalog: () -> Unit,
 ) {
     var confirmDiscard by remember { mutableStateOf(false) }
+    var confirmDelete by remember { mutableStateOf(false) }
     var pickingMuscles by remember { mutableStateOf(false) }
 
     val requestDismiss: () -> Unit = { if (dirty) confirmDiscard = true else onCancel() }
@@ -342,6 +346,15 @@ private fun ExerciseFormOverlay(
                 onClick = requestDismiss,
                 modifier = Modifier.fillMaxWidth(),
             )
+            if (form.id != null) {
+                TextButton(
+                    onClick = { confirmDelete = true },
+                    enabled = !saving,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Excluir exercício", color = MaterialTheme.colorScheme.error)
+                }
+            }
         },
     ) {
         IronTextField(
@@ -486,6 +499,35 @@ private fun ExerciseFormOverlay(
             dismissButton = {
                 TextButton(onClick = { confirmDiscard = false }) {
                     Text("Continuar editando", color = IronTextMuted)
+                }
+            },
+        )
+    }
+
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            containerColor = IronSurface,
+            titleContentColor = IronTextPrimary,
+            textContentColor = IronTextSecondary,
+            title = { Text("Excluir exercício?", style = MaterialTheme.typography.titleLarge) },
+            text = {
+                Text(
+                    "\"${form.name.trim()}\" sai do catálogo, dos templates e do mapeamento de músculos. " +
+                        "Os treinos já feitos continuam no histórico."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    onDelete()
+                }) {
+                    Text("Excluir", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) {
+                    Text("Manter", color = IronTextMuted)
                 }
             },
         )

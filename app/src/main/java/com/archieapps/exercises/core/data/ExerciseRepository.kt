@@ -52,6 +52,14 @@ class ExerciseRepository(
         return result
     }
 
+    suspend fun delete(id: Int): ApiResult<Map<String, Int>> {
+        val result = caller.call { api.deleteExercise(id) }
+
+        if (result is ApiResult.Success) dao.delete(id)
+
+        return result
+    }
+
     suspend fun find(id: Int) = dao.find(id)
 
     private fun toEntity(dto: ExerciseDto) = ExerciseEntity(

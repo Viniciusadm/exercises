@@ -239,6 +239,7 @@ fun ExercisesNavHost(container: AppContainer, modifier: Modifier = Modifier) {
                     onFormChange = viewModel::updateForm,
                     onSubmitForm = viewModel::submitForm,
                     onCancelForm = viewModel::cancelForm,
+                    onDeleteExercise = viewModel::deleteExercise,
                     onDeleteTemplate = viewModel::deleteTemplate,
                     onOpenTemplate = { id -> navController.navigate(Routes.template(id)) },
                     onPlanWorkout = { navController.navigate(Routes.PLAN) },

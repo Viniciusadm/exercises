@@ -124,6 +124,9 @@ interface ExercisesApi {
         @Query("limit") limit: Int = 60,
     ): Envelope<ExerciseHistoryDto>
 
+    @DELETE("api/exercises/{id}")
+    suspend fun deleteExercise(@Path("id") id: Int): Envelope<Map<String, Int>>
+
     @POST("api/exercises")
     suspend fun createExercise(@Body request: ExerciseRequest): Envelope<ExerciseDto>
 
