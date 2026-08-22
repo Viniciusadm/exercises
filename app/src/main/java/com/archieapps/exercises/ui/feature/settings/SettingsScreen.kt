@@ -153,7 +153,7 @@ fun SettingsScreen(
             GhostButton(text = "Sair da conta", onClick = onLogout, modifier = Modifier.fillMaxWidth())
         }
 
-        IronCard(Modifier.padding(horizontal = Spacing.lg)) {
+        IronCard {
             CardHeader(title = "Sobre", caption = "código e assets de terceiros")
             Spacer(Modifier.height(Spacing.md))
             GhostButton(
