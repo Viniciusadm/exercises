@@ -29,6 +29,9 @@ data class TotalsDto(
     val sets: Int = 0,
     val reps: Int = 0,
     @SerialName("volume_kg") val volumeKg: Double = 0.0,
+    @SerialName("distance_km") val distanceKm: Double = 0.0,
+    @SerialName("timed_seconds") val timedSeconds: Int = 0,
+    @SerialName("avg_speed_kmh") val avgSpeedKmh: Double? = null,
 )
 
 @Serializable
@@ -36,6 +39,7 @@ data class AveragesDto(
     @SerialName("minutes_per_session") val minutesPerSession: Double = 0.0,
     @SerialName("volume_per_session") val volumePerSession: Double = 0.0,
     @SerialName("sessions_per_week") val sessionsPerWeek: Double = 0.0,
+    @SerialName("distance_per_session") val distancePerSession: Double = 0.0,
 )
 
 @Serializable
@@ -63,6 +67,7 @@ data class WeekdayDto(
     val label: String,
     val sessions: Int = 0,
     @SerialName("volume_kg") val volumeKg: Double = 0.0,
+    @SerialName("distance_km") val distanceKm: Double = 0.0,
 )
 
 @Serializable
@@ -80,6 +85,7 @@ data class MonthlyDto(
     val sessions: Int = 0,
     val minutes: Int = 0,
     @SerialName("volume_kg") val volumeKg: Double = 0.0,
+    @SerialName("distance_km") val distanceKm: Double = 0.0,
 )
 
 @Serializable
@@ -110,4 +116,5 @@ data class CalendarDayDto(
     val minutes: Int = 0,
     val sets: Int = 0,
     @SerialName("volume_kg") val volumeKg: Double = 0.0,
+    @SerialName("distance_km") val distanceKm: Double = 0.0,
 )

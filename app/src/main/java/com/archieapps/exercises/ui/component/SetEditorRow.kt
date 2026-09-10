@@ -5,9 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -65,12 +67,21 @@ fun SetEditorHeader(exercise: SessionExercise, modifier: Modifier = Modifier) {
             modifier = Modifier.width(ColumnNumberWidth),
         )
         Text(
-            text = if (exercise.executionType == "time") "TEMPO" else "REPS",
+            text = if (exercise.isTimed) "TEMPO" else "REPS",
             style = MaterialTheme.typography.labelSmall,
             color = IronTextMuted,
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),
         )
+        if (exercise.tracksDistance) {
+            Text(
+                text = "KM",
+                style = MaterialTheme.typography.labelSmall,
+                color = IronTextMuted,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f),
+            )
+        }
         if (exercise.usesWeight) {
             Text(
                 text = "CARGA (KG)",
@@ -93,10 +104,13 @@ fun SetEditorRow(
     onWeightStep: (Int) -> Unit,
     onWeightSet: (Double) -> Unit,
     onDurationChange: (Int) -> Unit,
+    onDistanceStep: (Int) -> Unit,
+    onDistanceSet: (Double) -> Unit,
     action: SetAction,
     onRemove: () -> Unit,
     removable: Boolean = true,
     weightOptions: List<Double> = emptyList(),
+    elapsedSeconds: Long? = null,
 ) {
     val state = action.runState
     val background = when (state) {
@@ -105,60 +119,104 @@ fun SetEditorRow(
         SetRunState.Pending -> IronSurfaceHigh
     }
     var pickingWeight by remember { mutableStateOf(false) }
+    var pickingDistance by remember { mutableStateOf(false) }
+    val running = state == SetRunState.Running
 
-    Row(
+    Column(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
             .background(background)
             .padding(horizontal = Spacing.sm, vertical = Spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Box(
-            Modifier
-                .width(ColumnNumberWidth)
-                .clickable(enabled = removable, onClick = onRemove),
-            contentAlignment = Alignment.Center,
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
+            Box(
+                Modifier
+                    .width(ColumnNumberWidth)
+                    .clickable(enabled = removable, onClick = onRemove),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = position.toString(),
+                    style = IronText.metricSmall,
+                    color = when (state) {
+                        SetRunState.Running -> IronPrimary
+                        SetRunState.Done -> IronPositive
+                        SetRunState.Pending -> IronTextSecondary
+                    },
+                )
+            }
+
+            if (exercise.isTimed) {
+                SetStepper(
+                    value = if (running && elapsedSeconds != null) {
+                        Format.clock(elapsedSeconds)
+                    } else {
+                        Format.integer(set.durationSeconds ?: 0) + "s"
+                    },
+                    onDecrease = { onDurationChange(-15) },
+                    onIncrease = { onDurationChange(15) },
+                    modifier = Modifier.weight(1f),
+                    enabled = !running,
+                    highlighted = running,
+                )
+            } else {
+                SetStepper(
+                    value = Format.integer(set.repetitions ?: 0),
+                    onDecrease = { onRepsChange(-1) },
+                    onIncrease = { onRepsChange(1) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+
+            if (exercise.tracksDistance) {
+                SetStepper(
+                    value = Format.distanceValue(set.distanceKm ?: 0.0),
+                    onDecrease = { onDistanceStep(-1) },
+                    onIncrease = { onDistanceStep(1) },
+                    modifier = Modifier.weight(1f),
+                    onValueClick = { pickingDistance = true },
+                )
+            }
+
+            if (exercise.usesWeight) {
+                SetStepper(
+                    value = Format.weightValue(set.weightKg ?: 0.0),
+                    onDecrease = { onWeightStep(-1) },
+                    onIncrease = { onWeightStep(1) },
+                    modifier = Modifier.weight(1f),
+                    onValueClick = { pickingWeight = true },
+                )
+            }
+
+            SetActionButton(action = action)
+        }
+
+        set.speedKmh?.takeIf { exercise.tracksDistance }?.let { speed ->
+            Spacer(Modifier.height(Spacing.xs))
             Text(
-                text = position.toString(),
-                style = IronText.metricSmall,
-                color = when (state) {
-                    SetRunState.Running -> IronPrimary
-                    SetRunState.Done -> IronPositive
-                    SetRunState.Pending -> IronTextSecondary
-                },
+                text = "${Format.speed(speed)} · ${Format.pace(set.paceSecondsPerKm)}",
+                style = MaterialTheme.typography.labelSmall,
+                color = IronTextMuted,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
+    }
 
-        if (exercise.executionType == "time") {
-            SetStepper(
-                value = Format.integer(set.durationSeconds ?: 0) + "s",
-                onDecrease = { onDurationChange(-15) },
-                onIncrease = { onDurationChange(15) },
-                modifier = Modifier.weight(1f),
-            )
-        } else {
-            SetStepper(
-                value = Format.integer(set.repetitions ?: 0),
-                onDecrease = { onRepsChange(-1) },
-                onIncrease = { onRepsChange(1) },
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        if (exercise.usesWeight) {
-            SetStepper(
-                value = Format.weightValue(set.weightKg ?: 0.0),
-                onDecrease = { onWeightStep(-1) },
-                onIncrease = { onWeightStep(1) },
-                modifier = Modifier.weight(1f),
-                onValueClick = { pickingWeight = true },
-            )
-        }
-
-        SetActionButton(action = action)
+    if (pickingDistance) {
+        DistancePickerDialog(
+            current = set.distanceKm,
+            onDismiss = { pickingDistance = false },
+            onConfirm = { distance ->
+                onDistanceSet(distance)
+                pickingDistance = false
+            },
+        )
     }
 
     if (pickingWeight) {
@@ -270,20 +328,22 @@ fun SetStepper(
     onIncrease: () -> Unit,
     modifier: Modifier = Modifier,
     onValueClick: (() -> Unit)? = null,
+    enabled: Boolean = true,
+    highlighted: Boolean = false,
 ) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        SetStepperButton(label = "−", onClick = onDecrease)
+        SetStepperButton(label = "−", onClick = onDecrease, enabled = enabled)
         Text(
             text = value,
             style = IronText.stepper,
-            color = IronTextPrimary,
+            color = if (highlighted) IronPrimary else IronTextPrimary,
             textAlign = TextAlign.Center,
             maxLines = 1,
             softWrap = false,
             modifier = Modifier
                 .weight(1f)
                 .then(
-                    if (onValueClick == null) {
+                    if (onValueClick == null || !enabled) {
                         Modifier
                     } else {
                         Modifier
@@ -293,20 +353,24 @@ fun SetStepper(
                     }
                 ),
         )
-        SetStepperButton(label = "+", onClick = onIncrease)
+        SetStepperButton(label = "+", onClick = onIncrease, enabled = enabled)
     }
 }
 
 @Composable
-private fun SetStepperButton(label: String, onClick: () -> Unit) {
+private fun SetStepperButton(label: String, onClick: () -> Unit, enabled: Boolean = true) {
     Box(
         Modifier
             .size(StepButtonSize)
             .clip(CircleShape)
             .background(IronSurface)
-            .clickable(onClick = onClick),
+            .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = label, style = MaterialTheme.typography.titleMedium, color = IronTextSecondary)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            color = if (enabled) IronTextSecondary else IronTextMuted,
+        )
     }
 }

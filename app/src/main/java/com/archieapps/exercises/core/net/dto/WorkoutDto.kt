@@ -21,6 +21,8 @@ data class WorkoutDto(
     @SerialName("sets_count") val setsCount: Int = 0,
     @SerialName("total_reps") val totalReps: Int = 0,
     @SerialName("total_volume_kg") val totalVolumeKg: Double = 0.0,
+    @SerialName("total_distance_km") val totalDistanceKm: Double = 0.0,
+    @SerialName("avg_speed_kmh") val avgSpeedKmh: Double? = null,
     @SerialName("muscle_groups") val muscleGroups: List<String> = emptyList(),
     val exercises: List<WorkoutExerciseDto> = emptyList(),
 )
@@ -70,12 +72,16 @@ data class WorkoutExerciseDto(
     val name: String,
     @SerialName("execution_type") val executionType: String = "sets",
     @SerialName("uses_weight") val usesWeight: Boolean = false,
+    @SerialName("tracks_distance") val tracksDistance: Boolean = false,
     @SerialName("muscle_group") val muscleGroup: String? = null,
     val difficulty: String? = null,
     val notes: String? = null,
     val order: Int = 0,
     @SerialName("total_reps") val totalReps: Int = 0,
     @SerialName("total_volume_kg") val totalVolumeKg: Double = 0.0,
+    @SerialName("total_distance_km") val totalDistanceKm: Double = 0.0,
+    @SerialName("total_seconds") val totalSeconds: Int = 0,
+    @SerialName("avg_speed_kmh") val avgSpeedKmh: Double? = null,
     val sets: List<WorkoutSetDto> = emptyList(),
 )
 
@@ -85,7 +91,9 @@ data class WorkoutSetDto(
     @SerialName("set_number") val setNumber: Int,
     val repetitions: Int? = null,
     @SerialName("duration_seconds") val durationSeconds: Int? = null,
+    @SerialName("distance_km") val distanceKm: Double? = null,
     @SerialName("weight_kg") val weightKg: Double? = null,
+    @SerialName("speed_kmh") val speedKmh: Double? = null,
 )
 
 @Serializable
@@ -102,6 +110,7 @@ data class HistoryExerciseDto(
     val name: String,
     @SerialName("execution_type") val executionType: String = "sets",
     @SerialName("uses_weight") val usesWeight: Boolean = false,
+    @SerialName("tracks_distance") val tracksDistance: Boolean = false,
     @SerialName("muscle_group") val muscleGroup: String? = null,
     val equipment: String? = null,
     @SerialName("rest_seconds") val restSeconds: Int? = null,
@@ -117,6 +126,9 @@ data class HistoryRecordsDto(
     @SerialName("best_reps") val bestReps: RecordMarkDto? = null,
     @SerialName("best_estimated_1rm") val bestEstimated1rm: RecordMarkDto? = null,
     @SerialName("best_session_volume") val bestSessionVolume: RecordMarkDto? = null,
+    @SerialName("total_distance_km") val totalDistanceKm: Double = 0.0,
+    @SerialName("best_distance") val bestDistance: RecordMarkDto? = null,
+    @SerialName("best_speed") val bestSpeed: RecordMarkDto? = null,
 )
 
 @Serializable
@@ -124,6 +136,8 @@ data class RecordMarkDto(
     val value: Double,
     val repetitions: Int? = null,
     @SerialName("weight_kg") val weightKg: Double? = null,
+    @SerialName("distance_km") val distanceKm: Double? = null,
+    val seconds: Int? = null,
     val date: String? = null,
     @SerialName("workout_id") val workoutId: Int? = null,
 )
@@ -142,6 +156,9 @@ data class ExerciseSessionDto(
     val notes: String? = null,
     @SerialName("total_reps") val totalReps: Int = 0,
     @SerialName("total_volume_kg") val totalVolumeKg: Double = 0.0,
+    @SerialName("total_distance_km") val totalDistanceKm: Double = 0.0,
+    @SerialName("total_seconds") val totalSeconds: Int = 0,
+    @SerialName("avg_speed_kmh") val avgSpeedKmh: Double? = null,
     @SerialName("estimated_1rm") val estimated1rm: Double? = null,
     @SerialName("top_set") val topSet: WorkoutSetDto? = null,
     val sets: List<WorkoutSetDto> = emptyList(),
@@ -154,6 +171,7 @@ data class LatestExerciseDto(
     val date: String? = null,
     @SerialName("execution_type") val executionType: String = "sets",
     @SerialName("uses_weight") val usesWeight: Boolean = false,
+    @SerialName("tracks_distance") val tracksDistance: Boolean = false,
     val difficulty: String? = null,
     @SerialName("rest_seconds") val restSeconds: Int? = null,
     val sets: List<WorkoutSetDto> = emptyList(),
@@ -181,12 +199,15 @@ data class TemplateExerciseDto(
     val name: String = "",
     @SerialName("execution_type") val executionType: String = "sets",
     @SerialName("uses_weight") val usesWeight: Boolean = false,
+    @SerialName("tracks_distance") val tracksDistance: Boolean = false,
     @SerialName("muscle_group") val muscleGroup: String? = null,
     val equipment: String? = null,
     val order: Int = 0,
     @SerialName("target_sets") val targetSets: Int? = null,
     @SerialName("target_reps") val targetReps: Int? = null,
+    @SerialName("target_seconds") val targetSeconds: Int? = null,
     @SerialName("target_weight_kg") val targetWeightKg: Double? = null,
+    @SerialName("target_distance_km") val targetDistanceKm: Double? = null,
     @SerialName("rest_seconds") val restSeconds: Int? = null,
     val notes: String? = null,
 )

@@ -106,7 +106,13 @@ fun ExerciseLogScreen(
             IronCard(Modifier.padding(horizontal = Spacing.lg)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     exercise.equipment?.let { PillTag(text = it) }
-                    PillTag(text = Format.volume(exercise.volumeKg))
+
+                    if (exercise.tracksDistance) {
+                        PillTag(text = Format.distance(exercise.distanceKm))
+                        exercise.averageSpeedKmh?.let { PillTag(text = Format.speed(it)) }
+                    } else {
+                        PillTag(text = Format.volume(exercise.volumeKg))
+                    }
                 }
 
                 Spacer(Modifier.height(Spacing.sm))
@@ -177,6 +183,8 @@ fun ExerciseLogScreen(
                         onWeightStep = { direction -> actions.onChangeWeight(index, setIndex, direction) },
                         onWeightSet = { weight -> actions.onSetWeight(index, setIndex, weight) },
                         onDurationChange = { delta -> actions.onChangeDuration(index, setIndex, delta) },
+                        onDistanceStep = { direction -> actions.onChangeDistance(index, setIndex, direction) },
+                        onDistanceSet = { distance -> actions.onSetDistance(index, setIndex, distance) },
                         action = SetAction.Live(
                             runState = state.setRunState(index, setIndex),
                             startEnabled = canStartSet,
@@ -187,6 +195,7 @@ fun ExerciseLogScreen(
                         onRemove = { actions.onRemoveSet(index, setIndex) },
                         removable = state.draft?.canRemoveSet(index, setIndex) ?: true,
                         weightOptions = weightOptions,
+                        elapsedSeconds = state.elapsedSecondsOf(index, setIndex),
                     )
                     Spacer(Modifier.height(Spacing.sm))
                 }

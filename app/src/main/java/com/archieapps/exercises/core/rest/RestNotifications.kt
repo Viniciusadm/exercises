@@ -22,7 +22,7 @@ class RestNotifications(private val context: Context) {
 
         val ongoing = NotificationChannel(
             CHANNEL_ONGOING,
-            "Descanso em andamento",
+            "Treino em andamento",
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
             setShowBadge(false)
@@ -52,18 +52,28 @@ class RestNotifications(private val context: Context) {
     fun ongoing(snapshot: RestTimerBus.Snapshot): Notification =
         NotificationCompat.Builder(context, CHANNEL_ONGOING)
             .setSmallIcon(R.drawable.ic_dumbbell)
-            .setContentTitle("Descanso")
+            .setContentTitle(if (snapshot.countUp) "Em série" else "Descanso")
             .setContentText(snapshot.exerciseName)
-            .setWhen(snapshot.endsAtMillis)
+            .setWhen(if (snapshot.countUp) snapshot.startedAtMillis else snapshot.endsAtMillis)
             .setUsesChronometer(true)
-            .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) setChronometerCountDown(true) }
+            .apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    setChronometerCountDown(!snapshot.countUp)
+                }
+            }
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setShowWhen(true)
             .setSilent(true)
             .setContentIntent(openSession(REQUEST_ONGOING))
-            .addAction(0, "+15s", serviceAction(RestTimerService.ACTION_ADD))
-            .addAction(0, "Pular", serviceAction(RestTimerService.ACTION_SKIP))
+            .apply {
+                if (snapshot.countUp) {
+                    addAction(0, "Parar", serviceAction(RestTimerService.ACTION_FINISH_SET))
+                } else {
+                    addAction(0, "+15s", serviceAction(RestTimerService.ACTION_ADD))
+                    addAction(0, "Pular", serviceAction(RestTimerService.ACTION_SKIP))
+                }
+            }
             .build()
 
     fun alert(exerciseName: String) {

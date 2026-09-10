@@ -436,6 +436,23 @@ private fun ExerciseFormOverlay(
             )
         }
 
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Registra distância",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+            )
+            Switch(
+                checked = form.tracksDistance,
+                onCheckedChange = { value -> onChange { it.copy(tracksDistance = value) } },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = IronBackground,
+                    checkedTrackColor = IronPrimary,
+                    uncheckedTrackColor = IronSurfaceHigh,
+                ),
+            )
+        }
+
         if (form.usesWeight) {
             WeightOptionsSection(
                 options = form.weightOptions,

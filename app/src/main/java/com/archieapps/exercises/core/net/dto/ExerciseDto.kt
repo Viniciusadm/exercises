@@ -9,6 +9,7 @@ data class ExerciseDto(
     val name: String,
     @SerialName("execution_type") val executionType: String = "sets",
     @SerialName("uses_weight") val usesWeight: Boolean = false,
+    @SerialName("tracks_distance") val tracksDistance: Boolean = false,
     @SerialName("muscle_group") val muscleGroup: String? = null,
     val difficulty: String? = null,
     val equipment: String? = null,

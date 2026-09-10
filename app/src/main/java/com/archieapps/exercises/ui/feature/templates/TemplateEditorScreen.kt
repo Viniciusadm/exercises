@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.R
 import com.archieapps.exercises.core.format.Format
+import com.archieapps.exercises.core.session.DistanceLadder
 import com.archieapps.exercises.core.session.WeightLadder
 import com.archieapps.exercises.ui.component.ExercisePickerOverlay
 import com.archieapps.exercises.ui.component.GhostButton
@@ -232,12 +233,12 @@ private fun TemplateItemCard(
             onIncrease = { onUpdate { it.copy(targetSets = ((it.targetSets ?: 0) + 1).coerceAtMost(12)) } },
         )
 
-        if (item.executionType == "time") {
+        if (item.isTimed) {
             TargetRow(
                 label = "Tempo (s)",
-                value = item.targetReps?.toString() ?: Format.PLACEHOLDER,
-                onDecrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 15) - 15).coerceAtLeast(15)) } },
-                onIncrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 0) + 15).coerceAtMost(3600)) } },
+                value = item.targetSeconds?.toString() ?: Format.PLACEHOLDER,
+                onDecrease = { onUpdate { it.copy(targetSeconds = ((it.targetSeconds ?: 15) - 15).coerceAtLeast(15)) } },
+                onIncrease = { onUpdate { it.copy(targetSeconds = ((it.targetSeconds ?: 0) + 15).coerceAtMost(3600)) } },
             )
         } else {
             TargetRow(
@@ -245,6 +246,15 @@ private fun TemplateItemCard(
                 value = item.targetReps?.toString() ?: Format.PLACEHOLDER,
                 onDecrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 1) - 1).coerceAtLeast(1)) } },
                 onIncrease = { onUpdate { it.copy(targetReps = ((it.targetReps ?: 0) + 1).coerceAtMost(100)) } },
+            )
+        }
+
+        if (item.tracksDistance) {
+            TargetRow(
+                label = "Distância (km)",
+                value = item.targetDistanceKm?.let { Format.distance(it) } ?: Format.PLACEHOLDER,
+                onDecrease = { onUpdate { it.copy(targetDistanceKm = DistanceLadder.down(it.targetDistanceKm)) } },
+                onIncrease = { onUpdate { it.copy(targetDistanceKm = DistanceLadder.up(it.targetDistanceKm)) } },
             )
         }
 

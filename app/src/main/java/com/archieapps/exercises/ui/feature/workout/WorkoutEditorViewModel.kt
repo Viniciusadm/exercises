@@ -13,6 +13,7 @@ import com.archieapps.exercises.core.net.dto.WorkoutRequest
 import com.archieapps.exercises.core.net.dto.WorkoutSetRequest
 import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.core.session.SessionSet
+import com.archieapps.exercises.core.session.DistanceLadder
 import com.archieapps.exercises.core.session.WeightLadder
 import java.time.LocalDate
 import java.util.UUID
@@ -158,6 +159,22 @@ class WorkoutEditorViewModel(
     fun changeDurationSeconds(exerciseIndex: Int, setIndex: Int, delta: Int) =
         updateSet(exerciseIndex, setIndex) { set ->
             set.copy(durationSeconds = ((set.durationSeconds ?: 0) + delta).coerceIn(0, 7200))
+        }
+
+    fun changeDistance(exerciseIndex: Int, setIndex: Int, direction: Int) =
+        updateSet(exerciseIndex, setIndex) { set ->
+            set.copy(
+                distanceKm = if (direction >= 0) {
+                    DistanceLadder.up(set.distanceKm)
+                } else {
+                    DistanceLadder.down(set.distanceKm)
+                },
+            )
+        }
+
+    fun setDistance(exerciseIndex: Int, setIndex: Int, distanceKm: Double) =
+        updateSet(exerciseIndex, setIndex) { set ->
+            set.copy(distanceKm = DistanceLadder.clamp(distanceKm))
         }
 
     fun toggleSet(exerciseIndex: Int, setIndex: Int) = updateSet(exerciseIndex, setIndex) { set ->

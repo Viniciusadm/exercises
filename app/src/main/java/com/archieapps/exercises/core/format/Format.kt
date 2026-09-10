@@ -17,6 +17,10 @@ private val decimalFormat: NumberFormat = NumberFormat.getNumberInstance(PtBr).a
     maximumFractionDigits = 1
     minimumFractionDigits = 1
 }
+private val distanceFormat: NumberFormat = NumberFormat.getNumberInstance(PtBr).apply {
+    maximumFractionDigits = 2
+    minimumFractionDigits = 1
+}
 private val monthDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM", PtBr)
 private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", PtBr)
 
@@ -33,6 +37,23 @@ object Format {
     }
 
     fun weight(kg: Double?): String = if (kg == null) PLACEHOLDER else "${weightValue(kg)} kg"
+
+    fun distanceValue(km: Double?): String {
+        if (km == null) return PLACEHOLDER
+        val rounded = Math.round(km * 100) / 100.0
+
+        return if (rounded % 1.0 == 0.0) integerFormat.format(rounded.toLong()) else distanceFormat.format(rounded)
+    }
+
+    fun distance(km: Double?): String = if (km == null) PLACEHOLDER else "${distanceValue(km)} km"
+
+    fun speed(kmh: Double?): String = if (kmh == null) PLACEHOLDER else "${decimalFormat.format(kmh)} km/h"
+
+    fun pace(secondsPerKm: Int?): String {
+        if (secondsPerKm == null) return PLACEHOLDER
+
+        return "%d'%02d\"/km".format(secondsPerKm / 60, secondsPerKm % 60)
+    }
 
     fun volume(kg: Double?): String {
         if (kg == null) return PLACEHOLDER

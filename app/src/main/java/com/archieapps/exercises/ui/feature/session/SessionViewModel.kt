@@ -11,7 +11,9 @@ import com.archieapps.exercises.core.data.TemplateRepository
 import com.archieapps.exercises.core.data.WorkoutRepository
 import com.archieapps.exercises.core.db.ExerciseEntity
 import com.archieapps.exercises.core.format.Format
+import com.archieapps.exercises.core.session.DistanceLadder
 import com.archieapps.exercises.core.net.ApiResult
+import com.archieapps.exercises.core.rest.FinishSetBus
 import com.archieapps.exercises.core.rest.RestTimerBus
 import com.archieapps.exercises.core.rest.RestTimerController
 import com.archieapps.exercises.core.net.dto.ExerciseSessionDto
@@ -19,6 +21,7 @@ import com.archieapps.exercises.core.net.dto.TemplateDto
 import com.archieapps.exercises.core.net.dto.WorkoutDto
 import com.archieapps.exercises.core.session.ActiveSession
 import com.archieapps.exercises.core.session.SessionBuilder
+import com.archieapps.exercises.core.session.ExecutionType
 import com.archieapps.exercises.core.session.SessionEventType
 import com.archieapps.exercises.core.session.SessionExercise
 import com.archieapps.exercises.core.session.SessionPhase
@@ -50,6 +53,12 @@ data class RestState(
     val progress: Float get() = if (totalSeconds <= 0) 0f else remainingSeconds.toFloat() / totalSeconds
 }
 
+data class ExecutionState(
+    val exerciseName: String,
+    val setNumber: Int,
+    val elapsedSeconds: Long,
+)
+
 data class SessionUiState(
     val draft: ActiveSession? = null,
     val pendingStart: ActiveSession? = null,
@@ -73,6 +82,25 @@ data class SessionUiState(
         get() = draft?.let { SessionTimeBreakdown.of(it, nowMillis) } ?: SessionTimeBreakdown()
 
     val phase: SessionPhase get() = draft?.phase ?: SessionPhase.Idle
+
+    val execution: ExecutionState?
+        get() {
+            val executing = phase as? SessionPhase.Executing ?: return null
+            val exercise = draft?.exercises?.getOrNull(executing.exerciseIndex) ?: return null
+
+            return ExecutionState(
+                exerciseName = exercise.name,
+                setNumber = executing.setIndex + 1,
+                elapsedSeconds = ((nowMillis - executing.startedAtMillis) / 1_000L).coerceAtLeast(0L),
+            )
+        }
+
+    fun elapsedSecondsOf(exerciseIndex: Int, setIndex: Int): Long? {
+        val executing = phase as? SessionPhase.Executing ?: return null
+        if (executing.exerciseIndex != exerciseIndex || executing.setIndex != setIndex) return null
+
+        return ((nowMillis - executing.startedAtMillis) / 1_000L).coerceAtLeast(0L)
+    }
 
     fun weightOptionsFor(exerciseId: Int?): List<Double> =
         catalog.firstOrNull { it.id == exerciseId }?.weightOptions.orEmpty()
@@ -110,7 +138,7 @@ class SessionViewModel(
             recentWorkouts = extra.recentWorkouts,
             catalog = catalog,
             nowMillis = extra.nowMillis,
-            rest = rest?.let {
+            rest = rest?.takeUnless { it.countUp }?.let {
                 RestState(
                     exerciseName = it.exerciseName,
                     totalSeconds = it.totalSeconds,
@@ -135,6 +163,7 @@ class SessionViewModel(
             transient.value = transient.value.copy(geometry = geometryLoader.load())
         }
         startClock()
+        observeFinishRequests()
     }
 
     fun dismissMessage() = transient.update { it.copy(message = null) }
@@ -237,13 +266,7 @@ class SessionViewModel(
         draft.updateExercise(exerciseIndex) { exercise ->
             val reference = exercise.sets.lastOrNull()
 
-            exercise.copy(
-                sets = exercise.sets + SessionSet(
-                    repetitions = reference?.repetitions ?: exercise.targetReps ?: 12,
-                    weightKg = reference?.weightKg,
-                    durationSeconds = reference?.durationSeconds,
-                ),
-            )
+            exercise.copy(sets = exercise.sets + newSet(exercise, reference))
         }
     }
 
@@ -285,16 +308,29 @@ class SessionViewModel(
         set.copy(durationSeconds = ((set.durationSeconds ?: 0) + delta).coerceIn(0, 7200))
     }
 
+    fun changeDistance(exerciseIndex: Int, setIndex: Int, direction: Int) = updateSet(exerciseIndex, setIndex) { set ->
+        set.copy(
+            distanceKm = if (direction >= 0) {
+                DistanceLadder.up(set.distanceKm)
+            } else {
+                DistanceLadder.down(set.distanceKm)
+            },
+        )
+    }
+
+    fun setDistance(exerciseIndex: Int, setIndex: Int, distanceKm: Double) = updateSet(exerciseIndex, setIndex) { set ->
+        set.copy(distanceKm = DistanceLadder.clamp(distanceKm))
+    }
+
     fun startSet(exerciseIndex: Int, setIndex: Int) {
         viewModelScope.launch {
-            val wasResting = mutations.withLock {
+            val started = mutations.withLock {
                 val draft = sessions.observeDraft().first() ?: return@launch
 
                 if (draft.phase is SessionPhase.Executing) return@launch
                 if (draft.exercises.getOrNull(exerciseIndex)?.sets?.getOrNull(setIndex) == null) return@launch
 
                 val now = System.currentTimeMillis()
-                val resting = draft.phase is SessionPhase.Resting
 
                 sessions.saveDraft(
                     closeRest(draft, now, skipped = true)
@@ -302,10 +338,10 @@ class SessionViewModel(
                         .copy(phase = SessionPhase.Executing(exerciseIndex, setIndex, now)),
                 )
 
-                resting
+                draft.exercises[exerciseIndex].name to now
             }
 
-            if (wasResting) restTimer.skip()
+            restTimer.startExecution(started.first, started.second)
         }
     }
 
@@ -325,14 +361,7 @@ class SessionViewModel(
                 val restSeconds = (exercise.restSeconds ?: settings.current.defaultRestSeconds).coerceAtLeast(1)
 
                 sessions.saveDraft(
-                    draft
-                        .updateExercise(executing.exerciseIndex) { target ->
-                            target.copy(
-                                sets = target.sets.mapIndexed { position, set ->
-                                    if (position == executing.setIndex) set.copy(done = true) else set
-                                },
-                            )
-                        }
+                    draft.stampExecutingSet(now)
                         .record(SessionEventType.SET_FINISHED, now, executing.exerciseIndex, executing.setIndex)
                         .record(SessionEventType.REST_STARTED, now, executing.exerciseIndex, executing.setIndex)
                         .copy(
@@ -431,16 +460,22 @@ class SessionViewModel(
     private fun closeExecution(draft: ActiveSession, nowMillis: Long): ActiveSession {
         val executing = draft.phase as? SessionPhase.Executing ?: return draft
 
-        return draft
-            .updateExercise(executing.exerciseIndex) { target ->
-                target.copy(
-                    sets = target.sets.mapIndexed { position, set ->
-                        if (position == executing.setIndex) set.copy(done = true) else set
-                    },
-                )
-            }
+        return draft.stampExecutingSet(nowMillis)
             .record(SessionEventType.SET_FINISHED, nowMillis, executing.exerciseIndex, executing.setIndex)
             .copy(phase = SessionPhase.Idle)
+    }
+
+    private fun newSet(exercise: SessionExercise, reference: SessionSet?) = if (exercise.isTimed) {
+        SessionSet(
+            durationSeconds = reference?.durationSeconds ?: exercise.targetSeconds ?: 0,
+            distanceKm = reference?.distanceKm ?: exercise.targetDistanceKm,
+            weightKg = reference?.weightKg,
+        )
+    } else {
+        SessionSet(
+            repetitions = reference?.repetitions ?: exercise.targetReps ?: 12,
+            weightKg = reference?.weightKg,
+        )
     }
 
     private fun closeRest(draft: ActiveSession, nowMillis: Long, skipped: Boolean): ActiveSession {
@@ -457,6 +492,17 @@ class SessionViewModel(
             .copy(phase = SessionPhase.Idle)
     }
 
+    private fun observeFinishRequests() {
+        viewModelScope.launch {
+            FinishSetBus.requestedAt.collect { requestedAt ->
+                if (requestedAt == null) return@collect
+
+                FinishSetBus.consume()
+                finishSet()
+            }
+        }
+    }
+
     private fun startClock() {
         viewModelScope.launch {
             while (true) {
@@ -469,8 +515,9 @@ class SessionViewModel(
 
     private suspend fun reconcilePhase() {
         val snapshot = state.value.draft ?: return
+        val open = snapshot.phase is SessionPhase.Resting || snapshot.phase is SessionPhase.Executing
 
-        if (snapshot.events.isNotEmpty() && snapshot.phase !is SessionPhase.Resting) return
+        if (snapshot.events.isNotEmpty() && !open) return
 
         mutations.withLock {
             val draft = sessions.observeDraft().first() ?: return
@@ -480,6 +527,16 @@ class SessionViewModel(
                 sessions.saveDraft(
                     draft.record(SessionEventType.SESSION_STARTED, draft.startedAtEpochMillis),
                 )
+
+                return
+            }
+
+            (draft.phase as? SessionPhase.Executing)?.let { executing ->
+                if (RestTimerBus.current == null) {
+                    val name = draft.exercises.getOrNull(executing.exerciseIndex)?.name.orEmpty()
+
+                    restTimer.startExecution(name, executing.startedAtMillis)
+                }
 
                 return
             }
@@ -580,17 +637,21 @@ class SessionViewModel(
         return listOfNotNull(core.takeIf { it.isNotBlank() }, date).joinToString(" · ")
     }
 
-    private fun sessionExercise(exercise: ExerciseEntity) = SessionExercise(
-        exerciseId = exercise.id,
-        name = exercise.name,
-        executionType = exercise.executionType,
-        usesWeight = exercise.usesWeight,
-        muscleGroup = exercise.muscleGroup,
-        equipment = exercise.equipment,
-        restSeconds = exercise.restSeconds ?: settings.current.defaultRestSeconds,
-        bestWeightKg = exercise.bestWeightKg,
-        sets = listOf(SessionSet(repetitions = 12, weightKg = exercise.bestWeightKg)),
-    )
+    private fun sessionExercise(exercise: ExerciseEntity): SessionExercise {
+        val base = SessionExercise(
+            exerciseId = exercise.id,
+            name = exercise.name,
+            executionType = exercise.executionType,
+            usesWeight = exercise.usesWeight,
+            tracksDistance = exercise.tracksDistance,
+            muscleGroup = exercise.muscleGroup,
+            equipment = exercise.equipment,
+            restSeconds = exercise.restSeconds ?: settings.current.defaultRestSeconds,
+            bestWeightKg = exercise.bestWeightKg,
+        )
+
+        return base.copy(sets = listOf(newSet(base, reference = null).copy(weightKg = exercise.bestWeightKg)))
+    }
 
     private fun updateSet(exerciseIndex: Int, setIndex: Int, transform: (SessionSet) -> SessionSet) =
         mutate { draft ->

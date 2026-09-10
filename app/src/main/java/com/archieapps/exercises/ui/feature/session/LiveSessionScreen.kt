@@ -99,6 +99,20 @@ fun LiveSessionScreen(
         }
 
         val resting = state.phase is SessionPhase.Resting
+        val execution = state.execution
+
+        AnimatedVisibility(
+            visible = execution != null,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        ) {
+            execution?.let {
+                ExecutionBar(
+                    execution = it,
+                    onFinish = actions.onFinishSet,
+                    modifier = Modifier.padding(Spacing.lg),
+                )
+            }
+        }
 
         AnimatedVisibility(
             visible = resting && state.rest != null,
@@ -145,10 +159,17 @@ fun LiveSessionScreen(
             title = { Text("Finalizar treino?", style = MaterialTheme.typography.titleLarge) },
             text = {
                 Text(
-                    text = "${draft.completedSets} séries · ${Format.volume(draft.totalVolumeKg)}\n" +
-                        "execução ${Format.duration(state.breakdown.executionSeconds)} · " +
-                        "descanso ${Format.duration(state.breakdown.restSeconds)} · " +
-                        "ocioso ${Format.duration(state.breakdown.idleSeconds)}",
+                    text = buildString {
+                        append("${draft.completedSets} séries · ${Format.volume(draft.totalVolumeKg)}")
+
+                        if (draft.totalDistanceKm > 0) {
+                            append(" · ${Format.distance(draft.totalDistanceKm)}")
+                        }
+
+                        append("\nexecução ${Format.duration(state.breakdown.executionSeconds)} · ")
+                        append("descanso ${Format.duration(state.breakdown.restSeconds)} · ")
+                        append("ocioso ${Format.duration(state.breakdown.idleSeconds)}")
+                    },
                     style = MaterialTheme.typography.bodyLarge,
                 )
             },
@@ -190,6 +211,51 @@ fun LiveSessionScreen(
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun ExecutionBar(
+    execution: ExecutionState,
+    onFinish: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(IronSurfaceHigh)
+            .border(1.dp, IronPrimary.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
+            .padding(Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(10.dp)
+                .clip(RoundedCornerShape(5.dp))
+                .background(IronPrimary)
+        )
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(horizontal = Spacing.md)
+        ) {
+            Text(text = "Série ${execution.setNumber}", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = execution.exerciseName,
+                style = MaterialTheme.typography.labelMedium,
+                color = IronTextMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Text(
+            text = Format.clock(execution.elapsedSeconds),
+            style = MaterialTheme.typography.titleMedium,
+            color = IronPrimary,
+        )
+        Spacer(Modifier.width(Spacing.md))
+        GhostButton(text = "Parar", onClick = onFinish)
     }
 }
 

@@ -65,6 +65,8 @@ data class WorkoutEditorActions(
     val onChangeWeight: (Int, Int, Int) -> Unit,
     val onSetWeight: (Int, Int, Double) -> Unit,
     val onChangeDurationSeconds: (Int, Int, Int) -> Unit,
+    val onChangeDistance: (Int, Int, Int) -> Unit,
+    val onSetDistance: (Int, Int, Double) -> Unit,
     val onToggleSet: (Int, Int) -> Unit,
     val onSave: () -> Unit,
     val onDelete: () -> Unit,
@@ -284,6 +286,8 @@ private fun ExerciseEditorCard(
                 onWeightStep = { direction -> actions.onChangeWeight(index, setIndex, direction) },
                 onWeightSet = { weight -> actions.onSetWeight(index, setIndex, weight) },
                 onDurationChange = { delta -> actions.onChangeDurationSeconds(index, setIndex, delta) },
+                onDistanceStep = { direction -> actions.onChangeDistance(index, setIndex, direction) },
+                onDistanceSet = { distance -> actions.onSetDistance(index, setIndex, distance) },
                 action = SetAction.Toggle(
                     done = set.done,
                     onToggle = { actions.onToggleSet(index, setIndex) },

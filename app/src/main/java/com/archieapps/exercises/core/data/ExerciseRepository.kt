@@ -67,6 +67,7 @@ class ExerciseRepository(
         name = dto.name,
         executionType = dto.executionType,
         usesWeight = dto.usesWeight,
+        tracksDistance = dto.tracksDistance,
         muscleGroup = dto.muscleGroup,
         difficulty = dto.difficulty,
         equipment = dto.equipment,

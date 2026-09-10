@@ -328,15 +328,28 @@ private fun MonthTiles(stats: StatsDto, modifier: Modifier = Modifier) {
                 .weight(1f)
                 .fillMaxHeight(),
         )
-        StatTile(
-            label = "semana",
-            value = Format.weightValue(stats.averages.sessionsPerWeek),
-            caption = "${Format.integer(stats.totals.sessions)} em 12m",
-            accent = IronPositive,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
-        )
+        if (stats.totals.distanceKm > 0) {
+            StatTile(
+                label = "distância",
+                value = Format.distanceValue(stats.totals.distanceKm),
+                unit = "km",
+                caption = stats.totals.avgSpeedKmh?.let { Format.speed(it) },
+                accent = IronPositive,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+            )
+        } else {
+            StatTile(
+                label = "semana",
+                value = Format.weightValue(stats.averages.sessionsPerWeek),
+                caption = "${Format.integer(stats.totals.sessions)} em 12m",
+                accent = IronPositive,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+            )
+        }
     }
 }
 

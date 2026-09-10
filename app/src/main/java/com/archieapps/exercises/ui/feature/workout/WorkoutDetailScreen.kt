@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.R
 import com.archieapps.exercises.core.format.Format
 import com.archieapps.exercises.core.net.dto.WorkoutExerciseDto
+import com.archieapps.exercises.core.session.ExecutionType
 import com.archieapps.exercises.ui.component.CardHeader
 import com.archieapps.exercises.ui.component.CircleIconButton
 import com.archieapps.exercises.ui.component.GhostButton
@@ -195,15 +196,31 @@ private fun ExerciseSummaryCard(exercise: WorkoutExerciseDto, modifier: Modifier
     IronCard(modifier) {
         CardHeader(
             title = exercise.name,
-            caption = listOfNotNull(exercise.muscleGroup, "${exercise.sets.size} séries").joinToString(" · "),
-            trailing = { PillTag(text = Format.volume(exercise.totalVolumeKg)) },
+            caption = listOfNotNull(
+                exercise.muscleGroup,
+                "${exercise.sets.size} séries",
+                exercise.avgSpeedKmh?.let { Format.speed(it) },
+            ).joinToString(" · "),
+            trailing = {
+                PillTag(
+                    text = if (exercise.tracksDistance) {
+                        Format.distance(exercise.totalDistanceKm)
+                    } else {
+                        Format.volume(exercise.totalVolumeKg)
+                    },
+                )
+            },
         )
 
         Spacer(Modifier.height(Spacing.sm))
 
         exercise.sets.forEach { set ->
-            val detail = if (exercise.executionType == "time") {
-                Format.duration(set.durationSeconds)
+            val detail = if (exercise.executionType == ExecutionType.TIME) {
+                listOfNotNull(
+                    Format.duration(set.durationSeconds),
+                    set.distanceKm?.takeIf { it > 0 }?.let(Format::distance),
+                    set.speedKmh?.let(Format::speed),
+                ).joinToString(" · ")
             } else {
                 listOfNotNull(
                     set.repetitions?.let { "$it reps" },

@@ -1,5 +1,6 @@
 package com.archieapps.exercises.core.session
 
+import com.archieapps.exercises.core.format.Pace
 import com.archieapps.exercises.core.net.dto.WorkoutEventRequest
 import com.archieapps.exercises.core.net.dto.WorkoutExerciseRequest
 import com.archieapps.exercises.core.net.dto.WorkoutRequest
@@ -32,6 +33,8 @@ data class ActiveSession(
         get() = exercises.sumOf { exercise ->
             exercise.sets.filter { it.done }.sumOf { (it.repetitions ?: 0) * (it.weightKg ?: 0.0) }
         }
+
+    val totalDistanceKm: Double get() = exercises.sumOf { it.distanceKm }
 
     val hasWork: Boolean get() = completedSets > 0
 
@@ -95,6 +98,23 @@ data class ActiveSession(
         return anchored.first != exerciseIndex || setIndex > anchored.second
     }
 
+    fun stampExecutingSet(nowMillis: Long): ActiveSession {
+        val executing = phase as? SessionPhase.Executing ?: return this
+        val measured = ((nowMillis - executing.startedAtMillis) / 1_000L).toInt().coerceIn(0, MAX_SET_SECONDS)
+
+        return updateExercise(executing.exerciseIndex) { exercise ->
+            exercise.copy(
+                sets = exercise.sets.mapIndexed { position, set ->
+                    when {
+                        position != executing.setIndex -> set
+                        exercise.isTimed -> set.copy(done = true, durationSeconds = measured)
+                        else -> set.copy(done = true)
+                    }
+                },
+            )
+        }
+    }
+
     fun updateExercise(index: Int, transform: (SessionExercise) -> SessionExercise): ActiveSession =
         copy(exercises = exercises.mapIndexed { position, exercise ->
             if (position == index) transform(exercise) else exercise
@@ -124,6 +144,7 @@ data class ActiveSession(
                         name = exercise.name,
                         executionType = exercise.executionType,
                         usesWeight = exercise.usesWeight,
+                        tracksDistance = exercise.tracksDistance,
                         muscleGroup = exercise.muscleGroup,
                         difficulty = exercise.difficulty,
                         notes = exercise.notes?.takeIf { it.isNotBlank() },
@@ -132,6 +153,7 @@ data class ActiveSession(
                                 setNumber = index + 1,
                                 repetitions = set.repetitions,
                                 durationSeconds = set.durationSeconds,
+                                distanceKm = set.distanceKm,
                                 weightKg = set.weightKg,
                             )
                         },
@@ -181,6 +203,8 @@ data class ActiveSession(
     }
 }
 
+private const val MAX_SET_SECONDS = 86_400
+
 enum class SetRunState { Pending, Running, Done }
 
 @Serializable
@@ -189,19 +213,32 @@ data class SessionExercise(
     val name: String,
     val executionType: String = "sets",
     val usesWeight: Boolean = true,
+    val tracksDistance: Boolean = false,
     val muscleGroup: String? = null,
     val equipment: String? = null,
     val restSeconds: Int? = null,
     val difficulty: String? = null,
     val notes: String? = null,
     val targetReps: Int? = null,
+    val targetSeconds: Int? = null,
+    val targetDistanceKm: Double? = null,
     val sets: List<SessionSet> = emptyList(),
     val previousSummary: String? = null,
     val suggestion: String? = null,
     val bestWeightKg: Double? = null,
 ) {
+    val isTimed: Boolean get() = executionType == ExecutionType.TIME
+
     val volumeKg: Double
         get() = sets.filter { it.done }.sumOf { (it.repetitions ?: 0) * (it.weightKg ?: 0.0) }
+
+    val distanceKm: Double
+        get() = sets.filter { it.done }.sumOf { it.distanceKm ?: 0.0 }
+
+    val timedSeconds: Int
+        get() = sets.filter { it.done }.sumOf { it.durationSeconds ?: 0 }
+
+    val averageSpeedKmh: Double? get() = Pace.speedKmh(distanceKm, timedSeconds)
 
     val isComplete: Boolean get() = sets.isNotEmpty() && sets.all { it.done }
 
@@ -217,5 +254,10 @@ data class SessionSet(
     val repetitions: Int? = null,
     val weightKg: Double? = null,
     val durationSeconds: Int? = null,
+    val distanceKm: Double? = null,
     val done: Boolean = false,
-)
+) {
+    val speedKmh: Double? get() = Pace.speedKmh(distanceKm, durationSeconds)
+
+    val paceSecondsPerKm: Int? get() = Pace.secondsPerKm(distanceKm, durationSeconds)
+}

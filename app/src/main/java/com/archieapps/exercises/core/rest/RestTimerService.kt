@@ -34,6 +34,16 @@ class RestTimerService : Service() {
                 seconds = intent.getIntExtra(EXTRA_SECONDS, DEFAULT_SECONDS),
             )
 
+            ACTION_START_EXECUTION -> startExecution(
+                exerciseName = intent.getStringExtra(EXTRA_NAME).orEmpty(),
+                startedAtMillis = intent.getLongExtra(EXTRA_STARTED_AT, System.currentTimeMillis()),
+            )
+
+            ACTION_FINISH_SET -> {
+                FinishSetBus.request()
+                finish(alert = false)
+            }
+
             ACTION_ADD -> {
                 RestTimerBus.add(intent.getIntExtra(EXTRA_SECONDS, 15))
                 val snapshot = RestTimerBus.current
@@ -72,6 +82,13 @@ class RestTimerService : Service() {
                 }
             }
         }
+    }
+
+    private fun startExecution(exerciseName: String, startedAtMillis: Long) {
+        notifications.cancelAlert()
+        ticker?.cancel()
+        RestTimerBus.startExecution(exerciseName, startedAtMillis)
+        RestTimerBus.current?.let { promote(it) }
     }
 
     private fun promote(snapshot: RestTimerBus.Snapshot) {
@@ -119,10 +136,13 @@ class RestTimerService : Service() {
 
     companion object {
         const val ACTION_START = "com.archieapps.exercises.rest.START"
+        const val ACTION_START_EXECUTION = "com.archieapps.exercises.rest.START_EXECUTION"
         const val ACTION_ADD = "com.archieapps.exercises.rest.ADD"
         const val ACTION_SKIP = "com.archieapps.exercises.rest.SKIP"
+        const val ACTION_FINISH_SET = "com.archieapps.exercises.rest.FINISH_SET"
         const val EXTRA_NAME = "exercise_name"
         const val EXTRA_SECONDS = "seconds"
+        const val EXTRA_STARTED_AT = "started_at"
         const val DEFAULT_SECONDS = 90
     }
 }
@@ -133,6 +153,13 @@ class RestTimerController(private val context: Context) {
             .setAction(RestTimerService.ACTION_START)
             .putExtra(RestTimerService.EXTRA_NAME, exerciseName)
             .putExtra(RestTimerService.EXTRA_SECONDS, seconds)
+    )
+
+    fun startExecution(exerciseName: String, startedAtMillis: Long) = send(
+        Intent(context, RestTimerService::class.java)
+            .setAction(RestTimerService.ACTION_START_EXECUTION)
+            .putExtra(RestTimerService.EXTRA_NAME, exerciseName)
+            .putExtra(RestTimerService.EXTRA_STARTED_AT, startedAtMillis)
     )
 
     fun add(seconds: Int) = send(

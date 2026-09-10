@@ -35,6 +35,7 @@ data class WorkoutExerciseRequest(
     val name: String,
     @SerialName("execution_type") val executionType: String,
     @SerialName("uses_weight") val usesWeight: Boolean,
+    @SerialName("tracks_distance") val tracksDistance: Boolean = false,
     @SerialName("muscle_group") val muscleGroup: String? = null,
     val difficulty: String? = null,
     val notes: String? = null,
@@ -46,6 +47,7 @@ data class WorkoutSetRequest(
     @SerialName("set_number") val setNumber: Int,
     val repetitions: Int? = null,
     @SerialName("duration_seconds") val durationSeconds: Int? = null,
+    @SerialName("distance_km") val distanceKm: Double? = null,
     @SerialName("weight_kg") val weightKg: Double? = null,
 )
 
@@ -60,6 +62,7 @@ data class ExerciseRequest(
     val name: String,
     @SerialName("execution_type") val executionType: String,
     @SerialName("uses_weight") val usesWeight: Boolean,
+    @SerialName("tracks_distance") val tracksDistance: Boolean = false,
     @SerialName("muscle_group") val muscleGroup: String? = null,
     val difficulty: String? = null,
     val equipment: String? = null,
@@ -79,7 +82,9 @@ data class TemplateExerciseRequest(
     @SerialName("exercise_id") val exerciseId: Int,
     @SerialName("target_sets") val targetSets: Int? = null,
     @SerialName("target_reps") val targetReps: Int? = null,
+    @SerialName("target_seconds") val targetSeconds: Int? = null,
     @SerialName("target_weight_kg") val targetWeightKg: Double? = null,
+    @SerialName("target_distance_km") val targetDistanceKm: Double? = null,
     @SerialName("rest_seconds") val restSeconds: Int? = null,
     val notes: String? = null,
 )

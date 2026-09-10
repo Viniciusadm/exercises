@@ -27,6 +27,7 @@ data class ExerciseEntity(
     val name: String,
     val executionType: String,
     val usesWeight: Boolean,
+    val tracksDistance: Boolean = false,
     val muscleGroup: String?,
     val difficulty: String?,
     val equipment: String?,
@@ -110,6 +111,12 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
     }
 }
 
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE exercises ADD COLUMN tracksDistance INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
 class Converters {
     @TypeConverter
     fun weightOptionsToString(options: List<Double>?): String =
@@ -122,7 +129,7 @@ class Converters {
 
 @Database(
     entities = [JsonCacheEntity::class, ExerciseEntity::class, PendingWorkoutEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

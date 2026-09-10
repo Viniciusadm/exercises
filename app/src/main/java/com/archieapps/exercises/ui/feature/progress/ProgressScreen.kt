@@ -134,27 +134,51 @@ private fun RecordTiles(history: ExerciseHistoryDto, modifier: Modifier = Modifi
     val records = history.records
 
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        StatTile(
-            label = "melhor carga",
-            value = Format.weightValue(records.bestWeight?.value),
-            unit = "kg",
-            caption = records.bestWeight?.date?.let { Format.parseDate(it)?.let(Format::dayMonth) },
-            accent = IronRecord,
-            modifier = Modifier.weight(1f),
-        )
-        StatTile(
-            label = "1rm estimado",
-            value = Format.weightValue(records.bestEstimated1rm?.value),
-            unit = "kg",
-            caption = records.bestEstimated1rm?.date?.let { Format.parseDate(it)?.let(Format::dayMonth) },
-            modifier = Modifier.weight(1f),
-        )
-        StatTile(
-            label = "sessões",
-            value = Format.integer(records.sessionsCount),
-            caption = Format.volume(records.totalVolumeKg),
-            modifier = Modifier.weight(1f),
-        )
+        if (history.exercise.tracksDistance) {
+            StatTile(
+                label = "maior distância",
+                value = Format.distanceValue(records.bestDistance?.value),
+                unit = "km",
+                caption = records.bestDistance?.date?.let { Format.parseDate(it)?.let(Format::dayMonth) },
+                accent = IronRecord,
+                modifier = Modifier.weight(1f),
+            )
+            StatTile(
+                label = "melhor ritmo",
+                value = Format.weightValue(records.bestSpeed?.value),
+                unit = "km/h",
+                caption = records.bestSpeed?.date?.let { Format.parseDate(it)?.let(Format::dayMonth) },
+                modifier = Modifier.weight(1f),
+            )
+            StatTile(
+                label = "sessões",
+                value = Format.integer(records.sessionsCount),
+                caption = Format.distance(records.totalDistanceKm),
+                modifier = Modifier.weight(1f),
+            )
+        } else {
+            StatTile(
+                label = "melhor carga",
+                value = Format.weightValue(records.bestWeight?.value),
+                unit = "kg",
+                caption = records.bestWeight?.date?.let { Format.parseDate(it)?.let(Format::dayMonth) },
+                accent = IronRecord,
+                modifier = Modifier.weight(1f),
+            )
+            StatTile(
+                label = "1rm estimado",
+                value = Format.weightValue(records.bestEstimated1rm?.value),
+                unit = "kg",
+                caption = records.bestEstimated1rm?.date?.let { Format.parseDate(it)?.let(Format::dayMonth) },
+                modifier = Modifier.weight(1f),
+            )
+            StatTile(
+                label = "sessões",
+                value = Format.integer(records.sessionsCount),
+                caption = Format.volume(records.totalVolumeKg),
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 
@@ -217,15 +241,24 @@ private fun SessionsCard(history: ExerciseHistoryDto, modifier: Modifier = Modif
         CardHeader(title = "Últimas sessões", caption = history.exercise.name)
         Spacer(Modifier.height(Spacing.sm))
 
+        val tracksDistance = history.exercise.tracksDistance
+
         history.sessions.take(12).forEach { session ->
             KeyValueRow(
                 label = session.date?.let { Format.parseDate(it)?.let(Format::dateWithWeekday) } ?: Format.PLACEHOLDER,
                 value = buildString {
                     append(session.sets.size)
                     append("× ")
-                    append(Format.weight(session.topSet?.weightKg))
-                    append(" · ")
-                    append(Format.volume(session.totalVolumeKg))
+
+                    if (tracksDistance) {
+                        append(Format.distance(session.totalDistanceKm))
+                        append(" · ")
+                        append(Format.speed(session.avgSpeedKmh))
+                    } else {
+                        append(Format.weight(session.topSet?.weightKg))
+                        append(" · ")
+                        append(Format.volume(session.totalVolumeKg))
+                    }
                 },
             )
         }

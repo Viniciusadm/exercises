@@ -8,18 +8,31 @@ object SessionBuilder {
 
     fun fromTemplate(template: TemplateDto, defaultRestSeconds: Int): List<SessionExercise> =
         template.exercises.sortedBy { it.order }.map { item ->
+            val timed = item.executionType == ExecutionType.TIME
+
             SessionExercise(
                 exerciseId = item.exerciseId,
                 name = item.name,
                 executionType = item.executionType,
                 usesWeight = item.usesWeight,
+                tracksDistance = item.tracksDistance,
                 muscleGroup = item.muscleGroup,
                 equipment = item.equipment,
                 restSeconds = item.restSeconds ?: defaultRestSeconds,
                 targetReps = item.targetReps,
+                targetSeconds = item.targetSeconds,
+                targetDistanceKm = item.targetDistanceKm,
                 notes = item.notes,
                 sets = List((item.targetSets ?: 3).coerceIn(1, 12)) {
-                    SessionSet(repetitions = item.targetReps, weightKg = item.targetWeightKg)
+                    if (timed) {
+                        SessionSet(
+                            durationSeconds = item.targetSeconds ?: 0,
+                            distanceKm = item.targetDistanceKm,
+                            weightKg = item.targetWeightKg,
+                        )
+                    } else {
+                        SessionSet(repetitions = item.targetReps, weightKg = item.targetWeightKg)
+                    }
                 },
             )
         }
@@ -31,6 +44,7 @@ object SessionBuilder {
                 name = item.name,
                 executionType = item.executionType,
                 usesWeight = item.usesWeight,
+                tracksDistance = item.tracksDistance,
                 muscleGroup = item.muscleGroup,
                 restSeconds = defaultRestSeconds,
                 sets = item.sets.map { set ->
@@ -38,6 +52,7 @@ object SessionBuilder {
                         repetitions = set.repetitions,
                         weightKg = set.weightKg,
                         durationSeconds = set.durationSeconds,
+                        distanceKm = set.distanceKm,
                     )
                 }.ifEmpty { listOf(SessionSet()) },
             )
@@ -52,7 +67,11 @@ object SessionBuilder {
     fun estimatedSeconds(exercises: List<SessionExercise>, defaultRestSeconds: Int): Long =
         exercises.sumOf { exercise ->
             val rest = exercise.restSeconds ?: defaultRestSeconds
-            val perSet = (exercise.sets.firstOrNull()?.durationSeconds ?: ESTIMATED_SET_SECONDS) + rest
+            val perSet = (
+                exercise.sets.firstOrNull()?.durationSeconds?.takeIf { it > 0 }
+                    ?: exercise.targetSeconds
+                    ?: ESTIMATED_SET_SECONDS
+                ) + rest
 
             exercise.sets.size.toLong() * perSet
         }

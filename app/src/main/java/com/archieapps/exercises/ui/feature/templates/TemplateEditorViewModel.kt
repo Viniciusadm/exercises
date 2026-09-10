@@ -9,6 +9,7 @@ import com.archieapps.exercises.core.net.ApiResult
 import com.archieapps.exercises.core.net.dto.TemplateExerciseDto
 import com.archieapps.exercises.core.net.dto.TemplateExerciseRequest
 import com.archieapps.exercises.core.net.dto.TemplateRequest
+import com.archieapps.exercises.core.session.ExecutionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,17 +25,24 @@ data class TemplateItemForm(
     val equipment: String? = null,
     val executionType: String = "sets",
     val usesWeight: Boolean = true,
+    val tracksDistance: Boolean = false,
     val targetSets: Int? = 3,
     val targetReps: Int? = 12,
+    val targetSeconds: Int? = null,
     val targetWeightKg: Double? = null,
+    val targetDistanceKm: Double? = null,
     val restSeconds: Int? = null,
     val notes: String? = null,
 ) {
+    val isTimed: Boolean get() = executionType == ExecutionType.TIME
+
     fun toRequest() = TemplateExerciseRequest(
         exerciseId = exerciseId,
         targetSets = targetSets,
-        targetReps = targetReps,
+        targetReps = targetReps.takeUnless { isTimed },
+        targetSeconds = targetSeconds.takeIf { isTimed },
         targetWeightKg = targetWeightKg,
+        targetDistanceKm = targetDistanceKm.takeIf { tracksDistance },
         restSeconds = restSeconds,
         notes = notes?.takeIf { it.isNotBlank() },
     )
@@ -104,6 +112,8 @@ class TemplateEditorViewModel(
                 equipment = exercise.equipment,
                 executionType = exercise.executionType,
                 usesWeight = exercise.usesWeight,
+                tracksDistance = exercise.tracksDistance,
+                targetSeconds = if (exercise.executionType == ExecutionType.TIME) 60 else null,
                 targetWeightKg = exercise.bestWeightKg,
                 restSeconds = exercise.restSeconds,
             ),
@@ -200,9 +210,12 @@ class TemplateEditorViewModel(
         equipment = item.equipment,
         executionType = item.executionType,
         usesWeight = item.usesWeight,
+        tracksDistance = item.tracksDistance,
         targetSets = item.targetSets,
         targetReps = item.targetReps,
+        targetSeconds = item.targetSeconds,
         targetWeightKg = item.targetWeightKg,
+        targetDistanceKm = item.targetDistanceKm,
         restSeconds = item.restSeconds,
         notes = item.notes,
     )

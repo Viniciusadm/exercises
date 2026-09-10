@@ -1,6 +1,7 @@
 package com.archieapps.exercises.ui.feature.session
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.archieapps.exercises.core.data.FinishOutcome
 import com.archieapps.exercises.core.db.ExerciseEntity
 import com.archieapps.exercises.core.format.Format
+import com.archieapps.exercises.core.format.Pace
 import com.archieapps.exercises.core.net.dto.TemplateDto
 import com.archieapps.exercises.core.session.ActiveSession
 import com.archieapps.exercises.core.session.SessionTimeBreakdown
@@ -26,6 +28,8 @@ import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.HeroSurface
 import com.archieapps.exercises.ui.component.MetricValue
 import com.archieapps.exercises.ui.component.PrimaryButton
+import com.archieapps.exercises.ui.component.IronCard
+import com.archieapps.exercises.ui.component.PillTag
 import com.archieapps.exercises.ui.component.SectionLabel
 import com.archieapps.exercises.ui.component.SessionTimeCard
 import com.archieapps.exercises.ui.component.SessionTimeMetrics
@@ -47,6 +51,8 @@ data class SessionActions(
     val onChangeWeight: (Int, Int, Int) -> Unit,
     val onSetWeight: (Int, Int, Double) -> Unit,
     val onChangeDuration: (Int, Int, Int) -> Unit,
+    val onChangeDistance: (Int, Int, Int) -> Unit,
+    val onSetDistance: (Int, Int, Double) -> Unit,
     val onStartSet: (Int, Int) -> Unit,
     val onStartNextSet: (Int) -> Unit,
     val onFinishSet: () -> Unit,
@@ -179,6 +185,20 @@ private fun SessionSummary(
             fallbackTotalSeconds = breakdown?.totalSeconds,
             modifier = Modifier.fillMaxWidth(),
         )
+
+        finished?.takeIf { it.totalDistanceKm > 0 }?.let { session ->
+            IronCard(Modifier.fillMaxWidth()) {
+                SectionLabel(text = "cardio")
+                Spacer(Modifier.height(Spacing.sm))
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                    PillTag(text = Format.distance(session.totalDistanceKm))
+                    Pace.speedKmh(
+                        session.totalDistanceKm,
+                        session.exercises.sumOf { it.timedSeconds },
+                    )?.let { PillTag(text = Format.speed(it)) }
+                }
+            }
+        }
 
         if (entries.isNotEmpty()) {
             SessionTimelineList(

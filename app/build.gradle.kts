@@ -34,8 +34,18 @@ android {
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
+    signingConfigs {
+        create("sideload") {
+            storeFile = File(System.getProperty("user.home"), ".android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("sideload")
             optimization {
                 enable = false
             }
