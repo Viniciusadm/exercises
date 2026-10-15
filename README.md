@@ -37,7 +37,7 @@ Every request sends `Accept: application/json`. Responses come in an envelope wi
 
 Authentication: `POST api/auth/login` with `email` and `password` returns a token, sent afterwards as `Authorization: Bearer <token>`. A 401 or 403 sends the user back to login.
 
-Access code: the backend guards some writes with a daily access code typed by the user. When a write is refused with a 400 that carries the gate message, the app asks for the 8-digit code on a shuffled keypad, checks it with `POST api/user/test` (`{"code": "..."}`) and sends it in the `code` header on the following requests. The app never derives the code.
+Registration: `POST api/auth/register` with `name`, `email`, `password` and `password_confirmation`, sent with the `X-Client: exercises` header, creates an account and returns the same token payload as login. A new account starts with a copy of the owner's exercise catalog and sees only its own workouts; every route outside the workout domain answers 403 to it. Switching to a different account on the same device clears the local cache.
 
 Endpoints used:
 

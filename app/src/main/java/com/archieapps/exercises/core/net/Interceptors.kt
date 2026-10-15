@@ -1,7 +1,6 @@
 package com.archieapps.exercises.core.net
 
 import java.util.concurrent.TimeUnit
-import com.archieapps.exercises.core.access.AccessCode
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -12,7 +11,6 @@ class SessionInterceptor(
         val builder = chain.request().newBuilder().header("Accept", "application/json")
 
         token()?.takeIf { it.isNotBlank() }?.let { builder.header("Authorization", "Bearer $it") }
-        AccessCode.header()?.let { builder.header(AccessCode.HEADER, it) }
 
         return chain.proceed(builder.build())
     }

@@ -20,6 +20,7 @@ import kotlinx.coroutines.runBlocking
 data class AppSettings(
     val token: String? = null,
     val userName: String? = null,
+    val userId: Int? = null,
     val defaultRestSeconds: Int = 90,
     val keepScreenOnDuringWorkout: Boolean = true,
     val planObjective: String? = null,
@@ -41,10 +42,11 @@ class SettingsStore(context: Context, scope: CoroutineScope) {
 
     val current: AppSettings get() = state.value
 
-    suspend fun setSession(token: String, userName: String?) {
+    suspend fun setSession(token: String, userName: String?, userId: Int?) {
         store.edit {
             it[Keys.token] = token
             if (userName != null) it[Keys.userName] = userName
+            if (userId != null) it[Keys.userId] = userId else it.remove(Keys.userId)
         }
     }
 
@@ -75,6 +77,7 @@ class SettingsStore(context: Context, scope: CoroutineScope) {
     private fun read(preferences: Preferences) = AppSettings(
         token = preferences[Keys.token],
         userName = preferences[Keys.userName],
+        userId = preferences[Keys.userId],
         defaultRestSeconds = preferences[Keys.restSeconds] ?: 90,
         keepScreenOnDuringWorkout = preferences[Keys.keepScreenOn] ?: true,
         planObjective = preferences[Keys.planObjective],
@@ -86,6 +89,7 @@ class SettingsStore(context: Context, scope: CoroutineScope) {
     private object Keys {
         val token = stringPreferencesKey("token")
         val userName = stringPreferencesKey("user_name")
+        val userId = intPreferencesKey("user_id")
         val restSeconds = intPreferencesKey("default_rest_seconds")
         val keepScreenOn = booleanPreferencesKey("keep_screen_on")
         val planObjective = stringPreferencesKey("plan_objective")

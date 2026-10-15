@@ -5,7 +5,6 @@ import com.archieapps.exercises.BuildConfig
 import androidx.room.Room
 import com.archieapps.exercises.core.anatomy.BodyGeometryLoader
 import com.archieapps.exercises.core.data.AnatomyRepository
-import com.archieapps.exercises.core.data.AccessRepository
 import com.archieapps.exercises.core.data.AuthRepository
 import com.archieapps.exercises.core.data.ExerciseRepository
 import com.archieapps.exercises.core.data.HomeRepository
@@ -31,6 +30,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -70,9 +70,9 @@ class AppContainer(context: Context) {
 
     private val caller = ApiCaller(ApiJson)
 
-    val authRepository = AuthRepository(api, caller, settings)
-
-    val accessRepository = AccessRepository(api, caller)
+    val authRepository = AuthRepository(api, caller, settings) {
+        withContext(Dispatchers.IO) { database.clearAllTables() }
+    }
 
     val homeRepository = HomeRepository(api, database.jsonCache(), caller, ApiJson)
 

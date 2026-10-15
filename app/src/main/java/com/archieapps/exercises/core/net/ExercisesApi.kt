@@ -28,18 +28,19 @@ import com.archieapps.exercises.core.net.dto.PlanOptionsDto
 import com.archieapps.exercises.core.net.dto.PlanProposalDto
 import com.archieapps.exercises.core.net.dto.PlanRequest
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
-import kotlinx.serialization.json.JsonElement
 
 interface ExercisesApi {
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): Envelope<Session>
 
-    @POST("api/user/test")
-    suspend fun validateAccessCode(@Body request: AccessCodeRequest): Envelope<JsonElement>
+    @Headers("X-Client: exercises")
+    @POST("api/auth/register")
+    suspend fun register(@Body request: RegisterRequest): Envelope<Session>
 
     @GET("api/workouts/stats")
     suspend fun stats(

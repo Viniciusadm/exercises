@@ -1,11 +1,10 @@
 package com.archieapps.exercises.core.net
 
 import java.io.IOException
-import com.archieapps.exercises.core.access.AccessCode
 import kotlinx.serialization.json.Json
 import retrofit2.HttpException
 
-enum class FailureKind { OFFLINE, UNAUTHORIZED, SERVER, EMPTY, GATED }
+enum class FailureKind { OFFLINE, UNAUTHORIZED, SERVER, EMPTY }
 
 sealed interface ApiResult<out T> {
     data class Success<T>(val value: T) : ApiResult<T>
@@ -24,7 +23,7 @@ class ApiCaller(private val json: Json) {
         val envelope = block()
 
         when {
-            !envelope.success -> ApiResult.Failure(envelope.errorText(), kindOf(envelope.errorText()))
+            !envelope.success -> ApiResult.Failure(envelope.errorText(), FailureKind.SERVER)
             envelope.body == null -> ApiResult.Failure(envelope.errorText(), FailureKind.EMPTY)
             else -> ApiResult.Success(envelope)
         }
@@ -35,20 +34,11 @@ class ApiCaller(private val json: Json) {
             message,
             when {
                 error.code() == 401 || error.code() == 403 -> FailureKind.UNAUTHORIZED
-                error.code() == 400 -> kindOf(message)
                 else -> FailureKind.SERVER
             },
         )
     } catch (error: IOException) {
         ApiResult.Failure("Sem conexão com o servidor.", FailureKind.OFFLINE)
-    }
-
-    private fun kindOf(message: String): FailureKind {
-        if (! message.contains(GATE_MESSAGE)) return FailureKind.SERVER
-
-        AccessCode.request()
-
-        return FailureKind.GATED
     }
 
     private fun messageOf(error: HttpException): String {
@@ -65,8 +55,6 @@ class ApiCaller(private val json: Json) {
         }
     }
 }
-
-private const val GATE_MESSAGE = "digo inv"
 
 fun Envelope<*>.errorText(): String =
     error?.takeIf { it.isNotBlank() } ?: message?.takeIf { it.isNotBlank() } ?: "Não foi possível carregar os dados."

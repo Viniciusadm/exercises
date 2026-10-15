@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.archieapps.exercises.ui.component.GhostButton
 import com.archieapps.exercises.ui.component.NoticeBanner
 import com.archieapps.exercises.ui.component.PrimaryButton
 import com.archieapps.exercises.ui.component.SectionLabel
@@ -37,6 +38,7 @@ fun LoginScreen(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
+    onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -52,7 +54,7 @@ fun LoginScreen(
         Spacer(Modifier.height(Spacing.sm))
         Text(text = "Entrar", style = MaterialTheme.typography.displayMedium)
         Text(
-            text = "Use a mesma conta do painel.",
+            text = "Acompanhe seus treinos, cargas e evolução.",
             style = MaterialTheme.typography.bodyMedium,
             color = IronTextSecondary,
         )
@@ -86,6 +88,13 @@ fun LoginScreen(
             onClick = onSubmit,
             enabled = state.canSubmit,
             loading = state.loading,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(Spacing.md))
+        GhostButton(
+            text = "Criar conta",
+            onClick = onCreateAccount,
+            enabled = !state.loading,
             modifier = Modifier.fillMaxWidth(),
         )
 
